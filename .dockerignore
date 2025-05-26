@@ -6,9 +6,6 @@ npm-debug.log
 .breakpoints
 .cache
 .config
-.dockerignore
-.git
-.gitignore
 .local
 .replit
 replit.nix
