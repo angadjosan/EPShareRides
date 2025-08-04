@@ -90,13 +90,7 @@
                                              </span>
                                           </span>
                                           <div class="buttons" style="margin: 10px;margin-right: 0px;">
-                                              <button class="button is-info is-outlined" onclick="openSettings()" style="margin-right: 5px;">
-                                                 <span class="icon">
-                                                    <i class="fas fa-cog"></i>
-                                                 </span>
-                                                 <span>Interests</span>
-                                              </button>
-                                              <a class="button is-link is-outlined" href="/logout">
+                                               <a class="button is-link is-outlined" href="/logout">
                                                  Log out
                                               </a>
                                              <div class="navbar-item has-dropdown is-hoverable "
@@ -243,19 +237,6 @@
                                      </div>
                                   </div>
                                   
-                                  <!-- Recommended Carpools Section -->
-                                  <div class="box" style="margin-top: 30px;">
-                                     <h2 class="title is-4">Recommended Carpools</h2>
-                                     <p class="subtitle is-6">Based on your interests and available carpools</p>
-                                     <div id="recommendedCarpools">
-                                        <div class="has-text-centered" id="recommendedCarpoolsLoading">
-                                           <span class="icon is-medium">
-                                              <i class="fas fa-spinner fa-pulse"></i>
-                                           </span>
-                                           <p>Loading recommendations...</p>
-                                        </div>
-                                     </div>
-                                  </div>
                                </div>
                             </div>
                         </div>
@@ -281,39 +262,6 @@
                   </section>
    </main>
 
-   <!-- Settings Modal -->
-   <div class="modal" id="settingsModal">
-      <div class="modal-background" onclick="closeModal('settingsModal')"></div>
-      <div class="modal-card" style="max-width: 500px;">
-         <header class="modal-card-head">
-            <p class="modal-card-title">My Interests</p>
-            <button class="delete" aria-label="close" onclick="closeModal('settingsModal')"></button>
-         </header>
-         <section class="modal-card-body">
-            <div class="content">
-               <p>Select your interests to get personalized carpool recommendations:</p>
-               <div class="field" id="interestsContainer" style="margin-top: 1rem;">
-                  <!-- Interests will be populated by JavaScript -->
-                  <div class="has-text-centered" id="interestsLoading">
-                     <span class="icon is-medium">
-                        <i class="fas fa-spinner fa-pulse"></i>
-                     </span>
-                     <p>Loading interests...</p>
-                  </div>
-               </div>
-            </div>
-         </section>
-         <footer class="modal-card-foot" style="justify-content: flex-end;">
-            <button class="button is-link" id="saveInterestsBtn" onclick="saveInterests()">
-               <span class="icon">
-                  <i class="fas fa-save"></i>
-               </span>
-               <span>Save Changes</span>
-            </button>
-            <button class="button" onclick="closeModal('settingsModal')">Cancel</button>
-         </footer>
-      </div>
-   </div>
 </body>
 <!-- start here -->
 <div class="modal" id="modal-js-edit">

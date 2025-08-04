@@ -28,7 +28,7 @@ EPShareRides is a Node.js web application for carpooling coordination at Eastsid
   - `User.model.js`: User accounts with CO2 tracking
   - `Carpool.model.js`: Carpool data with carpoolers and pending requests
   - `Event.model.js`: School events for carpooling
-  - `UserSettings.model.js`: User preferences and interests
+  - `UserSettings.model.js`: User preferences
 - `utils/`: Helper functions
   - `authUtils.js`: Firebase authentication middleware
   - `co2Calculator.js`: CO2 savings calculations
@@ -45,13 +45,12 @@ EPShareRides is a Node.js web application for carpooling coordination at Eastsid
 5. **CO2 Tracking**: Environmental impact calculations
 6. **Student Search**: Find nearby students by address
 7. **Email Notifications**: Automated carpool reminders and updates
-8. **Interest Matching**: Recommend carpools based on user interests
 
 ### Database Models
 - **User**: Personal info, admin status, CO2 savings, preferences
 - **Carpool**: Driver info, route details, carpoolers, pending requests
 - **Event**: School events with location and category
-- **UserSettings**: User preferences and interest categories
+- **UserSettings**: User preferences
 
 ### Authentication Flow
 - Firebase ID tokens stored in `idToken` cookie

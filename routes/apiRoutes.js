@@ -77,109 +77,6 @@ router.patch("/updateSettings", homeLimiter, authenticateToken, async (req, res)
   res.redirect("/updateSettings?suc=Settings updated successfully");
 });
 
-// Route to get user interests
-router.get("/user/interests", homeLimiter, authenticateToken, async (req, res) => {
-  try {
-    // Find user settings or create if they don't exist
-    let userSettings = await UserSettings.findOne({ userEmail: req.email });
-    
-    if (!userSettings) {
-      // If no settings exist, create with default interests (empty array)
-      userSettings = new UserSettings({
-        userEmail: req.email,
-        interests: []
-      });
-      await userSettings.save();
-    }
-    
-    // Return the user's interests (or empty array if not set)
-    res.json({ 
-      success: true, 
-      interests: userSettings.interests || [] 
-    });
-    
-  } catch (error) {
-    console.error('Error fetching user interests:', error);
-    res.status(500).json({ 
-      success: false, 
-      error: 'Failed to fetch user interests' 
-    });
-  }
-});
-
-// Route to update user interests
-router.post("/user/interests", homeLimiter, authenticateToken, async (req, res) => {
-  try {
-    const { interests } = req.body;
-    
-    if (!Array.isArray(interests)) {
-      return res.status(400).json({ error: "Interests must be an array" });
-    }
-
-    // Validate interests
-    const validInterests = ['sports', 'academic', 'social', 'other'];
-    const invalidInterests = interests.filter(item => !validInterests.includes(item));
-    
-    if (invalidInterests.length > 0) {
-      return res.status(400).json({ error: `Invalid interest(s): ${invalidInterests.join(', ')}` });
-    }
-
-    // Update user settings with new interests
-    const updatedSettings = await UserSettings.findOneAndUpdate(
-      { userEmail: req.email },
-      { interests },
-      { new: true, upsert: true }
-    );
-
-    res.json({ success: true, interests: updatedSettings.interests });
-  } catch (error) {
-    console.error("Error updating interests:", error);
-    res.status(500).json({ error: "Failed to update interests" });
-  }
-});
-
-// Route to get recommended carpools based on user interests
-router.get("/recommended-carpools", homeLimiter, authenticateToken, async (req, res) => {
-  try {
-    // Get user's interests
-    const settings = await UserSettings.findOne({ userEmail: req.email });
-    
-    if (!settings || !settings.interests || settings.interests.length === 0) {
-      return res.json([]);
-    }
-
-    // Map user interests to the possible carpool categories. Some older
-    // carpools used slightly different category labels (e.g. "academic teams"),
-    // so include those variants as well.
-    const interestMap = {
-      sports: ['sports'],
-      academic: ['academic', 'academic teams'],
-      social: ['social', 'socials'],
-      other: ['other']
-    };
-    
-    // Expand interests into the actual categories stored on carpools and
-    // remove duplicates.
-    const matchCategories = settings.interests
-      .flatMap(i => interestMap[i] || [])
-      .filter((v, i, arr) => arr.indexOf(v) === i);
-
-    // Create case-insensitive regexes so categories like "Academic Teams"
-    // also match.
-    const matchRegexes = matchCategories.map(cat => new RegExp(`^${cat}$`, 'i'));
-
-    // Find carpools that match user's interests and they haven't joined yet
-    const recommendedCarpools = await Carpool.find({
-      category: { $in: matchRegexes },
-      userEmail: { $ne: req.email }, // Not the user's own carpools
-      carpoolers: { $not: { $elemMatch: { email: req.email } } } // Not already joined
-    }).limit(5);
-    res.json(recommendedCarpools);
-  } catch (error) {
-    console.error("Error getting recommended carpools:", error);
-    res.status(500).json({ error: "Failed to get recommended carpools" });
-  }
-});
 
 // Route to get offer to carpool data
 // Why do we have a req here?
@@ -660,15 +557,84 @@ router.delete(
     try {
       // Get the carpool ID from the request
       const { id } = req.params;
+      const { transporter } = req; // Get transporter for email notifications
+      
+      // First, get the carpool data before deleting to notify affected users
+      const carpool = await Carpool.findById(id);
+      if (!carpool) {
+        return res.status(404).send("Carpool not found");
+      }
+      
+      // Get event details for the email
+      let event;
+      try {
+        event = await Event.findById(carpool.nameOfEvent);
+      } catch (err) {
+        console.error("Error retrieving event for deletion email:", err);
+        event = null; // Continue with deletion even if event lookup fails
+      }
+      
+      // Collect all affected user emails (carpoolers + pending requests)
+      const affectedEmails = [];
+      
+      // Add carpoolers
+      carpool.carpoolers.forEach(carpooler => {
+        if (carpooler.email) {
+          affectedEmails.push(carpooler.email);
+        }
+      });
+      
+      // Add pending request users
+      carpool.pendingRequests.forEach(request => {
+        if (request.email) {
+          affectedEmails.push(request.email);
+        }
+      });
+      
+      // Send deletion notification emails to all affected users
+      if (transporter && affectedEmails.length > 0) {
+        const eventName = event ? event.eventName : 'Unknown Event';
+        const eventDate = event ? new Date(event.date).toLocaleDateString() : 'Unknown Date';
+        
+        for (const email of affectedEmails) {
+          const mailOptions = {
+            from: process.env.SMTP_USER,
+            to: email,
+            subject: `Carpool Cancelled - ${eventName}`,
+            text: `We're writing to inform you that the carpool you were part of (or had requested to join) has been cancelled.
+
+Event Details:
+- Event: ${eventName}
+- Date: ${eventDate}
+- Driver: ${carpool.firstName} ${carpool.lastName}
+
+If you still need transportation for this event, please check the app for other available carpools or consider creating your own.
+
+We apologize for any inconvenience this may cause.
+
+Best regards,
+EPShareRides Team`
+          };
+          
+          try {
+            await transporter.sendMail(mailOptions);
+          } catch (emailErr) {
+            console.error(`Failed to send carpool deletion email to ${email}:`, emailErr);
+            // Continue with other emails even if one fails
+          }
+        }
+      }
+      
       // Delete the carpool from the DB
       const carpools = await Carpool.deleteOne({
         _id: new ObjectId(id),
       });
+      
       // Send a 200 status code because the carpool was deleted successfully
       res.json(carpools);
     } catch (err) {
-      console.error("Error retrieving carpools: " + err);
-      res.status(500).send("Error retrieving carpools");
+      console.error("Error deleting carpool: " + err);
+      res.status(500).send("Error deleting carpool");
     }
   },
 );
@@ -1106,18 +1072,73 @@ router.post("/update-co2-savings", homeLimiter, authenticateToken, async (req, r
   }
 });
 
-// Route to get the most recent version from MongoDB
-router.get("/version", homeLimiter, async (req, res) => {
+// Route to add school events for September 3rd, 2025 (one-time setup)
+router.post("/setup/school-events", homeLimiter, authenticateToken, async (req, res) => {
   try {
-    // Find the most recent version by createdAt descending
-    const latestVersion = await Version.findOne({}, {}, { sort: { createdAt: -1 } });
-    if (!latestVersion) {
-      return res.status(404).json({ error: "No version found" });
+    // Get the user's email from the request to check admin status
+    const user = await User.findOne({ email: req.email });
+    if (!user || !user.admin) {
+      return res.status(403).json({ error: "Admin access required" });
     }
-    res.json(latestVersion);
+
+    // School Start Event - September 3rd, 2025 at 8:15 AM
+    const schoolStartEvent = new Event({
+      firstName: 'System',
+      lastName: 'Administrator',
+      eventName: 'School Start - First Day',
+      wlocation: 'Eastside Preparatory School',
+      address: '10613 NE 38th Place, Kirkland, WA 98033',
+      date: new Date('2025-09-03T15:15:00.000Z').toISOString(), // 8:15 AM PDT (UTC-7)
+      category: 'academic'
+    });
+
+    // School End Event - September 3rd, 2025 at 3:15 PM
+    const schoolEndEvent = new Event({
+      firstName: 'System',
+      lastName: 'Administrator',
+      eventName: 'School End - First Day',
+      wlocation: 'Eastside Preparatory School',
+      address: '10613 NE 38th Place, Kirkland, WA 98033',
+      date: new Date('2025-09-03T22:15:00.000Z').toISOString(), // 3:15 PM PDT (UTC-7)
+      category: 'academic'
+    });
+
+    // Check if events already exist to avoid duplicates
+    const existingStartEvent = await Event.findOne({
+      eventName: 'School Start - First Day',
+      date: schoolStartEvent.date
+    });
+
+    const existingEndEvent = await Event.findOne({
+      eventName: 'School End - First Day',
+      date: schoolEndEvent.date
+    });
+
+    const results = [];
+
+    if (existingStartEvent) {
+      results.push({ event: 'School Start', status: 'already_exists' });
+    } else {
+      await schoolStartEvent.save();
+      results.push({ event: 'School Start', status: 'created', id: schoolStartEvent._id });
+    }
+
+    if (existingEndEvent) {
+      results.push({ event: 'School End', status: 'already_exists' });
+    } else {
+      await schoolEndEvent.save();
+      results.push({ event: 'School End', status: 'created', id: schoolEndEvent._id });
+    }
+
+    res.json({
+      success: true,
+      message: 'School events setup completed',
+      results: results
+    });
+
   } catch (err) {
-    console.error("Error retrieving version: " + err);
-    res.status(500).send("Error retrieving version");
+    console.error("Error setting up school events: " + err);
+    res.status(500).json({ error: "Error setting up school events" });
   }
 });
 

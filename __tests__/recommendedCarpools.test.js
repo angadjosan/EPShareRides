@@ -38,35 +38,14 @@ beforeEach(async () => {
   await UserSettings.deleteMany({});
 });
 
-test('returns recommended carpools based on user interests', async () => {
-  await UserSettings.create({ userEmail: 'test@example.com', interests: ['sports', 'academic'] });
+test('recommended carpools endpoint returns 404 since interests system was removed', async () => {
+  await UserSettings.create({ userEmail: 'test@example.com' });
 
   await Carpool.create([
     { seats: 3, userEmail: 'other@example.com', category: 'sports' },
-    { seats: 3, userEmail: 'other@example.com', category: 'academic' },
-    { seats: 3, userEmail: 'other@example.com', category: 'social' },
-    { seats: 3, userEmail: 'test@example.com', category: 'sports' },
-    { seats: 3, userEmail: 'other@example.com', category: 'sports', carpoolers: [{ email: 'test@example.com' }] }
+    { seats: 3, userEmail: 'other@example.com', category: 'academic' }
   ]);
 
   const res = await request(app).get('/api/recommended-carpools');
-  expect(res.statusCode).toBe(200);
-  expect(Array.isArray(res.body)).toBe(true);
-
-  const categories = res.body.map(c => c.category);
-  expect(categories).not.toContain('social');
-  
-  // Should only return sports and academic carpools not owned or joined by the user
-  expect(categories).toEqual(expect.arrayContaining(['sports', 'academic']));
-  expect(categories.length).toBe(2);
-});
-
-test('returns empty array when user has no interests set', async () => {
-  await UserSettings.create({ userEmail: 'test@example.com', interests: [] });
-
-  await Carpool.create({ seats: 3, userEmail: 'other@example.com', category: 'sports' });
-
-  const res = await request(app).get('/api/recommended-carpools');
-  expect(res.statusCode).toBe(200);
-  expect(res.body).toEqual([]);
+  expect(res.statusCode).toBe(404);
 });
