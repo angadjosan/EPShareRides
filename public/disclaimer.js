@@ -45,3 +45,30 @@ function showDisclaimer() {
     document.addEventListener('carpool-joined', (event) => {
       document.dispatchEvent(new CustomEvent('carpool-created', { detail: event.detail }));
     });
+
+    document.getElementById("eventsJS").innerHTML += '';
+
+    function myTimer(i) {
+      let control = document.getElementsByClassName("control");
+      for (let i = 0; i < control.length; i++) {
+
+        control[i].style.color = "white"
+      }
+      let button = document.getElementsByClassName("button");
+      for (let i = 0; i < button.length; i++) {
+        button[i].style.color = "#ffffff";
+        button[i].style.background = "#3c3c3c";
+        button[i].style.border = "#bcae98";
+      }
+      clearInterval(myTimer);
+    }
+    function navBurger() {
+      var burger = document.getElementById('nav-toggle');
+      var menu = document.getElementById('navbarMenuHeroC');
+      burger.addEventListener('click', function () {
+        burger.classList.toggle('is-active');
+        menu.classList.toggle('is-active');
+      });
+    }
+    navBurger()
+
