@@ -12,7 +12,6 @@ const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
 const cron = require('node-cron');
 const nodemailer = require('nodemailer');
-const { findNearbyStudents, loadStudentData } = require('./utils/studentUtils');
 
 
 // Import Schemas from MongoDB
@@ -160,82 +159,6 @@ app.get("/updateSettings", homeLimiter, authenticateToken, async (req, res) => {
   lastName = userInData["lastName"];
 
   res.render("updateSettings", { email, firstName, lastName }); // Render update settings page
-});
-
-// Find Rides route - Display available rides
-app.get("/findrides", homeLimiter, authenticateToken, async (req, res) => {
-  const email = req.email;
-  let firstName;
-  let lastName;
-
-  let userInData;
-
-  try {
-    userInData = await User.findOne({ email });
-    if (!userInData) {
-      res.clearCookie("idToken");
-      res.redirect("/signin?err=Error with system finding User, please try again");
-      return;
-    }
-  } catch (err) {
-    console.error("Error finding user: " + err);
-    res.clearCookie("idToken");
-    res.redirect("/signin?err=Internal server error, please sign in again");
-    return;
-  }
-
-  firstName = userInData["firstName"];
-  lastName = userInData["lastName"];
-
-  const searchQuery = req.query.search || '';
-  const searchRadius = parseFloat(req.query.radius) || 5;
-  
-  let results = null;
-  
-  // Only perform search if there's a search query
-  if (searchQuery) {
-    try {
-      // Ensure student data is loaded first
-      await loadStudentData();
-      
-      // Find nearby students using the studentUtils function
-      const searchResults = await findNearbyStudents(searchQuery, searchRadius);
-      
-      if (searchResults && searchResults.nearbyStudents && searchResults.nearbyStudents.length > 0) {
-        // Format the results to match what the template expects
-        const formattedStudents = searchResults.nearbyStudents.map(student => ({
-          name: student.name,
-          grade: student.grade,
-          address: student.address,
-          parents: student.parents,
-          contact: student.contact,
-          distance: student.distance
-        }));
-        
-        results = {
-          student: {
-            name: searchResults.student.name,
-            address: searchResults.student.address
-          },
-          nearbyStudents: formattedStudents
-        };
-      } else {
-        results = { error: 'No students found within the specified radius' };
-      }
-    } catch (err) {
-      console.error('Error searching for students:', err);
-      results = { error: err.message || 'An error occurred while searching' };
-    }
-  }
-  
-  res.render("findrides", { 
-    email, 
-    firstName, 
-    lastName, 
-    searchQuery, 
-    searchRadius,
-    results
-  });
 });
 
 // Friends route - Display list of all users
