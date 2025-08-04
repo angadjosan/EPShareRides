@@ -1,0 +1,1366 @@
+   //Create var
+   let value2;
+   let data1;
+   //Get list of users from mongo
+   var request = new Request("/api/users", {
+      method: "GET",
+      headers: new Headers({
+         Accept: 'application/json',
+         'Content-Type': 'application/json',
+      })
+   });
+   fetch(request)
+      .then((response) => response.json())
+      .then((data) => {
+         data1 = data;
+         //make email equal to the actual email from db
+         for (let k = 0; k < data1.length; k++) {
+            if (data1[k].email === "<%= email %>") {
+               console.log(data1[k].address)
+               value2 = data1[k].address;
+            }
+            else {
+               continue;
+            }
+         }
+      })
+
+   //Finds distance btwn two points on map
+   function distance(point1, point2) {
+      return Math.sqrt(
+         Math.pow(point2[0] - point1[0], 2) + Math.pow(point2[1] - point1[1], 2),
+      );
+   }
+
+   //Sorts distances
+   function sortByProximity(arrays, target) {
+      return arrays.sort((arr1, arr2) => {
+         const distance1 = distance(arr1, target);
+         const distance2 = distance(arr2, target);
+         console.log(distance1, distance2)
+         return distance2 - distance1;
+      });
+   }
+
+   let current;
+   let newCarpoolers = [];
+   function queGuay(id) {
+
+      current = id;
+
+      console.log(current)
+      addPeople()
+      updateAddressLabel123()
+   }
+
+   function addDirectionsButton(id) {
+      var topRight = document.getElementsByClassName("leaflet-top leaflet-right");
+      topRight[0].innerHTML = `
+  <div class="leaflet-control-attribution leaflet-control"><a style="font-size: 15px; padding: 5px" onclick="getPhoneRoute('` + id + `')">View in maps <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a></div>`
+   }
+
+   function generateMapsLink(finalDestination, waypoints) {
+      const startAddress = ''; // Leave this empty if you want to use the user's current location as the start address
+
+      // Encode the addresses for use in URLs
+      const encodedFinalDestination = encodeURIComponent(finalDestination);
+      const encodedWaypoints = waypoints.map(waypoint => encodeURIComponent(waypoint));
+
+      // Construct the URLs for Google Maps and Apple Maps
+      const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${startAddress}&destination=${encodedFinalDestination}&waypoints=${encodedWaypoints.join('|')}&travelmode=driving`;
+      const appleMapsUrl = `https://maps.apple.com/?saddr=${startAddress}&daddr=${encodedFinalDestination}&${encodedWaypoints.map(waypoint => `address=${waypoint}`).join('&')}&dirflg=d`;
+
+      // Detect the user's operating system
+      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+      const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
+
+      // Open the appropriate maps URL in a new tab based on the operating system
+      let mapsUrl;
+      if (isIOS) {
+         mapsUrl = appleMapsUrl;
+      } else if (/Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(userAgent)) {
+         // For other mobile platforms, use Google Maps
+         mapsUrl = googleMapsUrl;
+      } else {
+         // For desktop or unrecognized platforms, use a Google Maps URL with a route
+         mapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${startAddress}&destination=${encodedFinalDestination}&waypoints=${encodedWaypoints.join('|')}&travelmode=driving`;
+      }
+
+      window.open(mapsUrl, '_blank');
+   }
+
+   function getPhoneRoute(carpoolId) {
+      fetch(`/api/mapRoute/${carpoolId}`, {
+         method: "GET",
+         headers: {
+            'Content-Type': 'application/json',
+         }
+      })
+         .then(response => {
+            if (response.ok) {
+               return response.json();
+            } else {
+               console.error('A network error occurred:', error);
+               alert('A network error occurred. Please try again.');
+            }
+         })
+         .then(data => {
+            console.log(data.final)
+            console.log(data.stops)
+            stops = data.stops
+            stops = sortByProximity(stops, data.final);
+            generateMapsLink(data.final, stops);
+         })
+         .catch(error => {
+            console.error('A network error occurred:', error);
+            alert('A network error occurred. Please try again.');
+         });
+   }
+
+   function preperation() {
+      // if (confirm("Are you sure you want to delete this carpool for all users? This action cannot be undone.")) {
+      //   deletion()
+      // }
+      document.getElementById("deleteCarpoolBtn").innerHTML = `   <div class="buttons" style="margin-bottom: 5px"><div class="button"  onclick="deletion();">Ok</div><div class="button is-link" onclick="returnBack();">Cancel</div></div>`
+
+   }
+   function returnBack() {
+      document.getElementById("deleteCarpoolBtn").innerHTML = `     <div class="buttons" style="margin-bottom: 5px"><div class="button is-danger is-light" onclick="preperation();">Delete carpool</div></div>`
+   }
+
+   function deletion() {
+      console.log("Deleting " + current)
+      fetch(`/api/carpools/${current}`, { // Include the _id in the URL
+         method: "DELETE",
+         headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+         }
+      })
+         .then(response => {
+            if (response.ok) {
+               console.log('Successfully deleted the item.');
+               location.reload();
+            } else {
+               console.log('Failed to delete the item.');
+            }
+         })
+         .catch(error => {
+            console.error('A network error occurred:', error);
+            alert('A network error occurred. Please try again later.');
+         });
+   }
+
+   let joinedCarpools = []
+   let offeredCarpools = []
+   let eventsW;
+   let userData1;
+   let i;
+
+   function addPeople() {
+      document.getElementById("friendsInCarpool").innerHTML = '';
+
+      for (let index = 0; index < offeredCarpools.length; index++) {
+         if (offeredCarpools[index]._id == current) {
+            i = index;
+            console.log(i);
+         }
+         continue;
+      }
+
+      newCarpoolers = []
+      for (k = 0; k < offeredCarpools[i].carpoolers.length; k++) {
+         newCarpoolers.push(offeredCarpools[i].carpoolers[k])
+      }
+
+      for (let k = 0; k < offeredCarpools[i].carpoolers.length; k++) {
+         console.log(offeredCarpools[i].carpoolers.length)
+         console.log(k)
+         document.getElementById("friendsInCarpool").innerHTML += `<tr id="person_` + offeredCarpools[i].carpoolers[k]._id + `">
+            <th><a>` + offeredCarpools[i].carpoolers[k].firstName + " " + offeredCarpools[i].carpoolers[k].lastName + `</a></th>
+            <td><a href="mailto:` + offeredCarpools[i].carpoolers[k].email + `">` + offeredCarpools[i].carpoolers[k].email + `</a></td>
+            <td>` + (offeredCarpools[i].carpoolers[k].cell && offeredCarpools[i].carpoolers[k].cell !== "none" ? offeredCarpools[i].carpoolers[k].cell : "Not provided") + `</td>
+            <td><a style="color: black" onclick="removePerson('` + offeredCarpools[i].carpoolers[k]._id + `')">X</a></td>
+         </tr>`
+         continue;
+      }
+
+      // Populate driver information fields
+      document.getElementById("email").value = offeredCarpools[i].email || '';
+      document.getElementById("phone").value = offeredCarpools[i].phone || '';
+      document.getElementById("carmake").value = offeredCarpools[i].carMake || '';
+      document.getElementById("seats").value = offeredCarpools[i].seats || '';
+      document.getElementById("arrivaltime").value = offeredCarpools[i].arrivalTime || '';
+
+      if (offeredCarpools[i].route === "route") {
+         document.getElementById("route-type").value = "route"
+      }
+      else if (offeredCarpools[i].route === "eps-campus") {
+         document.getElementById("route-type").value = "eps-campus"
+      }
+      else {
+         document.getElementById("route-type").value = "point"
+      }
+
+      document.getElementById("address-input").value = offeredCarpools[i].wlocation
+   }
+
+   function removePerson(id) {
+      for (let i = 0; i < newCarpoolers.length; i++) {
+         if (newCarpoolers[i]._id == id) {
+            newCarpoolers.splice(i, 1)
+            document.getElementById("person_" + id).remove()
+            return; // Exit after finding and removing the person
+         }
+      }
+      // If we get here, the person wasn't found in newCarpoolers
+      console.error("Person with ID " + id + " not found in carpoolers list");
+   }
+
+   function getDayOfWeek(string) {
+      const d = new Date(string);
+      const dayOfWeek = d.getDay();
+      // Example: Get the name of the weekday (not just a number)
+      const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      const currentDay = weekdays[dayOfWeek];
+      return (currentDay)
+   }
+
+   function formatDate(date) {
+      const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      var date = new Date(date);
+      const day = weekdays[date.getDay()];
+      const month = date.getMonth();
+      const year = date.getFullYear();
+      return `${day}, ${months[month + 1]} ${date.getDate()}, ${year}`;
+   }
+
+
+   //Lists events
+   var request = new Request("/api/events", {
+      method: "GET",
+      headers: new Headers({
+         Accept: 'application/json',
+         'Content-Type': 'application/json',
+      })
+   });
+   fetch(request)
+      .then((response) => response.json())
+      .then((data) => {
+         eventsW = data;
+
+         var request = new Request("/api/userCarpools", {
+            method: "GET",
+            headers: new Headers({
+               Accept: 'application/json',
+               'Content-Type': 'application/json',
+            })
+         });
+         fetch(request)
+            .then((response) => response.json())
+            .then((data) => {
+               userData1 = data;
+
+               for (var i = 0; i < userData1.length; i++) {
+                  //Make the email proper
+                  let carpoolPart = userData1[i].carpoolers.find((x) => x.email === "<%= email %>")
+                  if (carpoolPart != undefined) {
+                     joinedCarpools.push(userData1[i])
+                  }
+               }
+
+               for (var i = 0; i < userData1.length; i++) {
+                  if (userData1[i].userEmail === "<%= email %>") {
+                     offeredCarpools.push(userData1[i])
+                  }
+               }
+               //event name, carpool driver name, time, reistered carpoolers
+
+               let driver;
+               let carpoolers = []
+               let eventName;
+               let date;
+               let email
+
+
+               //offered carpools
+               if (offeredCarpools.length == 0 && joinedCarpools.length == 0) {
+                  document.getElementById('carpoolsJS').innerHTML = `  <p class="has-text-centered">Don't see any carpools? Register for events <a href="/">here</a>.</p> `
+               }
+               else {
+                  for (var i = 0; i < offeredCarpools.length; i++) {
+                     console.log(offeredCarpools[i])
+                     driver = offeredCarpools[i].firstName + " " + offeredCarpools[i].lastName
+                     carpoolers = []
+
+                     for (var k = 0; k < offeredCarpools[i].carpoolers.length; k++) {
+
+                        carpoolers.push(offeredCarpools[i].carpoolers[k].firstName + " " + offeredCarpools[i].carpoolers[k].lastName.charAt(0));
+
+
+                     }
+                     console.log(eventsW)
+                     for (var j = 0; j < eventsW.length; j++) {
+                        if (eventsW[j]._id == offeredCarpools[i].nameOfEvent) {
+                           eventName = eventsW[j].eventName
+                           date = eventsW[j].date
+                           date = formatDate(date)
+                        }
+                     }
+                     document.getElementById('carpoolsJS').innerHTML += `<article class="panel is-link" style="position: relative" >
+   <div class="panel-heading" style="padding: 0px; margin-bottom: 12px; border-radius: 6px 6px 0px 0px; line-height: 22px;background: linear-gradient(105deg, #3273DC, #275CBF);" >
+      <div class="columns is-mobile">
+         <div class="column" style=" padding: 0px; padding-left: 10px;">
+            <div class=" " style="float: left; margin: 7px; left:0px;" >
+               <span class="panel-icon" style='color: white; display: inline'>
+                  <i class="fas fa-user" aria-hidden="true" style="margin: 13px; margin-left: 15px;"></i>
+                  <p style="color: white; display: inline; font-size: 15px; font-weight: 300 ">Carpool with ` + driver + `<i class="fa-solid fa-crown" style="margin-left: 5px;"></i></p>
+               </span>
+            </div>
+         </div>
+         <div class="column" style="padding: 0px; padding-top: 0.75em; padding-bottom: 0.75em">
+            <p class="" style="color: white; display: inline; font-size: 20px;  font-weight: 700;  ">` + eventName + `</p>
+         </div>
+         <div class="column" style="padding: 0px; padding-right: 10px;">
+            <div class="white-background " style="float: right; margin: 7px; right:0px;  border-radius: 6px; " >
+               <span class="panel-icon " id="spanz" style=' display: inline ;  '>
+                  <i class="fas fa-car " aria-hidden="true" style="margin: 13px; margin-left: 15px;"></i>
+                  <p style=" display: inline; font-size: 15px;  font-weight: 300;" id="datez" class="datew">` + date + `</p>
+               </span>
+            </div>
+         </div>
+      </div>
+   </div>
+   <div class="panel-block" style="display: block; padding: 1rem 1.25rem;">
+      <div class="columns is-mobile is-vcentered" style="width: 100%; margin: 0;">
+         <div class="column is-6" style="padding: 0.5rem;">
+            <p class="control" id="registered-carpoolers">
+               <strong>Riders:</strong> ` + carpoolers.join(", ") + `
+               <br>
+               <span class="icon-text" style="margin-top: 0.5rem; display: inline-flex; align-items: center;">
+                  <span class="icon has-text-success">
+                     <i class="fas fa-leaf"></i>
+                  </span>
+                  <span>CO₂ Saved: <strong>${offeredCarpools[i].co2Savings ? offeredCarpools[i].co2Savings.toFixed(2) + ' kg' : 'Calculating...'}</strong></span>
+               </span>
+            </p>
+         </div>
+         <div class="column is-6" style="padding: 0.5rem; text-align: right;">
+            <div class="buttons is-justify-content-flex-end" style="margin: 0;">
+               <button class="button is-link is-light is-small" onclick="getPhoneRoute('` + offeredCarpools[i]._id + `')">
+                  <span class="icon">
+                     <i class="fas fa-route"></i>
+                  </span>
+                  <span>Route</span>
+               </button>
+               <button class="button is-info is-light is-small js-modal-trigger" data-target="modal-js-edit" id="` + offeredCarpools[i]._id + `" onclick="queGuay('` + offeredCarpools[i]._id + `')">
+                  <span class="icon">
+                     <i class="fas fa-edit"></i>
+                  </span>
+                  <span>Edit</span>
+               </button>
+               <button class="button is-info is-light is-small" onclick="emailGroup('` + offeredCarpools[i]._id + `')">
+                  <span class="icon">
+                     <i class="fas fa-envelope"></i>
+                  </span>
+               </button>
+               <button class="button is-info is-light is-small" onclick="textGroup('` + offeredCarpools[i]._id + `')">
+                  <span class="icon">
+                     <i class="fas fa-comment"></i>
+                  </span>
+               </button>
+            </div>
+         </div>
+      </div>
+   </div>
+   <div style="margin: 10px 0; padding: 10px; background: #fffbe6; border: 1px solid #ffe08a; border-radius: 6px;">
+      <b>Pending Approvals:</b><br>
+      ${offeredCarpools[i].pendingRequests.map(req => `
+         <div style='margin-bottom: 6px;'>
+            ${req.firstName} ${req.lastName} (${req.email})
+            <button class='button is-small is-success' style='margin-left:8px;' onclick="approveRequest('${offeredCarpools[i]._id}','${req.email}',true)">Approve</button>
+            <button class='button is-small is-danger' style='margin-left:2px;' onclick="approveRequest('${offeredCarpools[i]._id}','${req.email}',false)">Deny</button>
+         </div>
+      `).join('')}
+   </div>
+</article>`
+
+                  }
+
+
+
+                  //joined carpools
+                  for (var i = 0; i < joinedCarpools.length; i++) {
+                     console.log("joinedCarpools[i]")
+                     driver = joinedCarpools[i].firstName + " " + joinedCarpools[i].lastName
+                     carpoolers = []
+                     joinedCarpools[i].carpoolers
+                     for (var k = 0; k < joinedCarpools[i].carpoolers.length; k++) {
+
+                        carpoolers.push(joinedCarpools[i].carpoolers[k].firstName + " " + joinedCarpools[i].carpoolers[k].lastName.charAt(0))
+                        email = joinedCarpools[i].email
+
+                     }
+                     console.log(eventsW)
+                     for (var j = 0; j < eventsW.length; j++) {
+                        if (eventsW[j]._id == joinedCarpools[i].nameOfEvent) {
+                           eventName = eventsW[j].eventName
+                           date = eventsW[j].date
+                           date = formatDate(date)
+                        }
+                     }
+                     document.getElementById('carpoolsJS').innerHTML += `<article class="panel is-link" style="position: relative" >
+                              <div class="panel-heading" style="padding: 0px; margin-bottom: 12px; border-radius: 6px 6px 0px 0px; line-height: 22px;background: linear-gradient(105deg, #3273DC, #275CBF);" >
+                                 <div class="columns is-mobile">
+                                    <div class="column" style=" padding: 0px; padding-left: 10px;">
+                                       <div class=" " style="float: left; margin: 7px; left:0px;" >
+                                          <span class="panel-icon" style='color: white; display: inline'>
+                                             <i class="fas fa-user" aria-hidden="true" style="margin: 13px; margin-left: 15px;"></i>
+                                             <p style="color: white; display: inline; font-size: 15px; font-weight: 300 ">Carpool with <a style="color:white; text-decoration-line: underline" href="mailto:` + email + `">` + driver + `</a></p>
+                                          </span>
+                                       </div>
+                                    </div>
+                                    <div class="column" style="padding: 0px; padding-top: 0.75em; padding-bottom: 0.75em">
+                                       <p class="" style="color: white; display: inline; font-size: 20px;  font-weight: 700;  ">` + eventName + `</p>
+                                    </div>
+                                    <div class="column" style="padding: 0px; padding-right: 10px;">
+                                       <div class="white-background " style="float: right; margin: 7px; right:0px;  border-radius: 6px; " >
+                                          <span class="panel-icon " id="spanz" style=' display: inline ;  '>
+                                             <i class="fas fa-car " aria-hidden="true" style="margin: 13px; margin-left: 15px;"></i>
+                                             <p style=" display: inline; font-size: 15px;  font-weight: 300;" id="datez" class="datew">` + date + `</p>
+                                          </span>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                              <div class="panel-block" style="display: block; padding: 1rem 1.25rem;">
+                                 <div class="columns is-mobile is-vcentered" style="width: 100%; margin: 0;">
+                                    <div class="column is-6" style="padding: 0.5rem;">
+                                       <p class="control" id="registered-carpoolers">
+                                          <strong>Riders:</strong> ` + carpoolers.join(", ") + `
+                                          <br>
+                                          <span class="icon-text" style="margin-top: 0.5rem; display: inline-flex; align-items: center;">
+                                             <span class="icon has-text-success">
+                                                <i class="fas fa-leaf"></i>
+                                             </span>
+                                             <span>CO₂ Saved: <strong>${joinedCarpools[i].co2Savings ? (joinedCarpools[i].carpoolers.find(c => c.email === '<%= email %>')?.co2Savings || 0).toFixed(2) + ' kg' : 'Calculating...'}</strong></span>
+                                          </span>
+                                       </p>
+                                    </div>
+                                    <div class="column is-6" style="padding: 0.5rem; text-align: right;">
+                                       <div class="buttons is-justify-content-flex-end" style="margin: 0;">
+                                          <button class="button is-link is-light is-small" onclick="getPhoneRoute('` + joinedCarpools[i]._id + `')">
+                                             <span class="icon">
+                                                <i class="fas fa-route"></i>
+                                             </span>
+                                             <span>Route</span>
+                                          </button>
+                                          <button class="button is-danger is-light is-small" id="` + joinedCarpools[i]._id + `" onclick="leaveIt('` + i + `')">
+                                             <span class="icon">
+                                                <i class="fas fa-sign-out-alt"></i>
+                                             </span>
+                                             <span>Leave</span>
+                                          </button>
+                                          <button class="button is-info is-light is-small" onclick="emailGroup('` + joinedCarpools[i]._id + `')">
+                                             <span class="icon">
+                                                <i class="fas fa-envelope"></i>
+                                             </span>
+                                          </button>
+                                          <button class="button is-info is-light is-small" onclick="textGroup('` + joinedCarpools[i]._id + `')">
+                                             <span class="icon">
+                                                <i class="fas fa-comment"></i>
+                                             </span>
+                                          </button>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </article>`
+                  }
+               }
+               //generation here
+               modalFunctions()
+
+
+
+
+            })
+            .catch((error) => {
+               console.error(error)
+            });
+
+
+
+
+
+
+
+      })
+
+
+   function modalFunctions() {
+      function openModal($el) {
+         $el.classList.add('is-active');
+      }
+
+      function Modal($el) {
+         $el.classList.remove('is-active');
+         returnBack()
+      }
+
+      function AllModals() {
+         (document.querySelectorAll('.modal') || []).forEach(($modal) => {
+            Modal($modal);
+         });
+      }
+
+      // Add a click event on buttons to open a specific modal
+      (document.querySelectorAll('.js-modal-trigger') || []).forEach(($trigger) => {
+         const modal = $trigger.dataset.target;
+         const $target = document.getElementById(modal);
+
+         $trigger.addEventListener('click', () => {
+            openModal($target);
+         });
+      });
+
+      // Add a click event on various child elements to close the parent modal
+      (document.querySelectorAll('.modal-background, .modal-close, .modal-card-head .delete, .modal-card-foot .cancel') || []).forEach(($close) => {
+         const $target = $close.closest('.modal');
+
+         $close.addEventListener('click', () => {
+            closeModal($target);
+         });
+      });
+
+      // Add a keyboard event to close all modals
+      document.addEventListener('keydown', (event) => {
+         const e = event || window.event;
+
+         if (e.keyCode === 27) { // Escape key
+            closeAllModals();
+         }
+      });
+   }
+   function navBurger() {
+      var burger = document.getElementById('nav-toggle');
+      var menu = document.getElementById('navbarMenuHeroC');
+      burger.addEventListener('click', function () {
+         burger.classList.toggle('is-active');
+         menu.classList.toggle('is-active');
+      });
+   }
+   navBurger()
+
+
+
+
+
+   function openModal($el) {
+      $el.classList.add('is-active');
+   }
+
+   function closeModal($el) {
+      $el.classList.remove('is-active');
+      returnBack()
+   }
+
+   function closeAllModals() {
+      (document.querySelectorAll('.modal') || []).forEach(($modal) => {
+         closeModal($modal);
+      });
+   }
+
+   // Add a click event on buttons to open a specific modal
+   (document.querySelectorAll('.js-modal-trigger') || []).forEach(($trigger) => {
+      const modal = $trigger.dataset.target;
+      const $target = document.getElementById(modal);
+
+      $trigger.addEventListener('click', () => {
+         openModal($target);
+      });
+   });
+
+   // Add a click event on various child elements to close the parent modal
+   (document.querySelectorAll('.modal-background, .modal-close, .modal-card-head .delete, .modal-card-foot .cancel') || []).forEach(($close) => {
+      const $target = $close.closest('.modal');
+
+      $close.addEventListener('click', () => {
+         closeModal($target);
+      });
+   });
+
+   // Add a keyboard event to close all modals
+   document.addEventListener('keydown', (event) => {
+      const e = event || window.event;
+
+      if (e.keyCode === 27) { // Escape key
+         closeAllModals();
+      }
+   });
+
+   var input = [];
+   var input2 = [];
+
+   function leaveIt(i) {
+      var answer;
+
+
+      console.log(joinedCarpools[i].carpoolers + " " + i);
+      console.log(joinedCarpools[i]);
+
+      input = joinedCarpools[i].carpoolers;
+      input2 = joinedCarpools[i];
+
+      for (let j = 0; j < joinedCarpools[i].carpoolers.length; j++) {
+         if (input[j].email === "<%= email %>") {
+            answer = input[j]._id;
+            console.log(input[j])
+            break;
+         }
+      }
+
+
+
+      fetch(`/api/carpools/deleteCarpooler`, {
+         method: "PATCH",
+         headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+         },
+         body: JSON.stringify({ _id: answer, _id2: input2._id })
+      })
+         .then(response => {
+            if (response.ok) {
+               console.log('Successfully deleted the item.');
+               location.reload();
+            } else {
+               console.log('Failed to delete the item.');
+            }
+         })
+         .catch(error => {
+            console.error('A network error occurred:', error);
+            alert('A network error occurred. Please try again later.');
+         });
+   }
+
+
+   function test() {
+      let newData = document.getElementById("address-input").value;
+      let value3 = document.getElementById("route-type").value;
+      let email = document.getElementById("email").value;
+      let phone = document.getElementById("phone").value;
+      let carMake = document.getElementById("carmake").value;
+      let seats = document.getElementById("seats").value;
+      let arrivalTime = document.getElementById("arrivaltime").value;
+      let cutCarpoolers = newCarpoolers;
+
+      console.log("Updating carpool with ID:", current);
+      fetch(`/api/carpools/updateRoute/${current}`, {
+         method: "PATCH",
+         headers: {
+            'Content-Type': 'application/json',
+         },
+         body: JSON.stringify({
+            route: value3,
+            wlocation: newData,
+            carpoolers: cutCarpoolers,
+            email: email,
+            phone: phone,
+            carMake: carMake,
+            seats: seats,
+            arrivalTime: arrivalTime
+         })
+      })
+         .then(response => {
+            if (!response.ok) {
+               window.location.href = "/mycarpools?error=Error updating carpool, please try again";
+            } else {
+               window.location.href = "/mycarpools?message=Carpool updated successfully";
+            }
+         })
+         .catch(error => {
+            console.error('A network error occurred:', error);
+            console.error('A network error occurred. Please try again later.');
+         });
+   }
+
+
+
+
+   document.body.onmousedown = function () {
+      if (document.getElementById('address-input') != null) {
+         document.getElementById("autocomplete-container").classList.remove("is-loading");
+      }
+
+   }
+
+   function addressAutocomplete(containerElement, idName, callback, options) {
+      // create input element
+      var inputElement = document.createElement("input");
+      inputElement.setAttribute("type", "text");
+      inputElement.setAttribute("placeholder", options.placeholder);
+      inputElement.setAttribute("id", idName);
+      inputElement.classList.add("input");
+      containerElement.appendChild(inputElement);
+
+
+
+      // add input field clear button
+      var clearButton = document.createElement("div");
+      clearButton.classList.add("clear-button");
+      addIcon(clearButton);
+      clearButton.addEventListener("click", (e) => {
+         e.stopPropagation();
+         inputElement.value = '';
+         callback(null);
+         clearButton.classList.remove("visible");
+         closeDropDownList();
+      });
+      containerElement.appendChild(clearButton);
+
+      /* Current autocomplete items data (GeoJSON.Feature) */
+      var currentItems;
+
+      /* Active request promise reject function. To be able to cancel the promise when a new request comes */
+      var currentPromiseReject;
+
+      /* Focused item in the autocomplete list. This variable is used to navigate with buttons */
+      var focusedItemIndex;
+
+      /* Execute a function when someone writes in the text field: */
+      inputElement.addEventListener("input", function (e) {
+         var currentValue = this.value;
+
+         document.getElementById("autocomplete-container").classList.add("is-loading");
+
+         /* Close any already open dropdown list */
+         closeDropDownList();
+
+         // Cancel previous request promise
+         if (currentPromiseReject) {
+            currentPromiseReject({
+               canceled: true
+            });
+         }
+
+         if (!currentValue) {
+            clearButton.classList.remove("visible");
+            return false;
+         }
+
+         // Show clearButton when there is a text
+         clearButton.classList.add("visible");
+
+         /* Create a new promise and send geocoding request */
+         var promise = new Promise((resolve, reject) => {
+            currentPromiseReject = reject;
+
+            var apiKey = "992ef3d60d434f2283ea8c6d70a4898d";
+            var url = `https://api.geoapify.com/v1/geocode/autocomplete?text=${encodeURIComponent(currentValue)}&limit=5&apiKey=${apiKey}`;
+
+            if (options.type) {
+               url += `&type=${options.type}`;
+            }
+
+            fetch(url)
+               .then(response => {
+                  // check if the call was successful
+                  if (response.ok) {
+                     response.json().then(data => resolve(data));
+
+                  } else {
+                     response.json().then(data => reject(data));
+                  }
+               });
+         });
+
+         promise.then((data) => {
+            document.getElementById("autocomplete-container").classList.remove("is-loading");
+            currentItems = data.features;
+
+            /*create a DIV element that will contain the items (values):*/
+            var autocompleteItemsElement = document.createElement("div");
+            autocompleteItemsElement.setAttribute("class", "autocomplete-items");
+            containerElement.appendChild(autocompleteItemsElement);
+
+            /* For each item in the results */
+            data.features.forEach((feature, index) => {
+               /* Create a DIV element for each element: */
+               var itemElement = document.createElement("DIV");
+               /* Set formatted address as item value */
+               itemElement.innerHTML = feature.properties.formatted;
+               itemElement.classList.add("hoverAddress");
+               /* Set the value for the autocomplete text field and notify: */
+               itemElement.addEventListener("click", function (e) {
+                  inputElement.value = currentItems[index].properties.formatted;
+
+
+
+                  callback(currentItems[index]);
+
+                  /* Close the list of autocompleted values: */
+                  closeDropDownList();
+               });
+
+               autocompleteItemsElement.appendChild(itemElement);
+            });
+         }, (err) => {
+            if (!err.canceled) {
+               console.log(err);
+            }
+         });
+      });
+
+      /* Add support for keyboard navigation */
+      inputElement.addEventListener("keydown", function (e) {
+         var autocompleteItemsElement = containerElement.querySelector(".autocomplete-items");
+         if (autocompleteItemsElement) {
+            var itemElements = autocompleteItemsElement.getElementsByTagName("div");
+            if (e.keyCode == 40) {
+               e.preventDefault();
+               /*If the arrow DOWN key is pressed, increase the focusedItemIndex variable:*/
+               focusedItemIndex = focusedItemIndex !== itemElements.length - 1 ? focusedItemIndex + 1 : 0;
+          /*and and make the current item more visible:*/-
+                  setActive(itemElements, focusedItemIndex);
+            } else if (e.keyCode == 38) {
+               e.preventDefault();
+
+               /*If the arrow UP key is pressed, decrease the focusedItemIndex variable:*/
+               focusedItemIndex = focusedItemIndex !== 0 ? focusedItemIndex - 1 : focusedItemIndex = (itemElements.length - 1);
+               /*and and make the current item more visible:*/
+               setActive(itemElements, focusedItemIndex);
+            } else if (e.keyCode == 13) {
+               /* If the ENTER key is pressed and value as selected, close the list*/
+               e.preventDefault();
+               if (focusedItemIndex > -1) {
+                  closeDropDownList();
+               }
+            }
+         } else {
+            if (e.keyCode == 40) {
+               /* Open dropdown list again */
+               var event = document.createEvent('Event');
+               event.initEvent('input', true, true);
+               inputElement.dispatchEvent(event);
+            }
+         }
+      });
+
+      function setActive(items, index) {
+         if (!items || !items.length) return false;
+
+         for (var i = 0; i < items.length; i++) {
+            items[i].classList.remove("autocomplete-active");
+         }
+
+         /* Add class "autocomplete-active" to the active element*/
+         items[index].classList.add("autocomplete-active");
+
+         // Change input value and notify
+         inputElement.value = currentItems[index].properties.formatted;
+         callback(currentItems[index]);
+      }
+
+      function closeDropDownList() {
+         var autocompleteItemsElement = containerElement.querySelector(".autocomplete-items");
+         if (autocompleteItemsElement) {
+            containerElement.removeChild(autocompleteItemsElement);
+         }
+
+         focusedItemIndex = -1;
+      }
+
+      function addIcon(buttonElement) {
+         var svgElement = document.createElementNS("", 'svg');
+         svgElement.setAttribute('viewBox', "0 0 24 24");
+         svgElement.setAttribute('height', "24");
+
+
+      }
+
+      /* Close the autocomplete dropdown when the document is clicked. 
+      Skip, when a user clicks on the input field */
+      document.addEventListener("click", function (e) {
+         if (e.target !== inputElement) {
+            closeDropDownList();
+         } else if (!containerElement.querySelector(".autocomplete-items")) {
+            // open dropdown list again
+            var event = document.createEvent('Event');
+            event.initEvent('input', true, true);
+            inputElement.dispatchEvent(event);
+         }
+      });
+
+   }
+   addressAutocomplete(document.getElementById("autocomplete-container"), "address-input", (data) => {
+      console.log("Selected option: ");
+      console.log(data);
+      console.log(data.properties.formatted);
+      arr.push(data.properties.formatted);
+
+   }, {
+
+      placeholder: "Enter Address Here"
+
+   });
+
+
+   let userData1s
+
+   /*var request = new Request("/api/users", {
+      method: "GET",
+      headers: new Headers({
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      })
+    });
+    fetch(request)
+      .then((response) => response.json())
+      .then((data) => {
+        userData1s = data;
+          for (let k = 0; k < userData1s.length; k++) {
+            if(userData1s[k].dark === true){
+               document.getElementById("head").style.background = "#1c1c1c";
+               let temp = document.getElementsByClassName("title");
+               for (let i = 0; i < temp.length; i++) {
+                 temp[i].style.color = "white"
+               }
+               let Cont = document.getElementsByClassName("container");
+               for (let i = 0; i < Cont.length; i++) {
+                 Cont[i].style.color = "white"
+               }
+               let sub = document.getElementsByClassName("subtitle");
+               for (let i = 0; i < sub.length; i++) {
+                 sub[i].style.color = "white"
+               }
+               setInterval(myTimer, 1, k);
+               let control = document.getElementsByClassName("hero-foot");
+               for (let i = 0; i < control.length; i++) {
+                 control[i].style.background = "#1c1c1c";
+               }
+               let tabs = document.getElementsByClassName("tabs");
+               for (let i = 0; i < tabs.length; i++) {
+                  tabs[i].style.background = "black";
+                  tabs[i].style.color = "white";
+               }
+               let white = document.getElementsByClassName("white");
+               for (let i = 0; i < white.length; i++) {
+                  white[i].style.color = "white";
+               }
+               let isactive = document.getElementsByClassName("is-active");
+              for (let i = 0; i < isactive.length; i++) {
+                  isactive[i].style.color = "white";
+                  isactive[i].style.bordercolor = "#3e3e3e";
+              }
+              let isactive1 = document.getElementsByClassName("is-active1");
+              for (let i = 0; i < isactive1.length; i++) {
+                  isactive1[i].style.background = "#3e3e3e";
+                  isactive1[i].style.border = "#3e3e3e";
+                  isactive1[i].style.color = "white";
+              }
+              let leafletcontrolzoomin = document.getElementsByClassName("leaflet-control-zoom-in");
+              for (let i = 0; i < leafletcontrolzoomin.length; i++) {
+                  leafletcontrolzoomin[i].style.background = "rgb(0 0 0)";
+                  leafletcontrolzoomin[i].style.color = "white";
+              }
+              let leafletcontrolzoomin1 = document.getElementsByClassName("leaflet-control-zoom-out");
+              for (let i = 0; i < leafletcontrolzoomin1.length; i++) {
+                  leafletcontrolzoomin1[i].style.background = "rgb(0 0 0)";
+                  leafletcontrolzoomin1[i].style.color = "white";
+              }
+         }
+
+       }
+       })*/
+   function myTimer(i) {
+      let control = document.getElementsByClassName("control");
+      for (let i = 0; i < control.length; i++) {
+
+         control[i].style.color = "white"
+      }
+      let button = document.getElementsByClassName("button");
+      for (let i = 0; i < button.length; i++) {
+         button[i].style.color = "#ffffff";
+         button[i].style.background = "#3c3c3c";
+         button[i].style.border = "#bcae98";
+      }
+      let whitebackground = document.getElementsByClassName("white-background");
+      for (let i = 0; i < whitebackground.length; i++) {
+         whitebackground[i].style.background = "black";
+      }
+      let icons = document.getElementsByClassName("panel-icon ");
+      for (let i = 0; i < icons.length; i++) {
+         icons[i].style.color = "white";
+      }
+      let dates = document.getElementsByClassName("datew")
+      for (let i = 0; i < dates.length; i++) {
+         dates[i].style.color = "white";
+      }
+      clearInterval(myTimer);
+   }
+   function emailGroup(carpoolId) {
+      fetch(`/api/carpools/${carpoolId}/contact-info`, {
+         method: "GET",
+         headers: {
+            'Content-Type': 'application/json',
+         }
+      })
+         .then(response => response.json())
+         .then(data => {
+            const emails = data.emails.join(',');
+            window.location.href = `mailto:${emails}`;
+         })
+         .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to get contact information. Please try again.');
+         });
+   }
+
+   function textGroup(carpoolId) {
+      fetch(`/api/carpools/${carpoolId}/contact-info`, {
+         method: "GET",
+         headers: {
+            'Content-Type': 'application/json',
+         }
+      })
+         .then(response => response.json())
+         .then(data => {
+            const phones = data.phones.filter(phone => phone && phone !== "none").join(',');
+            if (phones) {
+               window.location.href = `sms:${phones}`;
+            } else {
+               alert('No phone numbers available for this group.');
+            }
+         })
+         .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to get contact information. Please try again.');
+         });
+   }
+   function showDisclaimer() {
+      document.getElementById('disclaimer-modal').classList.add('is-active');
+   }
+
+   function closeDisclaimer() {
+      document.getElementById('disclaimer-modal').classList.remove('is-active');
+   }
+
+   let pendingCount = 0;
+   for (let i = 0; i < offeredCarpools.length; i++) {
+      if (offeredCarpools[i].pendingRequests && offeredCarpools[i].pendingRequests.length > 0) {
+         pendingCount += offeredCarpools[i].pendingRequests.length;
+      }
+   }
+   if (pendingCount > 0) {
+      document.getElementById('pending-badge').innerText = pendingCount;
+      document.getElementById('pending-badge').style.display = 'inline-block';
+   }
+
+   function approveRequest(carpoolId, email, approve) {
+      fetch(`/api/carpools/${carpoolId}/approve`, {
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify({ email, approve })
+      })
+         .then(res => {
+            if (!res.ok) {
+               return res.text().then(text => { throw new Error(text || 'Request failed'); });
+            }
+            return res.json();
+         })
+         .then(() => {
+            // Display success message
+            alert(approve ? "Request approved successfully!" : "Request denied successfully!");
+            location.reload();
+         })
+         .catch((error) => {
+            console.error('Error:', error);
+            alert(`Failed to update request: ${error.message}`);
+         });
+   }
+
+   function formatTime12h(timeStr) {
+      if (!timeStr) return '';
+      const d = new Date('1970-01-01T' + timeStr);
+      let h = d.getHours();
+      let m = d.getMinutes();
+      let ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12;
+      h = h ? h : 12;
+      m = m < 10 ? '0' + m : m;
+      return h + ':' + m + ' ' + ampm;
+   }
+
+   // Function to fetch and display recommended carpools
+   function fetchRecommendedCarpools() {
+      const recommendedContainer = document.getElementById('recommendedCarpools');
+      const loadingElement = document.getElementById('recommendedCarpoolsLoading');
+
+      if (!recommendedContainer) {
+         console.error('Recommended carpools container not found');
+         return;
+      }
+      
+      fetch('/api/recommended-carpools', {
+         headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+         },
+         credentials: 'same-origin' // Include cookies for authentication
+      })
+         .then(response => {
+            if (!response.ok) {
+               throw new Error('Failed to fetch recommendations');
+            }
+            return response.json();
+         })
+         .then(recommendedCarpools => {
+            // Hide loading spinner if it exists
+            if (loadingElement) {
+               loadingElement.style.display = 'none';
+            }
+            
+            if (recommendedCarpools.length === 0) {
+               recommendedContainer.innerHTML = `
+                  <div class="notification is-light">
+                     No recommended carpools found. Check back later or update your interests in settings.
+                  </div>`;
+               return;
+            }
+            
+            // Clear loading message and display recommended carpools
+            recommendedContainer.innerHTML = '';
+            
+            recommendedCarpools.forEach(carpool => {
+               const carpoolElement = document.createElement('article');
+               carpoolElement.className = 'panel is-link';
+               carpoolElement.style.position = 'relative';
+               carpoolElement.style.marginBottom = '1.5rem';
+               
+               // Format the carpool details
+               const carpoolers = carpool.carpoolers || [];
+               const driverName = `${carpool.firstName} ${carpool.lastName}`;
+               const eventName = carpool.nameOfEvent || 'Event';
+               const seatsAvailable = carpool.seats - (carpool.carpoolers?.length || 0);
+               const timeStr = carpool.arrivalTime ? formatTime12h(carpool.arrivalTime) : 'Time not specified';
+               const category = carpool.category ? carpool.category.charAt(0).toUpperCase() + carpool.category.slice(1) : 'Other';
+               
+               carpoolElement.innerHTML = `
+                  <div class="panel-heading" style="padding: 0px; margin-bottom: 12px; border-radius: 6px 6px 0px 0px; line-height: 22px; background: linear-gradient(105deg, #48c774, #29a34a);">
+                     <div class="columns is-mobile">
+                        <div class="column" style="padding: 0px; padding-left: 10px;">
+                           <div style="float: left; margin: 7px; left:0px;">
+                              <i class="fas fa-car" style="color: white;"></i>
+                           </div>
+                           <div style="margin-left: 40px; color: white;">
+                              <p style="font-weight: bold; margin-bottom: 0px;">${eventName}</p>
+                              <p style="font-size: 0.8em; margin-top: 0px;">${driverName}'s carpool • ${timeStr}</p>
+                           </div>
+                        </div>
+                        <div class="column is-narrow" style="padding: 0px; padding-right: 10px; display: flex; align-items: center; justify-content: flex-end;">
+                           <span class="tag is-light">${category}</span>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="panel-block" style="display: block; padding: 1rem 1.25rem;">
+                     <div class="columns is-mobile is-vcentered" style="width: 100%; margin: 0;">
+                        <div class="column is-6" style="padding: 0.5rem;">
+                           <p class="control">
+                              <strong>Riders:</strong> ${carpoolers.length > 0 ? carpoolers.map(r => r.firstName ? `${r.firstName} ${r.lastName}` : r.email).join(', ') : 'None yet'}
+                           </p>
+                           <p class="control">
+                              <strong>Seats available:</strong> ${seatsAvailable > 0 ? seatsAvailable : 'Full'}
+                           </p>
+                           <p class="control">
+                              <strong>Car:</strong> ${carpool.carMake || 'Not specified'}
+                           </p>
+                        </div>
+                        <div class="column is-6" style="padding: 0.5rem; display: flex; justify-content: flex-end;">
+                           <button class="button is-link" onclick="joinCarpool('${carpool._id}')">
+                              <span class="icon">
+                                 <i class="fas fa-user-plus"></i>
+                              </span>
+                              <span>Join</span>
+                           </button>
+                        </div>
+                     </div>
+                  </div>`;
+               
+               recommendedContainer.appendChild(carpoolElement);
+            });
+         })
+         .catch(error => {
+            console.error('Error fetching recommendations:', error);
+            if (loadingElement) {
+               loadingElement.innerHTML = `
+                  <div class="notification is-danger is-light">
+                     <button class="delete"></button>
+                     Failed to load recommendations. Please try again later.
+                  </div>`;
+
+               // Add click handler for the delete button
+               const deleteBtn = loadingElement.querySelector('.delete');
+               if (deleteBtn) {
+                  deleteBtn.addEventListener('click', () => {
+                     loadingElement.innerHTML = '';
+                  });
+               }
+            }
+        });
+   }
+   
+   // Call the function when the page loads
+   document.addEventListener('DOMContentLoaded', function() {
+      fetchRecommendedCarpools();
+      // Load user interests when page loads
+      loadUserInterests();
+   });
+   
+   // Modal functions
+   function openSettings() {
+      document.getElementById('settingsModal').classList.add('is-active');
+   }
+   
+   function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('is-active');
+   }
+   
+   // Load user interests from the server
+   async function loadUserInterests() {
+      const container = document.getElementById('interestsContainer');
+      const loadingElement = document.getElementById('interestsLoading');
+      
+      try {
+         console.log('Fetching user interests...');
+         const response = await fetch('/api/user/interests', {
+            headers: {
+               'Accept': 'application/json',
+               'Content-Type': 'application/json'
+            },
+            credentials: 'same-origin' // Include cookies for authentication
+         });
+         
+         console.log('Response status:', response.status);
+         const responseText = await response.text();
+         console.log('Response text:', responseText);
+         
+         let data;
+         try {
+            data = responseText ? JSON.parse(responseText) : {};
+         } catch (e) {
+            console.error('Failed to parse JSON response:', e);
+            throw new Error('Invalid server response');
+         }
+         
+         if (!response.ok) {
+            throw new Error(data.error || `Server responded with status ${response.status}`);
+         }
+         
+         const interests = data.interests || [];
+         const allCategories = ['sports', 'academic', 'social', 'other'];
+         
+         // Create checkboxes for each category
+         let html = '';
+         allCategories.forEach(category => {
+            const displayName = category.charAt(0).toUpperCase() + category.slice(1);
+            const isChecked = interests.includes(category) ? 'checked' : '';
+            html += `
+               <div class="field">
+                  <label class="checkbox">
+                     <input type="checkbox" value="${category}" ${isChecked}>
+                     ${displayName}
+                  </label>
+               </div>`;
+         });
+         
+         // Update the container with checkboxes
+         container.innerHTML = html;
+         if (loadingElement) {
+            loadingElement.style.display = 'none';
+         }
+         
+      } catch (error) {
+         console.error('Error loading interests:', error);
+         if (loadingElement) {
+            loadingElement.innerHTML = `
+               <div class="notification is-danger is-light">
+                  <p><strong>Error loading interests</strong></p>
+                  <p>${error.message || 'Please try again later.'}</p>
+                  <button class="button is-small is-light" onclick="loadUserInterests()" style="margin-top: 0.5rem;">
+                     <span class="icon">
+                        <i class="fas fa-sync-alt"></i>
+                     </span>
+                     <span>Retry</span>
+                  </button>
+               </div>`;
+         }
+      }
+   }
+   
+   // Save user interests
+   async function saveInterests() {
+      const checkboxes = document.querySelectorAll('#interestsContainer input[type="checkbox"]');
+      const selectedInterests = Array.from(checkboxes)
+         .filter(checkbox => checkbox.checked)
+         .map(checkbox => checkbox.value);
+      
+      const saveButton = document.getElementById('saveInterestsBtn');
+      const originalButtonText = saveButton.innerHTML;
+      
+      try {
+         // Show loading state
+         saveButton.classList.add('is-loading');
+         saveButton.disabled = true;
+         
+         // Save interests to the server
+         const response = await fetch('/api/user/interests', {
+            method: 'POST',
+            headers: {
+               'Content-Type': 'application/json',
+               'Accept': 'application/json'
+            },
+            credentials: 'same-origin',
+            body: JSON.stringify({ interests: selectedInterests })
+         });
+         
+         if (!response.ok) {
+            throw new Error('Failed to save interests');
+         }
+         
+         // Show success message
+         const successMessage = document.createElement('div');
+         successMessage.className = 'notification is-success is-light';
+         successMessage.style.marginTop = '1rem';
+         successMessage.textContent = 'Interests saved successfully!';
+         document.getElementById('interestsContainer').appendChild(successMessage);
+         
+         // Hide success message after 3 seconds
+         setTimeout(() => {
+            successMessage.remove();
+            closeModal('settingsModal');
+            // Refresh recommendations
+            fetchRecommendedCarpools();
+         }, 2000);
+         
+      } catch (error) {
+         console.error('Error saving interests:', error);
+         const errorMessage = document.createElement('div');
+         errorMessage.className = 'notification is-danger is-light';
+         errorMessage.style.marginTop = '1rem';
+         errorMessage.textContent = 'Failed to save interests. Please try again.';
+         document.getElementById('interestsContainer').appendChild(errorMessage);
+         
+         // Hide error message after 3 seconds
+         setTimeout(() => {
+            errorMessage.remove();
+         }, 3000);
+         
+      } finally {
+         // Reset button state
+         saveButton.classList.remove('is-loading');
+         saveButton.disabled = false;
+         saveButton.innerHTML = originalButtonText;
+      }
+   }
