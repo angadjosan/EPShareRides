@@ -558,15 +558,61 @@ router.delete(
     try {
       // Get the carpool ID from the request
       const { id } = req.params;
+      const { transporter } = req;
+
+      // Fetch carpool first to get member emails
+      const carpool = await Carpool.findById(new ObjectId(id));
+      if (!carpool) {
+        return res.status(404).send("Carpool not found");
+      }
+
+      // Build recipient list: driver + carpoolers (unique, non-empty)
+      const recipientSet = new Set([
+        carpool.email,
+        ...((carpool.carpoolers || []).map((c) => c.email)),
+      ]);
+      const recipients = [...recipientSet].filter(Boolean);
+
+      // Try to get event name if available
+      let eventName = "";
+      try {
+        const event = await Event.findById(carpool.nameOfEvent);
+        if (event?.eventName) {
+          eventName = event.eventName;
+        }
+      } catch (e) {
+        // Non-fatal if event lookup fails
+      }
+
+      // Send cancellation email (best-effort)
+      if (transporter && recipients.length > 0) {
+        const mailOptions = {
+          from: process.env.SMTP_USER,
+          to: recipients.join(","),
+          subject: `Carpool Cancelled${eventName ? ": " + eventName : ""}`,
+          text: `The carpool${eventName ? ` for ${eventName}` : ""} has been cancelled and removed.\n\nDriver: ${
+            [carpool.firstName, carpool.lastName].filter(Boolean).join(" ") ||
+            ""
+          }\nPickup: ${carpool.wlocation || ""}\nIf you have questions, reply to this email or contact the driver at ${
+            carpool.email || ""
+          }${carpool.phone ? ` / ${carpool.phone}` : ""}.`,
+        };
+        try {
+          await transporter.sendMail(mailOptions);
+        } catch (e) {
+          console.error("Failed to send carpool cancellation email:", e);
+        }
+      }
+
       // Delete the carpool from the DB
-      const carpools = await Carpool.deleteOne({
+      const deleteResult = await Carpool.deleteOne({
         _id: new ObjectId(id),
       });
       // Send a 200 status code because the carpool was deleted successfully
-      res.json(carpools);
+      res.json(deleteResult);
     } catch (err) {
-      console.error("Error retrieving carpools: " + err);
-      res.status(500).send("Error retrieving carpools");
+      console.error("Error deleting carpool: " + err);
+      res.status(500).send("Error deleting carpool");
     }
   },
 );
