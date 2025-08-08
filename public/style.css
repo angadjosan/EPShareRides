@@ -586,3 +586,267 @@ body {
 
 }
 
+
+/* ========================= */
+/* Glassmorphic Design System */
+/* ========================= */
+
+:root {
+  /* Sustainable palette */
+  --leaf-50: #f0f7f2;
+  --leaf-100: #e2f1e6;
+  --leaf-200: #c6e4cf;
+  --leaf-300: #9fd1b0;
+  --leaf-400: #6fbc8d;
+  --leaf-500: #45a074;
+  --leaf-600: #2f8b63;
+  --leaf-700: #237153;
+  --leaf-800: #1d5944;
+  --leaf-900: #154636;
+
+  --teal-500: #2aa198;
+  --sky-500: #6ec1e4;
+  --amber-500: #f0b429;
+  --danger-500: #e25252;
+
+  --surface-glass: rgba(255, 255, 255, 0.14);
+  --surface-strong: rgba(255, 255, 255, 0.22);
+  --border-glass: rgba(255, 255, 255, 0.28);
+  --shadow-glass: 0 10px 30px rgba(16, 38, 20, 0.12);
+  --backdrop-blur: 14px;
+  --radius-lg: 14px;
+  --radius-md: 10px;
+  --radius-sm: 8px;
+  --text-strong: #0f241a;
+  --text-muted: #35594a;
+
+  --brand-gradient: linear-gradient(120deg, var(--leaf-600), var(--teal-500));
+}
+
+/* Background: subtle eco gradient */
+html, body {
+  background: radial-gradient(1200px 600px at 10% -10%, #eaf6ef 0%, transparent 50%),
+              radial-gradient(1000px 500px at 90% 0%, #e6f3ff 0%, transparent 45%),
+              linear-gradient(180deg, #f7fbf8 0%, #eef7f2 60%, #eaf3ef 100%);
+  color: var(--text-strong);
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  background-size: 140% 140%, 140% 140%, 200% 200%;
+  animation: ecoFloat 28s ease-in-out infinite alternate;
+}
+
+@keyframes ecoFloat {
+  0% {
+    background-position: 0% 0%, 100% 0%, 0% 0%;
+  }
+  50% {
+    background-position: 10% 2%, 90% 3%, 50% 50%;
+  }
+  100% {
+    background-position: 0% 4%, 100% 2%, 100% 100%;
+  }
+}
+
+/* Glass helpers (applied to existing components via selectors below) */
+.is-glass {
+  background: var(--surface-glass);
+  -webkit-backdrop-filter: blur(var(--backdrop-blur));
+  backdrop-filter: blur(var(--backdrop-blur));
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-glass);
+}
+
+/* Navbar & hero */
+.hero {
+  background: transparent;
+}
+.hero .hero-head {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+.navbar {
+  margin-top: 10px;
+  padding: 6px 10px;
+  border-radius: var(--radius-lg);
+  background: var(--surface-glass);
+  -webkit-backdrop-filter: blur(var(--backdrop-blur));
+  backdrop-filter: blur(var(--backdrop-blur));
+  border: 1px solid var(--border-glass);
+  box-shadow: var(--shadow-glass);
+}
+.navbar-item, .navbar-link {
+  color: var(--text-strong);
+}
+.navbar-dropdown {
+  background: var(--surface-glass);
+  -webkit-backdrop-filter: blur(var(--backdrop-blur));
+  backdrop-filter: blur(var(--backdrop-blur));
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-glass);
+}
+
+/* Footer tabs */
+.hero-foot {
+  background: var(--surface-glass) !important;
+  -webkit-backdrop-filter: blur(var(--backdrop-blur));
+  backdrop-filter: blur(var(--backdrop-blur));
+  border-top: 1px solid var(--border-glass);
+}
+.tabs.is-boxed li a {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+}
+.tabs.is-boxed li.is-active a,
+.tabs.is-boxed li a.is-active1 {
+  background: var(--surface-strong);
+  color: var(--text-strong);
+  border-color: var(--border-glass);
+  border-radius: var(--radius-sm);
+}
+
+/* Panels, boxes, cards */
+.panel,
+.box,
+.message,
+.notification,
+.modal-card {
+  background: var(--surface-glass);
+  -webkit-backdrop-filter: blur(var(--backdrop-blur));
+  backdrop-filter: blur(var(--backdrop-blur));
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-glass);
+}
+.panel .panel-heading {
+  background: var(--brand-gradient) !important;
+  color: white;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  border: none !important;
+}
+.panel .panel-block {
+  background: transparent;
+}
+
+/* Buttons */
+.button.is-link,
+.button.is-info {
+  background: var(--brand-gradient) !important;
+  border: 1px solid transparent !important;
+  color: #fff !important;
+}
+.button.is-link.is-light,
+.button.is-info.is-light,
+.button.is-outlined {
+  background: var(--surface-strong) !important;
+  color: var(--text-strong) !important;
+  border: 1px solid var(--border-glass) !important;
+}
+.button.is-danger { background: linear-gradient(120deg, var(--danger-500), #c0392b) !important; color: #fff !important; }
+.button.is-success { background: linear-gradient(120deg, var(--leaf-600), var(--leaf-500)) !important; color: #fff !important; }
+.button { position: relative; overflow: hidden; }
+.button:hover { filter: brightness(1.03); transform: translateY(-1px); transition: all .15s ease; }
+.button:active { transform: translateY(0); }
+
+/* Sheen on hover */
+.button::before {
+  content: "";
+  position: absolute;
+  top: -120%;
+  left: -30%;
+  width: 60%;
+  height: 300%;
+  transform: rotate(25deg);
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
+  transition: transform 0.6s ease, opacity 0.4s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+.button:hover::before {
+  opacity: 1;
+  transform: translateX(260%) rotate(25deg);
+}
+
+/* Ripple effect node */
+.button .ripple {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: radial-gradient(circle, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.25) 40%, rgba(255,255,255,0.05) 70%, rgba(255,255,255,0) 80%);
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0);
+  animation: ripple-animate 600ms ease-out forwards;
+  mix-blend-mode: screen;
+}
+@keyframes ripple-animate {
+  to { transform: translate(-50%, -50%) scale(12); opacity: 0; }
+}
+
+/* Inputs & selects */
+.input,
+.select select,
+input[type="date"],
+input[type="time"],
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="tel"],
+textarea {
+  background: var(--surface-strong) !important;
+  border: 1px solid var(--border-glass) !important;
+  border-radius: var(--radius-md) !important;
+  color: var(--text-strong) !important;
+  -webkit-backdrop-filter: blur(var(--backdrop-blur));
+  backdrop-filter: blur(var(--backdrop-blur));
+}
+.input::placeholder,
+textarea::placeholder { color: #5c7467; }
+.select:not(.is-multiple):not(.is-loading)::after { border-color: var(--text-muted); }
+
+/* Badges, labels, small UI */
+#co2-savings { color: var(--leaf-700) !important; }
+.co2-equivalents { color: var(--text-muted); }
+
+/* Calendar overrides (keep structure, refresh colors) */
+.container-calendar {
+  background: var(--surface-glass);
+  -webkit-backdrop-filter: blur(var(--backdrop-blur));
+  backdrop-filter: blur(var(--backdrop-blur));
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-glass);
+}
+.container-calendar #left h1,
+#event-section h3,
+#reminder-section h3 { color: var(--leaf-700); background-color: transparent; }
+#event-section,
+#reminder-section { background: var(--surface-strong); border: 1px solid var(--border-glass); }
+.button-container-calendar button { background: var(--leaf-600); border-color: var(--leaf-600); }
+.date-picker:hover { background-color: var(--leaf-600); color: #fff; }
+.date-picker.selected { background-color: var(--leaf-100); outline-color: var(--leaf-400); }
+.event-tooltip { background-color: rgba(255, 255, 255, 0.9); }
+
+/* Modals */
+.modal-card-head,
+.modal-card-foot { background: transparent; border: none; }
+.modal-background { background-color: rgba(16, 38, 20, 0.4) !important; }
+
+/* Hover affordances */
+.hoverAddress:hover { background-color: rgba(255,255,255,0.4); }
+
+/* Make white-background glassy everywhere */
+.white-background {
+  background: var(--surface-strong) !important;
+  -webkit-backdrop-filter: blur(var(--backdrop-blur));
+  backdrop-filter: blur(var(--backdrop-blur));
+  border: 1px solid var(--border-glass);
+}
+
+/* Reduce motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .button:hover { transform: none; }
+  html, body { animation: none; }
+}

@@ -59,3 +59,33 @@ window.addEventListener("click", function (o) {
         document.getElementById("name_button").contains(o.target) ||
         (document.getElementById("navbar-dropdown").style.visibility = "hidden");
 });
+
+// Shiny ripple on buttons (works for dynamically added elements)
+document.addEventListener('click', function (event) {
+  const button = event.target.closest('.button');
+  if (!button) return;
+  // Ignore disabled buttons
+  if (button.disabled || button.getAttribute('aria-disabled') === 'true') return;
+
+  const rect = button.getBoundingClientRect();
+  const ripple = document.createElement('span');
+  ripple.className = 'ripple';
+  ripple.style.left = (event.clientX - rect.left) + 'px';
+  ripple.style.top = (event.clientY - rect.top) + 'px';
+  button.appendChild(ripple);
+  ripple.addEventListener('animationend', () => ripple.remove());
+});
+
+// Keyboard activation sheen for accessibility
+document.addEventListener('keydown', function (event) {
+  if (event.key !== 'Enter' && event.key !== ' ') return;
+  const button = document.activeElement?.closest?.('.button');
+  if (!button) return;
+  const rect = button.getBoundingClientRect();
+  const ripple = document.createElement('span');
+  ripple.className = 'ripple';
+  ripple.style.left = (rect.width / 2) + 'px';
+  ripple.style.top = (rect.height / 2) + 'px';
+  button.appendChild(ripple);
+  ripple.addEventListener('animationend', () => ripple.remove());
+});
