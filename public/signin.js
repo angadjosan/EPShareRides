@@ -23,29 +23,20 @@ function toggleSignIn() {
 
     provider.addScope('User.Read');
     signInWithPopup(auth, provider)
-      .then((result) => {
-        const user = result.user;
-        const email = user.email;
-
-        auth.currentUser.getIdToken(/* forceRefresh */ false).then(function(idToken) {
-          document.cookie = `idToken=${idToken};`;
-        }).catch(function(error) {
-          console.error(error);
-        });
-
-        fetch("/login", {
+      .then(() => auth.currentUser.getIdToken(/* forceRefresh */ false))
+      .then((idToken) => {
+        const secureAttr = window.location.protocol === 'https:' ? '; Secure' : '';
+        document.cookie = `idToken=${idToken}; Path=/; SameSite=Lax${secureAttr}`;
+        return fetch("/login", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }).then((response) => {
-          window.location.href = "/";
-        }).catch((error) => {
-          console.error("Error:", error)
+          headers: { "Content-Type": "application/json" },
+          credentials: "same-origin",
         });
-      }).catch((error) => {
-        console.error(error);
-      });
+      })
+      .then(() => {
+        window.location.href = "/";
+      })
+      .catch(() => {});
   } else {
     signOut(auth);
   }

@@ -37,14 +37,13 @@ router.post("/login", homeLimiter, async (req, res) => {
     user = decodedToken;
   })
   .catch((err) => {
-    console.error(err);
     res.clearCookie("idToken");
     res.redirect("/signin");
   });
 
   // Check if the user exists cause if they don't it's a problem
   if (!user) {
-    res.redirect("/login");
+    return res.redirect("/signin");
   }
 
   // Get the user email from the user object
@@ -60,7 +59,7 @@ router.post("/login", homeLimiter, async (req, res) => {
   }
 
   if (alreadyUser) {
-    res.redirect("/");
+    return res.redirect("/");
   } else {
     let userCheckIfExist;
 
@@ -96,13 +95,12 @@ router.post("/login", homeLimiter, async (req, res) => {
     });
 
     // Save the new user to the database
-    newUser.save().catch((err) => {
-      // Log the error and redirect to the signup page with an error message
-      console.error("Error creating user: " + err);
-      // Redirect to the signup page with an error message
-      res.redirect("/signin");
-      return;
-    });
+    try {
+      await newUser.save();
+    } catch (err) {
+      return res.redirect("/signin");
+    }
+    return res.redirect("/");
   }
 });
 
