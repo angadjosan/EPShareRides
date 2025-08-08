@@ -114,15 +114,17 @@
 
             <span id="createEventButton">
               <button id="buttonzx" style="
-      padding: 5px 7px;
-      background-color: #f5f5f5;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      color: #333;
-      font-size: 13px;
+      padding: 8px 16px;
+      background-color: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      color: #666;
+      font-size: 0.9rem;
+      font-weight: 500;
       cursor: pointer;
-      margin-left: 3px;
-      " onclick="var create_event = document.getElementById('create_event'); create_event.style.marginBottom='60px'; create_event.innerHTML = `<form class='box' style='margin-top: -20px'><div class='modal-card-head' style='padding: 0px;margin-bottom: 20px;background-color: white;border: none;'>
+      margin-left: 8px;
+      transition: all 0.2s ease;
+      " onmouseover="this.style.borderColor='#3273dc'; this.style.boxShadow='0 2px 8px rgba(50, 115, 220, 0.1)'" onmouseout="this.style.borderColor='#e0e0e0'; this.style.boxShadow='none'" onclick="var create_event = document.getElementById('create_event'); create_event.style.marginBottom='60px'; create_event.innerHTML = `<form class='box' style='margin-top: -20px'><div class='modal-card-head' style='padding: 0px;margin-bottom: 20px;background-color: white;border: none;'>
         <div class='modal-card-title'>Create Event</div>
     <button class='delete' aria-label='close' onclick='var create_event = document.getElementById(\'create_event\'); create_event.style.marginBottom=\'50px\'; create_event.innerHTML = \'\''></button>
     </div>
@@ -783,8 +785,15 @@ function addressAutocomplete(containerElement, idName, callback, options) {
         function turnRegistered(eventsToDisable) {
 
           for (var i = 0; i < eventsToDisable.length; i++) {
-            document.getElementById(eventsToDisable[i]._id).disabled = true;
-            document.getElementById(eventsToDisable[i]._id).innerHTML = "Registered for this event"
+            const card = document.getElementById(eventsToDisable[i]._id).closest('.modern-event-card');
+            if (card) {
+              card.classList.add('disabled');
+              const primaryBtn = card.querySelector('.modern-btn-primary');
+              if (primaryBtn) {
+                primaryBtn.disabled = true;
+                primaryBtn.innerHTML = "Registered for this event";
+              }
+            }
           }
         }
 
@@ -839,38 +848,35 @@ function addressAutocomplete(containerElement, idName, callback, options) {
               var time = new Date(obj["date"]).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
 
 
-              document.getElementById("eventsJS").innerHTML += `<article class="panel is-link has-text-centered" style=" margin-top: 10px;" >
-         <div style="float: left; margin: 7px; left:0px; position: absolute " class="booker" >
-          <span class="panel-icon" style='color: white; display: inline'>
-            <i class="fas fa-book" aria-hidden="true" style="margin: 13px; margin-left: 15px;"></i>
-            <p style="color: white; display: inline; font-size: 15px; " >Booked by `+ obj["firstName"] + ` ` + obj["lastName"] + `</p>
-          </span>
-         </div>
-         <p class="panel-heading link-heading" style="margin-top: -10px;background: linear-gradient(105deg, #3273DC, #275CBF); " >
-
-         `+ obj["eventName"] + `
-
-
-         </p>
-
-
-         <div class="panel-block">
-          <p class="control has-icons-left" style="width: 100px;">
-
-            <span style="color: #999999; margin-right: 5px;"><i class="fa-solid fa-location-dot "></i></span>Location: `+ obj["wlocation"] + `<br class="extraspace" style='display: none; '>  <span id="clock"  style="color: #999999; margin-right: 5px; margin-left: 10px;"><i class="fa-solid fa-clock "></i></span> Date: ` + date + `, ` + time + `
-           </p>
-          <div class="buttons upcoming-buttons" style="float: left; display: inline-block;">
-
-          <button class="button js-modal-trigger" style="margin-right: 5px;" data-target="modal-js-example" id="`+ obj["_id"] + `_offer` + `" onclick=sendData('` + obj["_id"] + `')>Offer to carpool</button>
-
-          <button class="button js-modal-trigger" data-target="modal-js-register" id="`+ obj["_id"] + `" onclick=sendData('` + obj["_id"] + `')>Join a carpool</button>
-           </div>
-           </div>
-
-
-
-
-         </article>`;
+              document.getElementById("eventsJS").innerHTML += `
+                <div class="modern-event-card">
+                  <div class="modern-category-tag">${obj["category"]}</div>
+                  <h3 class="modern-event-title">${obj["eventName"]}</h3>
+                  <div class="modern-event-details">
+                    <div class="modern-detail-row">
+                      <div class="modern-detail-icon">
+                        <i class="fa-solid fa-calendar"></i>
+                      </div>
+                      <span>${date} at ${time}</span>
+                    </div>
+                    <div class="modern-detail-row">
+                      <div class="modern-detail-icon">
+                        <i class="fa-solid fa-location-dot"></i>
+                      </div>
+                      <span>${obj["wlocation"]}</span>
+                    </div>
+                    <div class="modern-detail-row">
+                      <div class="modern-detail-icon">
+                        <i class="fa-solid fa-users"></i>
+                      </div>
+                      <span>3 carpool(s) available</span>
+                    </div>
+                  </div>
+                  <div class="modern-action-buttons">
+                    <button class="modern-btn-primary js-modal-trigger" data-target="modal-js-register" id="${obj["_id"]}" onclick="sendData('${obj["_id"]}')">Join Carpool</button>
+                    <button class="modern-btn-secondary js-modal-trigger" data-target="modal-js-example" id="${obj["_id"]}_offer" onclick="sendData('${obj["_id"]}')">Create</button>
+                  </div>
+                </div>`;
 
             }
             checkIfRegistered(userData1)
@@ -904,73 +910,67 @@ function addressAutocomplete(containerElement, idName, callback, options) {
                 if (document.getElementById("filter").value == "all") {
                   // `<div style="float: right; margin: 10px; width: 35px; height: 35px; background-color: hsl(348, 100%, 61%); border-radius: 5px
                   //    " <="" div=""></div>`
-                  document.getElementById("eventsJS").innerHTML += `<article class="panel is-link has-text-centered" style=" margin-top: 10px;" >
-                     <div style="float: left; margin: 7px; left:0px; position: absolute " class="booker" >
-                       <span class="panel-icon" style='color: white; display: inline'>
-                         <i class="fas fa-book" aria-hidden="true" style="margin: 13px; margin-left: 15px;"></i>
-                         <p style="color: white; display: inline; font-size: 15px; " >Booked by `+ obj["firstName"] + ` ` + obj["lastName"] + `</p>
-                       </span>
-                     </div>
-                     <p class="panel-heading link-heading" style="margin-top: -10px;background: linear-gradient(105deg, #3273DC, #275CBF); " >
-
-                    `+ obj["eventName"] + `
-
-
-                     </p>
-
-
-                     <div class="panel-block">
-                       <p class="control has-icons-left" style="width: 100px;">
-
-                         <span style="color: #999999; margin-right: 5px;"><i class="fa-solid fa-location-dot "></i></span>Location: `+ obj["wlocation"] + `<br class="extraspace" style='display: none; '>  <span id="clock"  style="color: #999999; margin-right: 5px; margin-left: 10px;"><i class="fa-solid fa-clock "></i></span> Date: ` + date + `, ` + time + `
-                        </p>
-                       <div class="buttons upcoming-buttons" style="float: left; display: inline-block;">
-
-                       <button class="button js-modal-trigger" style="margin-right: 5px;" data-target="modal-js-example" id="`+ obj["_id"] + `_offer` + `" onclick=sendData('` + obj["_id"] + `')>Offer to carpool</button>
-
-                       <button class="button js-modal-trigger" data-target="modal-js-register" id="`+ obj["_id"] + `" onclick=sendData('` + obj["_id"] + `')>Join a carpool</button>
+                  document.getElementById("eventsJS").innerHTML += `
+                    <div class="modern-event-card">
+                      <div class="modern-category-tag">${obj["category"]}</div>
+                      <h3 class="modern-event-title">${obj["eventName"]}</h3>
+                      <div class="modern-event-details">
+                        <div class="modern-detail-row">
+                          <div class="modern-detail-icon">
+                            <i class="fa-solid fa-calendar"></i>
+                          </div>
+                          <span>${date} at ${time}</span>
                         </div>
+                        <div class="modern-detail-row">
+                          <div class="modern-detail-icon">
+                            <i class="fa-solid fa-location-dot"></i>
+                          </div>
+                          <span>${obj["wlocation"]}</span>
                         </div>
-
-
-
-
-                    </article>`;
+                        <div class="modern-detail-row">
+                          <div class="modern-detail-icon">
+                            <i class="fa-solid fa-users"></i>
+                          </div>
+                          <span>3 carpool(s) available</span>
+                        </div>
+                      </div>
+                      <div class="modern-action-buttons">
+                        <button class="modern-btn-primary js-modal-trigger" data-target="modal-js-register" id="${obj["_id"]}" onclick="sendData('${obj["_id"]}')">Join Carpool</button>
+                        <button class="modern-btn-secondary js-modal-trigger" data-target="modal-js-example" id="${obj["_id"]}_offer" onclick="sendData('${obj["_id"]}')">Create</button>
+                      </div>
+                    </div>`;
                 }
 
                 else if (document.getElementById("filter").value == obj["category"]) {
-                  document.getElementById("eventsJS").innerHTML += `<article class="panel is-link has-text-centered" style=" margin-top: 10px;" >
-                <div style="float: left; margin: 7px; left:0px; position: absolute " class="booker" >
-                  <span class="panel-icon" style='color: white; display: inline'>
-                    <i class="fas fa-book" aria-hidden="true" style="margin: 13px; margin-left: 15px;"></i>
-                    <p style="color: white; display: inline; font-size: 15px; " >Booked by `+ obj["firstName"] + ` ` + obj["lastName"] + `</p>
-                  </span>
-                </div>
-                <p class="panel-heading link-heading" style="margin-top: -10px;background: linear-gradient(105deg, #3273DC, #275CBF); " >
-
-               `+ obj["eventName"] + `
-
-
-                </p>
-
-
-                <div class="panel-block">
-                  <p class="control has-icons-left" style="width: 100px;">
-
-                    <span style="color: #999999; margin-right: 5px;"><i class="fa-solid fa-location-dot "></i></span>Location: `+ obj["wlocation"] + `<br class="extraspace" style='display: none; '>  <span id="clock"  style="color: #999999; margin-right: 5px; margin-left: 10px;"><i class="fa-solid fa-clock "></i></span> Date: ` + date + `, ` + time + `
-                   </p>
-                  <div class="buttons upcoming-buttons" style="float: left; display: inline-block;">
-
-                  <button class="button js-modal-trigger" style="margin-right: 5px;" data-target="modal-js-example" id="`+ obj["_id"] + `_offer` + `" onclick=sendData('` + obj["_id"] + `')>Offer to carpool</button>
-
-                  <button class="button js-modal-trigger" data-target="modal-js-register" id="`+ obj["_id"] + `" onclick=sendData('` + obj["_id"] + `')>Join a carpool</button>
-                   </div>
-                   </div>
-
-
-
-
-               </article>`;
+                  document.getElementById("eventsJS").innerHTML += `
+                    <div class="modern-event-card">
+                      <div class="modern-category-tag">${obj["category"]}</div>
+                      <h3 class="modern-event-title">${obj["eventName"]}</h3>
+                      <div class="modern-event-details">
+                        <div class="modern-detail-row">
+                          <div class="modern-detail-icon">
+                            <i class="fa-solid fa-calendar"></i>
+                          </div>
+                          <span>${date} at ${time}</span>
+                        </div>
+                        <div class="modern-detail-row">
+                          <div class="modern-detail-icon">
+                            <i class="fa-solid fa-location-dot"></i>
+                          </div>
+                          <span>${obj["wlocation"]}</span>
+                        </div>
+                        <div class="modern-detail-row">
+                          <div class="modern-detail-icon">
+                            <i class="fa-solid fa-users"></i>
+                          </div>
+                          <span>3 carpool(s) available</span>
+                        </div>
+                      </div>
+                      <div class="modern-action-buttons">
+                        <button class="modern-btn-primary js-modal-trigger" data-target="modal-js-register" id="${obj["_id"]}" onclick="sendData('${obj["_id"]}')">Join Carpool</button>
+                        <button class="modern-btn-secondary js-modal-trigger" data-target="modal-js-example" id="${obj["_id"]}_offer" onclick="sendData('${obj["_id"]}')">Create</button>
+                      </div>
+                    </div>`;
                 }
 
               }

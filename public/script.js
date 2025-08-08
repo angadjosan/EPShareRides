@@ -62,7 +62,7 @@ window.addEventListener("click", function (o) {
 
 // Shiny ripple on buttons (works for dynamically added elements)
 document.addEventListener('click', function (event) {
-  const button = event.target.closest('.button');
+  const button = event.target.closest('.button, .modern-btn-primary, .modern-btn-secondary');
   if (!button) return;
   // Ignore disabled buttons
   if (button.disabled || button.getAttribute('aria-disabled') === 'true') return;
@@ -79,7 +79,7 @@ document.addEventListener('click', function (event) {
 // Keyboard activation sheen for accessibility
 document.addEventListener('keydown', function (event) {
   if (event.key !== 'Enter' && event.key !== ' ') return;
-  const button = document.activeElement?.closest?.('.button');
+  const button = document.activeElement?.closest?.('.button, .modern-btn-primary, .modern-btn-secondary');
   if (!button) return;
   const rect = button.getBoundingClientRect();
   const ripple = document.createElement('span');

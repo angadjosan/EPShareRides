@@ -562,19 +562,25 @@ body {
 }
 
 #filter {
-  background-color: #EFEFEF;
-  border: none;
-  border-radius: 5px;
-  padding: 2px;
-  padding-top: 1px;
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 #filter:hover {
-  background-color: #E5E5E5;
-  cursor: pointer;
+  border-color: #3273dc;
+  box-shadow: 0 2px 8px rgba(50, 115, 220, 0.1);
 }
+
 #filter:focus {
-  outline: 0;
+  outline: none;
+  border-color: #3273dc;
+  box-shadow: 0 0 0 3px rgba(50, 115, 220, 0.1);
 }
 
 
@@ -586,6 +592,189 @@ body {
 
 }
 
+
+/* ========================= */
+/* Modern Event Card Design */
+/* ========================= */
+
+/* Modern event card container */
+.modern-event-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #f0f0f0;
+  padding: 20px;
+  margin-bottom: 16px;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.modern-event-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  transform: translateY(-1px);
+}
+
+/* Event title */
+.modern-event-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 12px 0;
+  line-height: 1.3;
+}
+
+/* Category tag */
+.modern-category-tag {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: #f5f5f5;
+  color: #666;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+/* Event details container */
+.modern-event-details {
+  margin-bottom: 20px;
+}
+
+/* Event detail row */
+.modern-detail-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.modern-detail-row:last-child {
+  margin-bottom: 0;
+}
+
+/* Icons in detail rows */
+.modern-detail-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  color: #999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Action buttons container */
+.modern-action-buttons {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Primary button (Join Carpool) */
+.modern-btn-primary {
+  background: #3273dc;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex: 1;
+  text-align: center;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.modern-btn-primary:hover {
+  background: #275cbf;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(50, 115, 220, 0.3);
+}
+
+/* Secondary button (Create) */
+.modern-btn-secondary {
+  background: white;
+  color: #666;
+  border: 1px solid #e0e0e0;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.modern-btn-secondary:hover {
+  background: #f8f9fa;
+  border-color: #d0d0d0;
+  transform: translateY(-1px);
+}
+
+/* Plus icon for create button */
+.modern-btn-secondary::before {
+  content: "+";
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+/* Disabled state */
+.modern-event-card.disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.modern-btn-primary:disabled,
+.modern-btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .modern-event-card {
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  
+  .modern-event-title {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+  }
+  
+  .modern-category-tag {
+    top: 16px;
+    right: 16px;
+    font-size: 0.7rem;
+    padding: 3px 10px;
+  }
+  
+  .modern-action-buttons {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .modern-btn-primary,
+  .modern-btn-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+}
 
 /* ========================= */
 /* Glassmorphic Design System */
@@ -623,15 +812,13 @@ body {
   --brand-gradient: linear-gradient(120deg, var(--leaf-600), var(--teal-500));
 }
 
-/* Background: subtle eco gradient */
+/* Background: simple gradient */
 html, body {
-  background: radial-gradient(1200px 600px at 10% -10%, #eaf6ef 0%, transparent 50%),
-              radial-gradient(1000px 500px at 90% 0%, #e6f3ff 0%, transparent 45%),
-              linear-gradient(180deg, #f7fbf8 0%, #eef7f2 60%, #eaf3ef 100%);
+  background: #f5f5f5;
   color: var(--text-strong);
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-  background-size: 140% 140%, 140% 140%, 200% 200%;
-  animation: ecoFloat 28s ease-in-out infinite alternate;
+  min-height: 100%;
+  background-attachment: fixed;
 }
 
 @keyframes ecoFloat {
@@ -669,11 +856,9 @@ html, body {
   margin-top: 10px;
   padding: 6px 10px;
   border-radius: var(--radius-lg);
-  background: var(--surface-glass);
-  -webkit-backdrop-filter: blur(var(--backdrop-blur));
-  backdrop-filter: blur(var(--backdrop-blur));
-  border: 1px solid var(--border-glass);
-  box-shadow: var(--shadow-glass);
+  background: white;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 .navbar-item, .navbar-link {
   color: var(--text-strong);
@@ -689,22 +874,21 @@ html, body {
 
 /* Footer tabs */
 .hero-foot {
-  background: var(--surface-glass) !important;
-  -webkit-backdrop-filter: blur(var(--backdrop-blur));
-  backdrop-filter: blur(var(--backdrop-blur));
-  border-top: 1px solid var(--border-glass);
+  background: white !important;
+  border-top: 1px solid #e0e0e0;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
 }
 .tabs.is-boxed li a {
   background: transparent;
   border: 1px solid transparent;
-  color: var(--text-muted);
+  color: #666;
 }
 .tabs.is-boxed li.is-active a,
 .tabs.is-boxed li a.is-active1 {
-  background: var(--surface-strong);
-  color: var(--text-strong);
-  border-color: var(--border-glass);
-  border-radius: var(--radius-sm);
+  background: #3273dc;
+  color: white;
+  border-color: #3273dc;
+  border-radius: 8px;
 }
 
 /* Panels, boxes, cards */
@@ -770,7 +954,9 @@ html, body {
 }
 
 /* Ripple effect node */
-.button .ripple {
+.button .ripple,
+.modern-btn-primary .ripple,
+.modern-btn-secondary .ripple {
   position: absolute;
   width: 20px;
   height: 20px;

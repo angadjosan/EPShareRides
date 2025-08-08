@@ -228,19 +228,22 @@
                      -->
                         </div>
                         <!-- </div>  -->
-                        <div class="container">
-                           <div class="columns " style="width: 100%; margin-left: 0px; margin-top: -50px;">
-                              <div class="column has-text-centered" id="upcoming-carpools-column"
-                                 style="margin-left: 0px; margin-right: 0px; overflow:auto;">
-                                 <div class="container " style="margin-top: 5px; ">
-                                    <div id="carpoolsJS">
-                                     </div>
+                         <div class="container is-fluid">
+                            <div class="columns" style="width: 100%; margin-left: 0px; margin-top: -30px;">
+                               <div class="column is-half" id="offered-carpools-column" style="overflow:auto;">
+                                  <h2 class="title is-5 has-text-centered">Carpools I'm driving</h2>
+                                  <div class="container" style="margin-top: 5px;">
+                                     <div id="offeredCarpoolsJS"></div>
                                   </div>
-                                  
-                                   
+                               </div>
+                               <div class="column is-half" id="joined-carpools-column" style="overflow:auto;">
+                                  <h2 class="title is-5 has-text-centered">Carpools I'm in</h2>
+                                  <div class="container" style="margin-top: 5px;">
+                                     <div id="joinedCarpoolsJS"></div>
+                                  </div>
                                </div>
                             </div>
-                        </div>
+                         </div>
                      </div>
                      <!-- Include the JavaScript file for the calendar functionality -->
                      <script src="./script.js"></script>
@@ -688,9 +691,16 @@
 
                //offered carpools
                if (offeredCarpools.length == 0 && joinedCarpools.length == 0) {
-                  document.getElementById('carpoolsJS').innerHTML = `  <p class="has-text-centered">Don't see any carpools? Register for events <a href="/">here</a>.</p> `
-               }
-               else {
+                  const emptyMsg = `  <p class="has-text-centered">Don't see any carpools? Register for events <a href="/">here</a>.</p> `;
+                  document.getElementById('offeredCarpoolsJS').innerHTML = emptyMsg;
+                  document.getElementById('joinedCarpoolsJS').innerHTML = emptyMsg;
+               } else {
+                  if (offeredCarpools.length === 0) {
+                     document.getElementById('offeredCarpoolsJS').innerHTML = `<p class="has-text-centered">No carpools offered yet.</p>`;
+                  }
+                  if (joinedCarpools.length === 0) {
+                     document.getElementById('joinedCarpoolsJS').innerHTML = `<p class="has-text-centered">No carpools joined yet.</p>`;
+                  }
                   for (var i = 0; i < offeredCarpools.length; i++) {
                      console.log(offeredCarpools[i])
                      driver = offeredCarpools[i].firstName + " " + offeredCarpools[i].lastName
@@ -710,7 +720,7 @@
                            date = formatDate(date)
                         }
                      }
-                     document.getElementById('carpoolsJS').innerHTML += `<article class="panel is-link" style="position: relative" >
+                      document.getElementById('offeredCarpoolsJS').innerHTML += `<article class="panel is-link" style="position: relative" >
    <div class="panel-heading" style="padding: 0px; margin-bottom: 12px; border-radius: 6px 6px 0px 0px; line-height: 22px;background: linear-gradient(105deg, #3273DC, #275CBF);" >
       <div class="columns is-mobile">
          <div class="column" style=" padding: 0px; padding-left: 10px;">
@@ -734,9 +744,9 @@
          </div>
       </div>
    </div>
-   <div class="panel-block" style="display: block; padding: 1rem 1.25rem;">
-      <div class="columns is-mobile is-vcentered" style="width: 100%; margin: 0;">
-         <div class="column is-6" style="padding: 0.5rem;">
+    <div class="panel-block" style="display: block; padding: 1rem 1.25rem;">
+       <div class="columns is-vcentered" style="width: 100%; margin: 0;">
+          <div class="column is-8" style="padding: 0.5rem;">
             <p class="control" id="registered-carpoolers">
                <strong>Riders:</strong> ` + carpoolers.join(", ") + `
                <br>
@@ -748,7 +758,7 @@
                </span>
             </p>
          </div>
-         <div class="column is-6" style="padding: 0.5rem; text-align: right;">
+          <div class="column is-4" style="padding: 0.5rem; text-align: right;">
             <div class="buttons is-justify-content-flex-end" style="margin: 0;">
                <button class="button is-link is-light is-small" onclick="getPhoneRoute('` + offeredCarpools[i]._id + `')">
                   <span class="icon">
@@ -812,7 +822,7 @@
                            date = formatDate(date)
                         }
                      }
-                     document.getElementById('carpoolsJS').innerHTML += `<article class="panel is-link" style="position: relative" >
+                      document.getElementById('joinedCarpoolsJS').innerHTML += `<article class="panel is-link" style="position: relative" >
                               <div class="panel-heading" style="padding: 0px; margin-bottom: 12px; border-radius: 6px 6px 0px 0px; line-height: 22px;background: linear-gradient(105deg, #3273DC, #275CBF);" >
                                  <div class="columns is-mobile">
                                     <div class="column" style=" padding: 0px; padding-left: 10px;">
@@ -836,9 +846,9 @@
                                     </div>
                                  </div>
                               </div>
-                              <div class="panel-block" style="display: block; padding: 1rem 1.25rem;">
-                                 <div class="columns is-mobile is-vcentered" style="width: 100%; margin: 0;">
-                                    <div class="column is-6" style="padding: 0.5rem;">
+                               <div class="panel-block" style="display: block; padding: 1rem 1.25rem;">
+                                  <div class="columns is-vcentered" style="width: 100%; margin: 0;">
+                                     <div class="column is-8" style="padding: 0.5rem;">
                                        <p class="control" id="registered-carpoolers">
                                           <strong>Riders:</strong> ` + carpoolers.join(", ") + `
                                           <br>
@@ -850,7 +860,7 @@
                                           </span>
                                        </p>
                                     </div>
-                                    <div class="column is-6" style="padding: 0.5rem; text-align: right;">
+                                     <div class="column is-4" style="padding: 0.5rem; text-align: right;">
                                        <div class="buttons is-justify-content-flex-end" style="margin: 0;">
                                           <button class="button is-link is-light is-small" onclick="getPhoneRoute('` + joinedCarpools[i]._id + `')">
                                              <span class="icon">
