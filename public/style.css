@@ -282,9 +282,7 @@ body {
   #topLogo {
     display: none;
   }
-  #bottomLogo {
-    
-  }
+  /* Removed empty #bottomLogo ruleset to satisfy CSS linters */
 }
 
 /* mobile */
@@ -390,8 +388,8 @@ body {
 /* desktop */
 @media only screen and (max-width: 1024px) {
   .navbar-dropdown {
-    display: none; !important;
-    visibility: hidden; !important
+  display: none !important;
+  visibility: hidden !important;
   }
   #name_button:hover ~ .navbar-dropdown {
     display: block;
@@ -513,9 +511,7 @@ body {
   transform: translateX(-100%);
 }
 
-.switch-label:active:after {
-
-}
+/* Removed empty .switch-label:active:after ruleset */
 
 .App {
   font-family: sans-serif;
@@ -859,6 +855,21 @@ html, body {
   background: white;
   border: 1px solid #e0e0e0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+.navbar.is-glass {
+  background: var(--surface-glass) !important;
+  -webkit-backdrop-filter: blur(var(--backdrop-blur));
+  backdrop-filter: blur(var(--backdrop-blur));
+  border: 1px solid var(--border-glass);
+  box-shadow: var(--shadow-glass);
+}
+.navbar.is-glass .navbar-menu {
+  background: var(--surface-glass);
+  -webkit-backdrop-filter: blur(var(--backdrop-blur));
+  backdrop-filter: blur(var(--backdrop-blur));
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-glass);
 }
 .navbar-item, .navbar-link {
   color: var(--text-strong);
