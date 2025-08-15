@@ -38,6 +38,33 @@
       .navbar .navbar-brand .title { font-size: 1.6rem; }
       #createEventButton { margin-left: 8px; }
     }
+
+    /* Make the events grid scrollable within its own container */
+    #eventsJS {
+      overflow-y: auto;
+      overflow-x: hidden;
+      max-height: 60vh; /* Fixed height for the grid container */
+      padding-right: 8px; /* Add some padding for scrollbar */
+    }
+    
+    /* Custom scrollbar styling for the events grid */
+    #eventsJS::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    #eventsJS::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 3px;
+    }
+    
+    #eventsJS::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 3px;
+    }
+    
+    #eventsJS::-webkit-scrollbar-thumb:hover {
+      background: #a8a8a8;
+    }
   </style>
 </head>
 
@@ -127,7 +154,7 @@
           </div>
           
           <!-- Upcoming Events Title -->
-          <div style="margin-top: 40px; margin-bottom: 10px;">
+          <div style="margin-top: -20px; margin-bottom: 10px;">
             <h1 class="title is-3" style="color: black; text-align: left; margin-left: 0;">Upcoming Events</h1>
           </div>
 
@@ -738,7 +765,7 @@ function addressAutocomplete(containerElement, idName, callback, options) {
             if (carpoolPart == "<%= email %>") {
               carpooledEvent = eventsW2.find((x) => x._id === userData1[i].nameOfEvent)
               if (carpooledEvent != undefined) {
-                carpooledEvents.push(carpooledEvent)
+                carpooledEvents.push(carpooldEvent)
               }
             }
           }
