@@ -164,7 +164,7 @@
                 <i class="fas fa-filter" style="font-size: 1.2em; color: black;"></i>
               </span>
               <select name="filter" id="filter" style="border: 1px solid #dbdbdb; border-radius: 6px; padding: 8px 12px; background: white; color: black;">
-                <option value="all">All</option>
+                <option value="all">All Events</option>
                 <option value="sports">Sports</option>
                 <option value="academic teams">Academic teams</option>
                 <option value="socials">Socials</option>
@@ -839,6 +839,8 @@ function addressAutocomplete(containerElement, idName, callback, options) {
               var date = formatDate(obj["date"]);
               var time = new Date(obj["date"]).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
 
+              // Calculate available carpools for this event
+              var availableCarpools = userData1.filter(carpool => carpool.nameOfEvent === obj["_id"]).length;
 
               document.getElementById("eventsJS").innerHTML += `
                 <div class="modern-event-card">
@@ -861,7 +863,7 @@ function addressAutocomplete(containerElement, idName, callback, options) {
                       <div class="modern-detail-icon">
                         <i class="fa-solid fa-users"></i>
                       </div>
-                      <span>3 carpool(s) available</span>
+                      <span>${availableCarpools} carpool(s) available</span>
                     </div>
                   </div>
                   <div class="modern-action-buttons">
@@ -899,6 +901,10 @@ function addressAutocomplete(containerElement, idName, callback, options) {
                 var obj = eventsW[i];
                 var date = formatDate(obj["date"]);
                 var time = new Date(obj["date"]).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
+                
+                // Calculate available carpools for this event
+                var availableCarpools = userData1.filter(carpool => carpool.nameOfEvent === obj["_id"]).length;
+                
                 if (document.getElementById("filter").value == "all") {
                   // `<div style="float: right; margin: 10px; width: 35px; height: 35px; background-color: hsl(348, 100%, 61%); border-radius: 5px
                   //    " <="" div=""></div>`
@@ -923,7 +929,7 @@ function addressAutocomplete(containerElement, idName, callback, options) {
                           <div class="modern-detail-icon">
                             <i class="fa-solid fa-users"></i>
                           </div>
-                          <span>3 carpool(s) available</span>
+                          <span>${availableCarpools} carpool(s) available</span>
                         </div>
                       </div>
                       <div class="modern-action-buttons">
@@ -955,7 +961,7 @@ function addressAutocomplete(containerElement, idName, callback, options) {
                           <div class="modern-detail-icon">
                             <i class="fa-solid fa-users"></i>
                           </div>
-                          <span>3 carpool(s) available</span>
+                          <span>${availableCarpools} carpool(s) available</span>
                         </div>
                       </div>
                       <div class="modern-action-buttons">
