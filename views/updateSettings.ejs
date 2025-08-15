@@ -22,7 +22,7 @@
   <main>
     <section class="hero is-fullheight" id="hero">
       <div class="hero-head">
-  <header class="navbar is-glass">
+          <header class="navbar">
           <div class="container">
             <div class="navbar-brand">
               <a class="navbar-item">
@@ -50,9 +50,6 @@
                       <a class="fa-solid fa-leaf" href="/sustainabilityStatement" style="color: #30B700"></a>
                     </span>
                     <div class="buttons" style="margin: 10px;margin-right: 0px;">
-                      <a class="button is-link is-outlined " href="/logout">
-                        Log out
-                      </a>
                       <div class="navbar-item has-dropdown is-hoverable "
                         onclick="document.getElementById('navbar-dropdown').style.visibility = 'visible';">
                         <a class="button is-link" id="name_button"
@@ -64,7 +61,7 @@
                         <div id="filler"
                           style="width: 130px; background-color: transparent; height: 20px; position: absolute; margin-top: -15px;">
                         </div>
-                        <div class="navbar-dropdown" id="navbar-dropdown">
+                        <div class="navbar-dropdown" id="navbar-dropdown" style="background: white; border: 1px solid #dbdbdb;">
                           <a class="navbar-item" href="/updateSettings">
                             Update settings
                           </a>
@@ -75,6 +72,9 @@
                             Sustainability statement
                           </a>
                           <hr class="navbar-divider">
+                          <a class="navbar-item" href="/logout">
+                            Log out
+                          </a>
                           <div class="navbar-item">
                             Version <%= process.env.VERSION %>
                           </div>

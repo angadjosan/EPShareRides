@@ -21,7 +21,7 @@
     <section class="hero is-fullheight">
       <!-- Hero head: will stick at the top -->
       <div class="hero-head">
-  <header class="navbar is-glass">
+          <header class="navbar">
           <div class="container">
             <div class="navbar-brand">
               <a class="navbar-item">
@@ -59,9 +59,6 @@
                       </span>
                     </a>
                     <div class="buttons" style="margin: 10px;margin-right: 0px;">
-                      <a class="button is-link is-outlined " href="/logout">
-                        Log out
-                      </a>
                       <div class="navbar-item has-dropdown is-hoverable "
                         onclick="document.getElementById('navbar-dropdown').style.visibility = 'visible';">
                         <a class="button is-link" id="name_button"
@@ -73,7 +70,7 @@
                         <div id="filler"
                           style="width: 130px; background-color: transparent; height: 20px; position: absolute; margin-top: -15px;">
                         </div>
-                        <div class="navbar-dropdown" id="navbar-dropdown">
+                        <div class="navbar-dropdown" id="navbar-dropdown" style="background: white; border: 1px solid #dbdbdb;">
                           <a class="navbar-item" href="/updateSettings">
                             Update settings
                           </a>
@@ -84,6 +81,9 @@
                             Sustainability statement
                           </a>
                           <hr class="navbar-divider">
+                          <a class="navbar-item" href="/logout">
+                            Log out
+                          </a>
                           <div class="navbar-item">
                             Version <%= process.env.VERSION %>
                           </div>
@@ -102,15 +102,25 @@
         <div class="container" style="margin-top: 0px; width: 100%; ">
           <div id="create_event" style="margin-bottom: 0px">
           </div>
-          <div class=" " style="position: absolute; margin-top: -40px;  width: 100%; ">
-            <label for="filter">Filter by: </label>
-            <select name="filter" id="filter">
-              <option value="all">All</option>
-              <option value="sports">Sports</option>
-              <option value="academic teams">Academic teams</option>
-              <option value="socials">Socials</option>
-              <option value="other">Other</option>
-            </select>
+          
+          <!-- Upcoming Events Title -->
+          <div style="margin-top: 40px; margin-bottom: 20px;">
+            <h1 class="title is-3" style="color: #3273dc; text-align: center;">Upcoming Events</h1>
+          </div>
+          
+          <div class=" " style="margin-top: 20px; margin-bottom: 30px; width: 100%; ">
+            <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+              <span style="margin-right: 10px; color: #3273dc;">
+                <i class="fas fa-filter" style="font-size: 1.2em;"></i>
+              </span>
+              <select name="filter" id="filter" style="border: 1px solid #dbdbdb; border-radius: 6px; padding: 8px 12px; background: white;">
+                <option value="all">All</option>
+                <option value="sports">Sports</option>
+                <option value="academic teams">Academic teams</option>
+                <option value="socials">Socials</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
 
             <span id="createEventButton">
               <button id="buttonzx" style="
@@ -192,7 +202,7 @@
         <nav class="tabs is-boxed is-fullwidth">
           <div class="container">
             <ul>
-              <li class="is-active"><a href="/" class="is-active1">Upcoming</a></li>
+              <li class="is-active"><a href="/" class="is-active1">Upcoming Events</a></li>
               <li><a href="/mycarpools" class="white">My Carpools</a></li>
             </ul>
           </div>
@@ -573,7 +583,7 @@ function addressAutocomplete(containerElement, idName, callback, options) {
         <nav class="tabs is-boxed is-fullwidth">
           <div class="container">
             <ul>
-              <li class="is-active"><a href="/" class="is-active1">Upcoming</a></li>
+              <li class="is-active"><a href="/" class="is-active1">Upcoming Events</a></li>
               <li><a href="/mycarpools" class="white">My Carpools</a></li>
             </ul>
           </div>
