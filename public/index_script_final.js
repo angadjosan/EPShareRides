@@ -164,7 +164,7 @@ fetch(request)
         `</p>
       </span>
      </div>
-     <p class="panel-heading link-heading" style="margin-top: -10px;background: linear-gradient(105deg, #3273DC, #275CBF); " >
+     <p class="panel-heading link-heading" style="margin-top: -10px;background: #3273DC; " >
 
      ` +
         obj["eventName"] +
@@ -252,7 +252,7 @@ fetch(request)
             `</p>
                    </span>
                  </div>
-                 <p class="panel-heading link-heading" style="margin-top: -10px;background: linear-gradient(105deg, #3273DC, #275CBF); " >
+                 <p class="panel-heading link-heading" style="margin-top: -10px;background: #3273DC; " >
 
                 ` +
             obj["eventName"] +
@@ -307,7 +307,7 @@ fetch(request)
             `</p>
               </span>
             </div>
-            <p class="panel-heading link-heading" style="margin-top: -10px;background: linear-gradient(105deg, #3273DC, #275CBF); " >
+            <p class="panel-heading link-heading" style="margin-top: -10px;background: #3273DC; " >
 
            ` +
             obj["eventName"] +

@@ -14,29 +14,38 @@ const auth = getAuth();
 
 const signInButton = document.getElementById('sign-in')
 
-function toggleSignIn() {
+async function toggleSignIn() {
   if (!auth.currentUser) {
-    const provider = new OAuthProvider('microsoft.com');
-    provider.setCustomParameters({
-      tenant: 'eastsideprep.org',
-    });
+    try {
+      const provider = new OAuthProvider('microsoft.com');
+      provider.setCustomParameters({
+        tenant: 'eastsideprep.org',
+      });
 
-    provider.addScope('User.Read');
-    signInWithPopup(auth, provider)
-      .then(() => auth.currentUser.getIdToken(/* forceRefresh */ false))
-      .then((idToken) => {
+      provider.addScope('User.Read');
+      
+      // Ensure popup opens immediately
+      const result = await signInWithPopup(auth, provider);
+      
+      if (result.user) {
+        const idToken = await result.user.getIdToken(/* forceRefresh */ false);
         const secureAttr = window.location.protocol === 'https:' ? '; Secure' : '';
         document.cookie = `idToken=${idToken}; Path=/; SameSite=Lax${secureAttr}`;
-        return fetch("/login", {
+        
+        const response = await fetch("/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "same-origin",
         });
-      })
-      .then(() => {
-        window.location.href = "/";
-      })
-      .catch(() => {});
+        
+        if (response.ok) {
+          window.location.href = "/";
+        }
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      // Don't silently catch errors - let user know something went wrong
+    }
   } else {
     signOut(auth);
   }
@@ -46,4 +55,8 @@ onAuthStateChanged(auth, function (user) {
   // Something could happen here
 });
 
-signInButton.addEventListener('click', toggleSignIn, false);
+// Use mousedown instead of click to ensure immediate response
+signInButton.addEventListener('mousedown', (e) => {
+  e.preventDefault();
+  toggleSignIn();
+}, false);
