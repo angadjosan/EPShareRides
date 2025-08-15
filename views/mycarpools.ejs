@@ -49,86 +49,52 @@
                <% } %>
                   <section class="hero is-fullheight" id="hero">
                      <!-- Hero head: will stick at the top -->
-                     <div class="hero-head">
-                        <header class="navbar">
-                           <div class="container">
-                              <div class="navbar-brand">
-                                 <a class="navbar-item">
-                                    <div style="position: relative; display: flex; align-items: center;">
-                                       <img src="EPS Logo - Transparent-4.png" alt="Logo">
-                                       <h1 class="title is-3" style="margin-left: 10px; margin-bottom: -10px">EPCarpool
-                                       </h1>
-                                       <span
-                                          style="position: absolute; top: -5px; right: -25px; background: #3273DC; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7em; font-weight: bold;">BETA</span>
-                                    </div>
-                                 </a>
-                                 <div class="navbar-item" style="padding: 0.5rem 1.25rem;">
-                                    <button class="button is-info is-light" onclick="showDisclaimer()">
-                                       <span class="icon">
-                                          <i class="fas fa-info-circle"></i>
-                                       </span>
-                                    </button>
-                                 </div>
-                                 <span class="navbar-burger" data-target="navbarMenuHeroC" id="nav-toggle">
-                                    <span></span>
-                                    <span></span>
-                                    <span></span>
-                                 </span>
-                              </div>
-                              <div id="navbarMenuHeroC" class="navbar-menu ">
-                                 <div class="navbar-end">
-                                     <div class="is-button is-link">
-                                        <div class="navbar-item">
-                                           <a href="/sustainabilityStatement" style="font-size: 1em; color: #30B700; float: right; display: flex; align-items: center; margin-right: 15px; text-decoration: none;">
-                                             <i class="fa-solid fa-leaf" style="color: #30B700; margin-right: 10px;"></i>
+                     <div class="hero-head" style="margin-top:0; padding-top:0;">
+        <header class="navbar" style="padding:6px 0;">
+          <div class="container" style="padding-left:0; padding-right:0;">
+            <div class="navbar-brand">
+              <a class="navbar-item" style="display:flex; align-items:center; padding:6px 8px;">
+                <img src="EPS Logo - Transparent-4.png" alt="Logo" style="height:40px;">
+                <h1 class="title is-4" style="margin-left: 10px; margin-bottom: 0; font-size: 1.2rem;">EPCarpool</h1>
+                <button style="margin-left:8px; background-color: transparent; border: none; color: #3273dc; cursor: pointer; font-size: 1rem;" onclick="showDisclaimer()">
+                  <i class="fas fa-info-circle"></i>
+                </button>
+              </a>
+              <span class="navbar-burger" data-target="navbarMenuHeroC" id="nav-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+              </span>
+            </div>
 
-                                             <span>
-                                                <span id="co2-savings" style="font-size: 0.9em; font-weight: bold;">0 kg CO₂ saved</span>
-                                                <span id="co2-equivalents" class="co2-equivalents"></span>
+            <div id="navbarMenuHeroC" class="navbar-menu">
+              <div class="navbar-end" style="align-items: center;">
+                <a class="navbar-item" href="/" style="color: #3273dc; font-weight: 600; margin-right: 10px; font-size: 0.95rem;">Upcoming Events</a>
+                <a class="navbar-item" href="/mycarpools" style="color: #3273dc; font-weight: 600; margin-right: 12px; font-size: 0.95rem;">My Carpools</a>
+                <a href="/sustainabilityStatement" class="navbar-item" style="font-size: 0.95rem; color: #30B700; margin-right: 8px; display:flex; align-items:center;">
+                  <i class="fa-solid fa-leaf" style="color: #30B700; margin-right: 8px;"></i>
+                  <span id="co2-savings" style="font-size: 0.9em; font-weight: bold;">0 kg CO₂ saved</span>
+                </a>
 
-                                             </span>
-                                           </a>
-                                          <div class="buttons" style="margin: 10px;margin-right: 0px;">
-                                             <div class="navbar-item has-dropdown is-hoverable "
-                                                onclick="document.getElementById('navbar-dropdown').style.visibility = 'visible';">
-                                                <a class="button is-link" id="name_button"
-                                                   style="background: #3273DC;">
-                                                   <%= firstName %>
-                                                      <%= lastName %>
-                                                         <i style="margin-left: 5px;" class="fas fa-angle-down"
-                                                            aria-hidden="true"></i>
-                                                </a>
-                                                <div id="filler"
-                                                   style="width: 130px; background-color: transparent; height: 20px; position: absolute; margin-top: -15px;">
-                                                </div>
-                                                <div class="navbar-dropdown" id="navbar-dropdown" style="background: white; border: 1px solid #dbdbdb;">
-                                                   <a class="navbar-item" href="/updateSettings">
-                                                      Update settings
-                                                   </a>
-                                                   <a class="navbar-item" href="https://forms.office.com/r/deCSjA7bCR">
-                                                      Report a bug
-                                                   </a>
-                                                   <a class="navbar-item" href="/sustainabilityStatement">
-                                                      Sustainability statement
-                                                   </a>
-                                                   <hr class="navbar-divider">
-                                                   <a class="navbar-item" href="/logout">
-                                                      Log out
-                                                   </a>
-                                                   <div class="navbar-item">
-                                                      Version <%= process.env.VERSION %>
-                                                   </div>
-                                                </div>
-                                             </div>
-                                             </nav>
-                                          </div>
-                                       </div>
-                                    </div>
-                                 </div>
-                              </div>
-                           </div>
-                        </header>
-                     </div>
+                <div class="navbar-item has-dropdown is-hoverable" style="margin-left: 6px;">
+                  <a class="button is-link" id="name_button" style="background: #3273DC; padding: 6px 10px; font-size: 0.95rem;">
+                    <%= firstName %> <%= lastName %>
+                    <i style="margin-left: 6px;" class="fas fa-angle-down" aria-hidden="true"></i>
+                  </a>
+                  <div id="navbar-dropdown" class="navbar-dropdown" style="background: white; border: 1px solid #dbdbdb;">
+                    <a class="navbar-item" href="/updateSettings">Update settings</a>
+                    <a class="navbar-item" href="https://forms.office.com/r/deCSjA7bCR">Report a bug</a>
+                    <a class="navbar-item" href="/sustainabilityStatement">Sustainability statement</a>
+                    <hr class="navbar-divider">
+                    <a class="navbar-item" href="/logout">Log out</a>
+                    <div class="navbar-item">Version <%= process.env.VERSION %></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+      </div>
                      <!-- Hero content: will be in the middle -->
                      <div class="hero-body" id="hero-body">
                         <div>
@@ -247,7 +213,7 @@
                      <!-- Include the JavaScript file for the calendar functionality -->
                      <script src="./script.js"></script>
                      <!-- Hero footer: will stick at the bottom -->
-                     <div class="hero-foot">
+                     <!-- <div class="hero-foot">
                         <nav class="tabs is-boxed is-fullwidth">
                            <div class="container">
                                <ul>
@@ -261,7 +227,7 @@
                               </ul>
                            </div>
                         </nav>
-                     </div>
+                     </div> -->
                      </div>
                   </section>
    </main>

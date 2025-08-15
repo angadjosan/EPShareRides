@@ -14,6 +14,31 @@
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
   <script src="/co2Tracker.js"></script>
+  <style>
+    /* Remove default page margins so navbar sits flush to the top */
+    html, body { margin: 0; padding: 0; }
+    /* Ensure hero head has no extra spacing */
+    .hero-head { padding-top: 0; }
+
+    /* Adjusted brand title size */
+    .navbar .navbar-brand .title {
+      font-size: 2rem; /* Reduced size slightly */
+    }
+
+    /* Responsive events grid: 3 columns on wide screens, 2 on medium, 1 on small */
+    #eventsJS { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; grid-auto-rows: 260px; }
+
+    /* Card styling for each event item */
+    .event-card { background: white; border-radius: 8px; box-shadow: 0 1px 6px rgba(0,0,0,0.08); padding: 12px; height: 100%; display: flex; flex-direction: column; overflow: hidden; }
+    .event-card .event-title { font-weight: 700; color: #3273dc; margin-bottom: 6px; }
+    .event-card .event-meta { color: #666; font-size: 0.9rem; margin-top: auto; }
+
+    /* Keep filter and title left aligned on small screens */
+    @media (max-width: 768px) {
+      .navbar .navbar-brand .title { font-size: 1.6rem; }
+      #createEventButton { margin-left: 8px; }
+    }
+  </style>
 </head>
 
 <body>
@@ -27,18 +52,13 @@
               <a class="navbar-item">
                 <div style="position: relative; display: flex; align-items: center;">
                   <img src="EPS Logo - Transparent-4.png" alt="Logo">
-                  <h1 class="title is-3" style="margin-left: 10px; margin-bottom: -10px">EPCarpool</h1>
-                  <span
-                    style="position: absolute; top: -5px; right: -25px; background: #3273DC; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7em; font-weight: bold;">BETA</span>
+                  <h1 class="title" style="margin-left: 10px; margin-bottom: 5px;">EPCarpool</h1>
+                  <!-- TODO: make the icon blue and remove button background -->
+                  <button style="position: absolute; top: -5px; right: -25px; background-color: transparent; border: none; border-radius: 4px; font-size: 1.0em; color: #3273dc; cursor: pointer;" onclick="showDisclaimer()">
+                      <i class="fas fa-info-circle"></i>
+                  </button>
                 </div>
               </a>
-              <div class="navbar-item" style="padding: 0.5rem 1.25rem;">
-                <button class="button is-info is-light" onclick="showDisclaimer()">
-                  <span class="icon">
-                    <i class="fas fa-info-circle"></i>
-                  </span>
-                </button>
-              </div>
               <span class="navbar-burger" data-target="navbarMenuHeroC" id="nav-toggle">
                 <span></span>
                 <span></span>
@@ -47,6 +67,9 @@
             </div>
             <div id="navbarMenuHeroC" class="navbar-menu ">
               <div class="navbar-end">
+                <!-- Added quick nav links: Upcoming Events and My Carpools -->
+                <a class="navbar-item" href="/" style="color: #3273dc; font-weight: 600; margin-right: 10px;">Upcoming Events</a>
+                <a class="navbar-item" href="/mycarpools" style="color: #3273dc; font-weight: 600; margin-right: 12px;">My Carpools</a>
                 <div class="is-button is-link">
                   <div class="navbar-item">
                     <a href="/sustainabilityStatement" style="font-size: 1em; color: #30B700; float: right; display: flex; align-items: center; margin-right: 15px; text-decoration: none;">
@@ -104,16 +127,16 @@
           </div>
           
           <!-- Upcoming Events Title -->
-          <div style="margin-top: 40px; margin-bottom: 20px;">
-            <h1 class="title is-3" style="color: #3273dc; text-align: center;">Upcoming Events</h1>
+          <div style="margin-top: 40px; margin-bottom: 10px;">
+            <h1 class="title is-3" style="color: black; text-align: left; margin-left: 0;">Upcoming Events</h1>
           </div>
-          
-          <div class=" " style="margin-top: 20px; margin-bottom: 30px; width: 100%; ">
-            <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
-              <span style="margin-right: 10px; color: #3273dc;">
-                <i class="fas fa-filter" style="font-size: 1.2em;"></i>
+
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 20px; margin-bottom: 30px; width: 100%;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="margin-right: 6px; color: black;">
+                <i class="fas fa-filter" style="font-size: 1.2em; color: black;"></i>
               </span>
-              <select name="filter" id="filter" style="border: 1px solid #dbdbdb; border-radius: 6px; padding: 8px 12px; background: white;">
+              <select name="filter" id="filter" style="border: 1px solid #dbdbdb; border-radius: 6px; padding: 8px 12px; background: white; color: black;">
                 <option value="all">All</option>
                 <option value="sports">Sports</option>
                 <option value="academic teams">Academic teams</option>
@@ -122,74 +145,9 @@
               </select>
             </div>
 
-            <span id="createEventButton">
-              <button id="buttonzx" style="
-      padding: 8px 16px;
-      background-color: white;
-      border: 1px solid #e0e0e0;
-      border-radius: 8px;
-      color: #666;
-      font-size: 0.9rem;
-      font-weight: 500;
-      cursor: pointer;
-      margin-left: 8px;
-      transition: all 0.2s ease;
-      " onmouseover="this.style.borderColor='#3273dc'; this.style.boxShadow='0 2px 8px rgba(50, 115, 220, 0.1)'" onmouseout="this.style.borderColor='#e0e0e0'; this.style.boxShadow='none'" onclick="var create_event = document.getElementById('create_event'); create_event.style.marginBottom='60px'; create_event.innerHTML = `<form class='box' style='margin-top: -20px'><div class='modal-card-head' style='padding: 0px;margin-bottom: 20px;background-color: white;border: none;'>
-        <div class='modal-card-title'>Create Event</div>
-    <button class='delete' aria-label='close' onclick='var create_event = document.getElementById(\'create_event\'); create_event.style.marginBottom=\'50px\'; create_event.innerHTML = \'\''></button>
-    </div>
-    <div class='field'>
-      <label class='label' for='ename'>Event name:</label>
-      <div class='control'>
-        <input class='input' type='text' id='ename' name='name'>
-      </div>
-    </div>
-    <div class='field'>
-      <label class='label' for='elocation'>Location name:</label>
-      <div class='control'>
-        <input class='input' type='text' id='elocation' name='location'>
-      </div>
-    </div>
-    <div class='field'>
-      <label class='label' for='address'>Address:</label>
-      <div class='autocomplete-container ' id=''>
-            <div class='control' id='autocomplete-container3'>
-              <!-- South Kirkland Park and Ride, Bellevue, WA 98004, United States of America -->
+            <div id="createEventButton">
+              <button id="buttonzx" class="button is-link is-outlined" onclick="var create_event = document.getElementById('create_event'); create_event.style.marginBottom='60px'; create_event.innerHTML = `<form class='box' style='margin-top: -20px'><div class='modal-card-head' style='padding: 0px;margin-bottom: 20px;background-color: white;border: none;'><div class='modal-card-title'>Create Event</div><button class='delete' aria-label='close' onclick='var create_event = document.getElementById(\'create_event\'); create_event.style.marginBottom=\'50px\'; create_event.innerHTML = \'\''></button></div><div class='field'><label class='label' for='ename'>Event name:</label><div class='control'><input class='input' type='text' id='ename' name='name'></div></div><div class='field'><label class='label' for='elocation'>Location name:</label><div class='control'><input class='input' type='text' id='elocation' name='location'></div></div><div class='field'><label class='label' for='address'>Address:</label><div class='autocomplete-container ' id=''><div class='control' id='autocomplete-container3'><!-- South Kirkland Park and Ride, Bellevue, WA 98004, United States of America --></div></div></div><div class='field'><label class='label' for='edate'>Date and time:</label><div class='control'><input class='input' type='datetime-local' id='edate' name='date'></div></div><div class='field'><label class='label' for='ecategory'>Category:</label><div class='control'><div class='select'><select id='ecategory' name='category'><option value='sports'>Sports</option><option value='academic teams'>Academic teams</option><option value='socials'>Socials</option><option value='other'>Other</option></select></div></div></div><div class='field'><label class='label'>Map Preview:</label><div id='map' style='height: 300px; width: 100%; border-radius: 4px; margin-bottom: 1rem;'></div></div><div class='field'><div class='control'><div class='button is-link' type='button' onclick='createevent();'>Submit</div></div></div></form>`; createEventInputs()">Create event</button>
             </div>
-          </div>
-    </div>
-    <div class='field'>
-      <label class='label' for='edate'>Date and time:</label>
-      <div class='control'>
-        <input class='input' type='datetime-local' id='edate' name='date'>
-      </div>
-    </div>
-    <div class='field'>
-      <label class='label' for='ecategory'>Category:</label>
-      <div class='control'>
-        <div class='select'>
-          <select id='ecategory' name='category'>
-            <option value='sports'>Sports</option>
-            <option value='academic teams'>Academic teams</option>
-            <option value='socials'>Socials</option>
-            <option value='other'>Other</option>
-          </select>
-        </div>
-      </div>
-    </div>
-    <div class='field'>
-      <label class='label'>Map Preview:</label>
-      <div id='map' style='height: 300px; width: 100%; border-radius: 4px; margin-bottom: 1rem;'></div>
-    </div>
-    <div class='field'>
-      <div class='control'>
-        <div class='button is-link' type='button' onclick='createevent();'>Submit</div>
-      </div>
-    </div>
-  </form>`; createEventInputs()">
-    Create event
-  </button>
-</span>
           </div>
           <!--Start here  -->
           <div id="eventsJS">
@@ -198,16 +156,7 @@
       </div>
 
       <!-- Hero footer: will stick at the bottom -->
-      <div class="hero-foot">
-        <nav class="tabs is-boxed is-fullwidth">
-          <div class="container">
-            <ul>
-              <li class="is-active"><a href="/" class="is-active1">Upcoming Events</a></li>
-              <li><a href="/mycarpools" class="white">My Carpools</a></li>
-            </ul>
-          </div>
-        </nav>
-      </div>
+      <!-- hero-foot removed: navigation links moved to navbar -->
     </section>
   </main>
   <script></script>
@@ -579,16 +528,7 @@ function addressAutocomplete(containerElement, idName, callback, options) {
       </div>
 
       <!-- Hero footer: will stick at the bottom -->
-      <div class="hero-foot">
-        <nav class="tabs is-boxed is-fullwidth">
-          <div class="container">
-            <ul>
-              <li class="is-active"><a href="/" class="is-active1">Upcoming Events</a></li>
-              <li><a href="/mycarpools" class="white">My Carpools</a></li>
-            </ul>
-          </div>
-        </nav>
-      </div>
+      <!-- hero-foot removed: navigation links moved to navbar -->
     </section>
   </main>
   <script></script>
@@ -645,6 +585,21 @@ function addressAutocomplete(containerElement, idName, callback, options) {
               <label>Arrival time</label>
               <div class="field" style="margin-bottom: 10px;">
                 <input class="input" id="arrivaltime" type="time" placeholder="Time to arrive">
+              </div>
+            </div>
+            <div>
+              <label>Carpool category</label>
+              <div class="field" style="margin-bottom: 10px;">
+                <div class="control">
+                  <div class="select">
+                    <select id="carpool-category">
+                      <option value="sports">Sports</option>
+                      <option value="academic">Academic</option>
+                      <option value="social">Social</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -1226,7 +1181,6 @@ function addressAutocomplete(containerElement, idName, callback, options) {
 
         route_type.onchange = changeLabel;
         changeLabel();
-
 
 
 
