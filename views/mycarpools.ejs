@@ -24,6 +24,11 @@
       padding: 0.5rem 0 !important;
     }
 
+    /* Adjusted brand title size */
+    .navbar .navbar-brand .title {
+      font-size: 2rem; /* Reduced size slightly */
+    }
+
     /* Navigation button styling */
     .navbar-item.nav-link {
       color: #363636 !important;
@@ -44,6 +49,11 @@
 
     .navbar-item.nav-link:hover {
       background-color: rgba(54, 54, 54, 0.1) !important;
+    }
+
+    /* Responsive title */
+    @media (max-width: 768px) {
+      .navbar .navbar-brand .title { font-size: 1.6rem; }
     }
    </style>
 </head>
@@ -78,16 +88,19 @@
                <% } %>
                   <section class="hero is-fullheight" id="hero">
                      <!-- Hero head: will stick at the top -->
-                     <div class="hero-head" style="margin-top:0; padding-top:0;">
-        <header class="navbar" style="padding:6px 0;">
-          <div class="container" style="padding-left:0; padding-right:0;">
+                     <div class="hero-head">
+        <header class="navbar">
+          <div class="container">
             <div class="navbar-brand">
-              <a class="navbar-item" style="display:flex; align-items:center; padding:6px 8px;">
-                <img src="EPS Logo - Transparent-4.png" alt="Logo" style="height:40px;">
-                <h1 class="title is-4" style="margin-left: 10px; margin-bottom: 0; font-size: 1.2rem;">EPCarpool</h1>
-                <button style="margin-left:8px; background-color: transparent; border: none; color: #3273dc; cursor: pointer; font-size: 1rem;" onclick="showDisclaimer()">
-                  <i class="fas fa-info-circle"></i>
-                </button>
+              <a class="navbar-item">
+                <div style="position: relative; display: flex; align-items: center;">
+                  <img src="EPS Logo - Transparent-4.png" alt="Logo">
+                  <h1 class="title" style="margin-left: 10px; margin-bottom: 5px;">EPCarpool</h1>
+                  <!-- TODO: make the icon blue and remove button background -->
+                  <button style="position: absolute; top: -5px; right: -25px; background-color: transparent; border: none; border-radius: 4px; font-size: 1.0em; color: #3273dc; cursor: pointer;" onclick="showDisclaimer()">
+                      <i class="fas fa-info-circle"></i>
+                  </button>
+                </div>
               </a>
               <span class="navbar-burger" data-target="navbarMenuHeroC" id="nav-toggle">
                 <span></span>
@@ -102,23 +115,49 @@
                 <a class="navbar-item nav-link active" href="/mycarpools">My Carpools</a>
               </div>
               <div class="navbar-end">
-                <a href="/sustainabilityStatement" class="navbar-item" style="font-size: 0.95rem; color: #30B700; margin-right: 8px; display:flex; align-items:center;">
-                  <i class="fa-solid fa-leaf" style="color: #30B700; margin-right: 8px;"></i>
-                  <span id="co2-savings" style="font-size: 0.9em; font-weight: bold;">0 kg CO₂ saved</span>
-                </a>
+                <div class="is-button is-link">
+                  <div class="navbar-item">
+                    <a href="/sustainabilityStatement" style="font-size: 1em; color: #30B700; float: right; display: flex; align-items: center; margin-right: 15px; text-decoration: none;">
+                      <i class="fa-solid fa-leaf" style="color: #30B700; margin-right: 10px;"></i>
 
-                <div class="navbar-item has-dropdown is-hoverable" style="margin-left: 6px;">
-                  <a class="button is-link" id="name_button" style="background: #3273DC; padding: 6px 10px; font-size: 0.95rem;">
-                    <%= firstName %> <%= lastName %>
-                    <i style="margin-left: 6px;" class="fas fa-angle-down" aria-hidden="true"></i>
-                  </a>
-                  <div id="navbar-dropdown" class="navbar-dropdown" style="background: white; border: 1px solid #dbdbdb;">
-                    <a class="navbar-item" href="/updateSettings">Update settings</a>
-                    <a class="navbar-item" href="https://forms.office.com/r/deCSjA7bCR">Report a bug</a>
-                    <a class="navbar-item" href="/sustainabilityStatement">Sustainability statement</a>
-                    <hr class="navbar-divider">
-                    <a class="navbar-item" href="/logout">Log out</a>
-                    <div class="navbar-item">Version <%= process.env.VERSION %></div>
+                      <span>
+                        <span id="co2-savings" style="font-size: 0.9em; font-weight: bold; color: #30B700;">0 kg CO₂ saved</span>
+                        <span id="co2-equivalents" class="co2-equivalents"></span>
+
+                      </span>
+                    </a>
+                    <div class="buttons" style="margin: 10px;margin-right: 0px;">
+                      <div class="navbar-item has-dropdown is-hoverable "
+                        onclick="document.getElementById('navbar-dropdown').style.visibility = 'visible';">
+                        <a class="button is-link" id="name_button"
+                          style="background: #3273DC;">
+                          <%= firstName %>
+                            <%= lastName %>
+                              <i style="margin-left: 5px;" class="fas fa-angle-down" aria-hidden="true"></i>
+                        </a>
+                        <div id="filler"
+                          style="width: 130px; background-color: transparent; height: 20px; position: absolute; margin-top: -15px;">
+                        </div>
+                        <div class="navbar-dropdown" id="navbar-dropdown" style="background: white; border: 1px solid #dbdbdb;">
+                          <a class="navbar-item" href="/updateSettings">
+                            Update settings
+                          </a>
+                          <a class="navbar-item" href="https://forms.office.com/r/deCSjA7bCR">
+                            Report a bug
+                          </a>
+                          <a class="navbar-item" href="/sustainabilityStatement">
+                            Sustainability statement
+                          </a>
+                          <hr class="navbar-divider">
+                          <a class="navbar-item" href="/logout">
+                            Log out
+                          </a>
+                          <div class="navbar-item">
+                            Version <%= process.env.VERSION %>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
