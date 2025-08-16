@@ -20,12 +20,14 @@ body {
 
 /* Calendar container */
 .container-calendar {
-    background: #ffffff;
+    background: var(--surface-solid);
+    border: 1px solid var(--border-solid);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-solid);
     padding: 15px;
     max-width: 900px;
     margin: 0 auto;
     overflow: auto;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
     display: flex;
     justify-content: space-between;
 }
@@ -390,51 +392,10 @@ body {
   display: none !important;
   visibility: hidden !important;
   }
-  #name_button:hover ~ .navbar-dropdown {
-    display: block;
-    background-color: #fff;
-    border-bottom-left-radius: 6px;
-    border-bottom-right-radius: 6px;
-    border-top: 2px solid #dbdbdb;
-    box-shadow: 0 8px 8px rgba(10,10,10,.1);
-    font-size: .875rem;
-    left: 0;
-    min-width: 100%;
-    position: absolute;
-    top: 100%;
-    width: 160px;
-    visibility: visible;
-  }
-  #name_button:hover ~ .navbar-dropdown {
-    display: block;
-    background-color: #fff;
-    border-bottom-left-radius: 6px;
-    border-bottom-right-radius: 6px;
-    border-top: 2px solid #dbdbdb;
-    box-shadow: 0 8px 8px rgba(10,10,10,.1);
-    font-size: .875rem;
-    left: 0;
-    min-width: 100%;
-    position: absolute;
-    top: 100%;
-    width: 160px;
-    visibility: visible;
-  }
-  #filler:hover ~ .navbar-dropdown {
-    display: block;
-    background-color: #fff;
-    border-bottom-left-radius: 6px;
-    border-bottom-right-radius: 6px;
-    border-top: 2px solid #dbdbdb;
-    box-shadow: 0 8px 8px rgba(10,10,10,.1);
-    font-size: .875rem;
-    left: 0;
-    min-width: 100%;
-    position: absolute;
-    top: 100%;
-    width: 160px;
-    visibility: visible;
-  }
+  
+  /* Consolidated dropdown hover styles */
+  #name_button:hover ~ .navbar-dropdown,
+  #filler:hover ~ .navbar-dropdown,
   .navbar-dropdown:hover {
     display: block;
     background-color: #fff;
@@ -584,7 +545,7 @@ body {
   font-size: 0.8em;
   display: block;
   margin-top: 2px;
-
+  color: var(--text-muted);
 }
 
 
@@ -849,7 +810,8 @@ html, body {
   z-index: 30;
 }
 .navbar {
-  padding: 6px 10px;
+  min-height: 2.5rem;
+  padding: 0.5rem 0;
   border-radius: var(--radius-lg);
   background: #ffffff !important;
   border: 1px solid #e0e0e0;
@@ -870,8 +832,8 @@ html, body {
   color: var(--text-strong);
 }
 .navbar-dropdown {
-  background: var(--surface-solid);
-  border: 1px solid var(--border-solid);
+  background: white;
+  border: 1px solid #dbdbdb;
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-solid);
 }
@@ -985,15 +947,6 @@ textarea::placeholder { color: #5c7467; }
 .select:not(.is-multiple):not(.is-loading)::after { border-color: var(--text-muted); }
 
 /* Badges, labels, small UI */
-.co2-equivalents { color: var(--text-muted); }
-
-/* Calendar overrides (keep structure, refresh colors) */
-.container-calendar {
-  background: var(--surface-solid);
-  border: 1px solid var(--border-solid);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-solid);
-}
 
 /* Grid layout for carpool tiles */
 .carpool-grid {
@@ -1111,4 +1064,444 @@ textarea::placeholder { color: #5c7467; }
   animation-duration: revert !important;
   animation-delay: revert !important;
   animation-iteration-count: revert !important;
+}
+
+/* ========================= */
+/* Extracted Inline Styles from EJS Files */
+/* ========================= */
+
+/* index.ejs styles */
+.navbar-item.nav-link {
+  color: #363636 !important;
+  font-weight: 600;
+  margin: 0 15px;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem !important;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.navbar-item.nav-link.active {
+  color: #3273dc !important;
+  background-color: rgba(48, 183, 0, 0.1) !important;
+}
+
+.navbar-item.nav-link:hover {
+  background-color: rgba(54, 54, 54, 0.1) !important;
+}
+
+#eventsJS {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  grid-auto-rows: 260px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 60vh;
+  padding-right: 8px;
+}
+
+.event-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+  padding: 12px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.event-card .event-title {
+  font-weight: 700;
+  color: #3273dc;
+  margin-bottom: 6px;
+}
+
+.event-card .event-meta {
+  color: #666;
+  font-size: 0.9rem;
+  margin-top: auto;
+}
+
+.navbar .navbar-brand .title {
+  font-size: 1.9rem;
+}
+
+#createEventButton {
+  margin-left: 8px;
+}
+
+#eventsJS::-webkit-scrollbar {
+  width: 6px;
+}
+
+#eventsJS::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+#eventsJS::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+#eventsJS::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+.logo-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.title-with-logo {
+  margin-left: 10px;
+  margin-bottom: 5px;
+}
+
+.info-button {
+  position: absolute;
+  top: -5px;
+  right: -25px;
+  background-color: transparent;
+  border: none;
+  border-radius: 4px;
+  font-size: 1.0em;
+  color: #3273dc;
+  cursor: pointer;
+}
+
+.navbar-center {
+  flex-grow: 1;
+  justify-content: center;
+  display: flex;
+}
+
+.co2-link {
+  font-size: 1em;
+  color: #30B700;
+  float: right;
+  display: flex;
+  align-items: center;
+  margin-right: 15px;
+  text-decoration: none;
+}
+
+.co2-leaf-icon {
+  color: #30B700;
+  margin-right: 10px;
+}
+
+.co2-savings-text {
+  font-size: 0.9em;
+  font-weight: bold;
+  color: #30B700;
+}
+
+.user-buttons {
+  margin: 10px;
+  margin-right: 0px;
+}
+
+.user-button {
+  background: #3273DC;
+}
+
+.user-button-icon {
+  margin-left: 5px;
+}
+
+.dropdown-filler {
+  width: 130px;
+  background-color: transparent;
+  height: 20px;
+  position: absolute;
+  margin-top: -15px;
+}
+
+.hero-body-padding {
+  padding-bottom: 80px;
+}
+
+.container-full-width {
+  margin-top: 0px;
+  width: 100%;
+}
+
+.create-event-margin {
+  margin-bottom: 0px;
+}
+
+.upcoming-events-title {
+  margin-top: -20px;
+  margin-bottom: 10px;
+}
+
+.upcoming-events-h1 {
+  color: black;
+  text-align: left;
+  margin-left: 0;
+}
+
+.search-and-create-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 20px;
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.search-icon {
+  margin-right: 6px;
+  color: black;
+}
+
+.search-icon i {
+  font-size: 1.2em;
+  color: black;
+}
+
+.search-input {
+  border: 1px solid #dbdbdb;
+  border-radius: 6px;
+  padding: 8px 12px;
+  background: white;
+  color: black;
+  width: 250px;
+}
+
+.modal-background-dark {
+  background-color: rgba(10,10,10,.50);
+}
+
+.modal-heading-offer,
+.modal-heading-register {
+  padding: 15px;
+  padding-left: 20px;
+  display: table;
+}
+
+.modal-heading-icon,
+.modal-register-icon {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.modal-heading-icon {
+  position: absolute;
+}
+
+.modal-car-icon {
+  float: left;
+  transform: translate(0px,5px);
+}
+
+.modal-delete-right {
+  float: right;
+}
+
+.carpool-inputs-margin {
+  margin-right: 10px;
+}
+
+.carpool-panel-block {
+  border-radius: 5px;
+  padding: 0px;
+}
+
+.field-margin-bottom {
+  margin-bottom: 10px;
+}
+
+.pickup-options-container {
+  display: flex;
+  gap: 10px;
+}
+
+.modal-footer-custom,
+.modal-edit-footer {
+  background-color: white;
+  border-width: 1px;
+  padding: 10px;
+}
+
+.modal-buttons-left,
+.modal-edit-buttons {
+  margin-left: 0px;
+}
+
+.modal-button-primary,
+.modal-edit-apply,
+.disclaimer-button {
+  background: #3273DC;
+}
+
+.disclaimer-button {
+  margin-top: 20px;
+  margin-bottom: -20px;
+}
+
+.modal-users-icon {
+  float: left;
+  position: absolute;
+  transform: translate(0px, -10px);
+}
+
+.register-overflow {
+  overflow: auto;
+}
+
+/* signin.ejs styles */
+.signin-logo-top {
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+.signin-panel-heading {
+  background: #3273DC;
+}
+
+.signin-logo-bottom {
+  margin-top: -20px;
+  transform: translate(-6px,10px);
+}
+
+.signin-leaf-link {
+  font-size: 1em;
+  color: #30B700;
+  float: right;
+}
+
+.signin-description {
+  text-align: center;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.signin-button {
+  margin: 5px;
+  margin-top: 5px;
+  width: calc(100% - 10px);
+}
+
+/* mycarpools.ejs styles (additional to existing) */
+.mycarpools-container {
+  margin-top: 0px;
+  width: 100%;
+}
+
+.mycarpools-columns {
+  margin-top: -30px;
+}
+
+.mycarpools-column {
+  overflow: auto;
+}
+
+.carpool-card-modern {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: white;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.carpool-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 24px;
+}
+
+.carpool-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.carpool-subtitle {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.carpool-content {
+  padding: 0 24px 24px 24px;
+}
+
+.carpool-space {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modal-edit-heading {
+  padding: 15px;
+}
+
+.modal-edit-delete-right {
+  float: right;
+}
+
+.edit-route-container {
+  display: flex;
+  gap: 10px;
+}
+
+.edit-field-margin {
+  margin-bottom: 18px;
+}
+
+.delete-carpool-margin {
+  margin-bottom: 0px;
+}
+
+.delete-button-margin {
+  margin-bottom: 10px;
+}
+
+.pending-badge-hidden {
+    background: #ff3860;
+    color: white;
+    border-radius: 10px;
+    padding: 2px 8px;
+    font-size: 0.8em;
+    margin-left: 5px;
+    display: none;
+}
+
+.black-link {
+    color: black;
+}
+
+.modal-field-margin {
+    margin-bottom: 10px;
+}
+
+.modal-close-btn {
+    float: right;
+}
+
+.disclaimer-close-btn {
+    background: #3273DC;
+    margin-top: 20px;
+    margin-bottom: -20px;
 }
