@@ -255,12 +255,26 @@
                      -->
                         </div>
                         <!-- </div>  -->
-                         <div class="container is-fluid">
-                            <div class="columns" style="width: 100%; margin-left: 0px; margin-top: -30px;">
+                         <div class="container" style="margin-top: 0px; width: 100%;">
+                            <div class="columns" style="margin-top: -30px;">
                                <div class="column is-half" id="offered-carpools-column" style="overflow:auto;">
-                                  <h2 class="title is-5 has-text-centered">Carpools I'm driving</h2>
-                                  <div class="container" style="margin-top: 5px;">
-                                     <div id="offeredCarpoolsJS"></div>
+                                  <!-- Modern Card Style for My Carpool Offerings -->
+                                  <div class="rounded-lg border bg-card text-card-foreground shadow-sm" style="border: 1px solid #e5e7eb; border-radius: 8px; background: white; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);">
+                                     <div class="flex flex-col space-y-1.5 p-6" style="display: flex; flex-direction: column; gap: 6px; padding: 24px;">
+                                        <h3 class="text-2xl font-semibold leading-none tracking-tight flex items-center gap-2" style="font-size: 1.5rem; font-weight: 600; display: flex; align-items: center; gap: 8px; margin: 0;">
+                                           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5 text-primary" style="height: 20px; width: 20px; color: #3273dc;">
+                                              <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"></path>
+                                              <circle cx="7" cy="17" r="2"></circle>
+                                              <path d="M9 17h6"></path>
+                                              <circle cx="17" cy="17" r="2"></circle>
+                                           </svg>
+                                           My Carpool Offerings
+                                        </h3>
+                                        <p class="text-sm text-muted-foreground" style="font-size: 0.875rem; color: #6b7280; margin: 0;">Carpools you're driving for</p>
+                                     </div>
+                                     <div class="p-6 pt-0" style="padding: 0 24px 24px 24px;">
+                                        <div id="offeredCarpoolsJS" class="space-y-4" style="display: flex; flex-direction: column; gap: 16px;"></div>
+                                     </div>
                                   </div>
                                </div>
                                <div class="column is-half" id="joined-carpools-column" style="overflow:auto;">
@@ -659,13 +673,21 @@
    }
 
    function formatDate(date) {
-      const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
       const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-      var date = new Date(date);
-      const day = weekdays[date.getDay()];
-      const month = date.getMonth();
-      const year = date.getFullYear();
-      return `${day}, ${months[month + 1]} ${date.getDate()}, ${year}`;
+      var dateObj = new Date(date);
+      const month = dateObj.getMonth();
+      const day = dateObj.getDate();
+      const year = dateObj.getFullYear();
+      
+      // Get time information
+      let hours = dateObj.getHours();
+      const minutes = dateObj.getMinutes();
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12;
+      hours = hours ? hours : 12; // the hour '0' should be '12'
+      const minutesStr = minutes < 10 ? '0' + minutes : minutes;
+      
+      return `${months[month]} ${day}, ${year} at ${hours}:${minutesStr} ${ampm}`;
    }
 
 
@@ -747,83 +769,105 @@
                            date = formatDate(date)
                         }
                      }
-                      document.getElementById('offeredCarpoolsJS').innerHTML += `<article class="panel is-link" style="position: relative" >
-   <div class="panel-heading" style="padding: 0px; margin-bottom: 12px; border-radius: 6px 6px 0px 0px; line-height: 22px;background: #3273DC;" >
-      <div class="columns is-mobile">
-         <div class="column" style=" padding: 0px; padding-left: 10px;">
-            <div class=" " style="float: left; margin: 7px; left:0px;" >
-               <span class="panel-icon" style='color: white; display: inline'>
-                  <i class="fas fa-user" aria-hidden="true" style="margin: 13px; margin-left: 15px;"></i>
-                  <p style="color: white; display: inline; font-size: 15px; font-weight: 300 ">Carpool with ` + driver + `<i class="fa-solid fa-crown" style="margin-left: 5px;"></i></p>
-               </span>
-            </div>
-         </div>
-         <div class="column" style="padding: 0px; padding-top: 0.75em; padding-bottom: 0.75em">
-            <p class="" style="color: white; display: inline; font-size: 20px;  font-weight: 700;  ">` + eventName + `</p>
-         </div>
-         <div class="column" style="padding: 0px; padding-right: 10px;">
-            <div class="white-background " style="float: right; margin: 7px; right:0px;  border-radius: 6px; " >
-               <span class="panel-icon " id="spanz" style=' display: inline ;  '>
-                  <i class="fas fa-car " aria-hidden="true" style="margin: 13px; margin-left: 15px;"></i>
-                  <p style=" display: inline; font-size: 15px;  font-weight: 300;" id="datez" class="datew">` + date + `</p>
-               </span>
-            </div>
+                      document.getElementById('offeredCarpoolsJS').innerHTML += `
+<div class="border border-border rounded-lg p-4" style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; background: white;">
+   <div class="flex justify-between items-start mb-3" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+      <div>
+         <h3 class="font-semibold" style="font-weight: 600; margin: 0 0 4px 0;">${eventName}</h3>
+         <div class="flex items-center gap-4 text-sm text-muted-foreground mt-1" style="display: flex; align-items: center; gap: 16px; font-size: 0.875rem; color: #6b7280; margin-top: 4px;">
+            <span class="flex items-center gap-1" style="display: flex; align-items: center; gap: 4px;">
+               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-3 w-3" style="height: 12px; width: 12px;">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+               </svg>
+               ${date}
+            </span>
          </div>
       </div>
+      <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors border-transparent bg-primary text-primary-foreground" style="display: inline-flex; align-items: center; border-radius: 9999px; border: 1px solid transparent; padding: 2px 10px; font-size: 0.75rem; font-weight: 600; background-color: #3273dc; color: white;">confirmed</div>
    </div>
-    <div class="panel-block" style="display: block; padding: 1rem 1.25rem;">
-       <div class="columns is-vcentered" style="width: 100%; margin: 0;">
-          <div class="column is-8" style="padding: 0.5rem;">
-            <p class="control" id="registered-carpoolers">
-               <strong>Riders:</strong> ` + carpoolers.join(", ") + `
-               <br>
-               <span class="icon-text" style="margin-top: 0.5rem; display: inline-flex; align-items: center;">
-                  <span class="icon has-text-success">
-                     <i class="fas fa-leaf"></i>
-                  </span>
-                  <span>CO₂ Saved: <strong>${offeredCarpools[i].co2Savings ? offeredCarpools[i].co2Savings.toFixed(2) + ' kg' : 'Calculating...'}</strong></span>
-               </span>
-            </p>
-         </div>
-          <div class="column is-4" style="padding: 0.5rem; text-align: right;">
-            <div class="buttons is-justify-content-flex-end" style="margin: 0;">
-               <button class="button is-link is-light is-small" onclick="getPhoneRoute('` + offeredCarpools[i]._id + `')">
-                  <span class="icon">
-                     <i class="fas fa-route"></i>
-                  </span>
-                  <span>Route</span>
-               </button>
-               <button class="button is-info is-light is-small js-modal-trigger" data-target="modal-js-edit" id="` + offeredCarpools[i]._id + `" onclick="queGuay('` + offeredCarpools[i]._id + `')">
-                  <span class="icon">
-                     <i class="fas fa-edit"></i>
-                  </span>
-                  <span>Edit</span>
-               </button>
-               <button class="button is-info is-light is-small" onclick="emailGroup('` + offeredCarpools[i]._id + `')">
-                  <span class="icon">
-                     <i class="fas fa-envelope"></i>
-                  </span>
-               </button>
-               <button class="button is-info is-light is-small" onclick="textGroup('` + offeredCarpools[i]._id + `')">
-                  <span class="icon">
-                     <i class="fas fa-comment"></i>
-                  </span>
-               </button>
-            </div>
-         </div>
+   
+   <div class="space-y-2 mb-4" style="margin-bottom: 16px;">
+      <div class="flex items-center gap-2 text-sm" style="display: flex; align-items: center; gap: 8px; font-size: 0.875rem; margin-bottom: 8px;">
+         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-3 w-3" style="height: 12px; width: 12px;">
+            <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path>
+            <circle cx="12" cy="10" r="3"></circle>
+         </svg>
+         <span>${offeredCarpools[i].route === 'route' ? "Riders' Homes" : offeredCarpools[i].route === 'eps-campus' ? 'EPS Campus' : 'Meeting Point'}</span>
+      </div>
+      <div class="flex items-center gap-2 text-sm" style="display: flex; align-items: center; gap: 8px; font-size: 0.875rem;">
+         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-3 w-3" style="height: 12px; width: 12px;">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+         </svg>
+         <span>${carpoolers.length} rider(s): ${carpoolers.join(", ")}</span>
+      </div>
+      <div style="margin-top: 0.5rem; display: inline-flex; align-items: center;">
+         <i class="fa-solid fa-leaf" style="color: #30B700; margin-right: 10px;"></i>
+         <span style="font-size: 0.9em; font-weight: bold; color: #30B700;">
+            ${offeredCarpools[i].co2Savings ? offeredCarpools[i].co2Savings.toFixed(2) + ' kg CO₂ saved' : 'Calculating CO₂ savings...'}
+         </span>
       </div>
    </div>
-   <div style="margin: 10px 0; padding: 10px; background: #fffbe6; border: 1px solid #ffe08a; border-radius: 6px;">
-      <b>Pending Approvals:</b><br>
+   
+   ${offeredCarpools[i].pendingRequests && offeredCarpools[i].pendingRequests.length > 0 ? `
+   <div style="margin-bottom: 16px; padding: 12px; background: #fefce8; border: 1px solid #fde047; border-radius: 6px;">
+      <b style="font-weight: 600;">Pending Approvals:</b><br>
       ${offeredCarpools[i].pendingRequests.map(req => `
-         <div style='margin-bottom: 6px;'>
-            ${req.firstName} ${req.lastName} (${req.email})
-            <button class='button is-small is-success' style='margin-left:8px;' onclick="approveRequest('${offeredCarpools[i]._id}','${req.email}',true)">Approve</button>
-            <button class='button is-small is-danger' style='margin-left:2px;' onclick="approveRequest('${offeredCarpools[i]._id}','${req.email}',false)">Deny</button>
+         <div style='margin: 8px 0; display: flex; align-items: center; justify-content: space-between; font-size: 0.875rem;'>
+            <span>${req.firstName} ${req.lastName} (${req.email})</span>
+            <div style="display: flex; gap: 4px;">
+               <button class='button is-small is-success' style='padding: 4px 8px; font-size: 0.75rem; border-radius: 4px;' onclick="approveRequest('${offeredCarpools[i]._id}','${req.email}',true)">Approve</button>
+               <button class='button is-small is-danger' style='padding: 4px 8px; font-size: 0.75rem; border-radius: 4px;' onclick="approveRequest('${offeredCarpools[i]._id}','${req.email}',false)">Deny</button>
+            </div>
          </div>
       `).join('')}
    </div>
-</article>`
+   ` : ''}
+   
+   <div class="flex gap-2" style="display: flex; gap: 8px; flex-wrap: wrap;">
+      <button class="justify-center whitespace-nowrap text-sm font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 rounded-md px-3 flex items-center gap-1 js-modal-trigger" style="display: inline-flex; align-items: center; gap: 4px; padding: 8px 12px; font-size: 0.875rem; font-weight: 500; border: 1px solid #d1d5db; background: white; border-radius: 6px; cursor: pointer;" onclick="queGuay('${offeredCarpools[i]._id}')" data-target="modal-js-edit" id="${offeredCarpools[i]._id}">
+         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-3 w-3" style="height: 12px; width: 12px;">
+            <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+            <path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"></path>
+         </svg>
+         Edit
+      </button>
+      <button class="justify-center whitespace-nowrap text-sm font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 rounded-md px-3 flex items-center gap-1" style="display: inline-flex; align-items: center; gap: 4px; padding: 8px 12px; font-size: 0.875rem; font-weight: 500; border: 1px solid #d1d5db; background: white; border-radius: 6px; cursor: pointer;" onclick="getPhoneRoute('${offeredCarpools[i]._id}')">
+         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-3 w-3" style="height: 12px; width: 12px;">
+            <path d="M9 5H2v5a2 2 0 0 0 2 2h1l-1 4h9l-1-4h1a2 2 0 0 0 2-2V5H9Z"></path>
+            <path d="M3 5V3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2"></path>
+            <path d="M7 5h2"></path>
+         </svg>
+         Route
+      </button>
+      <button class="justify-center whitespace-nowrap text-sm font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 rounded-md px-3 flex items-center gap-1" style="display: inline-flex; align-items: center; gap: 4px; padding: 8px 12px; font-size: 0.875rem; font-weight: 500; border: 1px solid #d1d5db; background: white; border-radius: 6px; cursor: pointer;" onclick="emailGroup('${offeredCarpools[i]._id}')">
+         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-3 w-3" style="height: 12px; width: 12px;">
+            <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+         </svg>
+         Email Group
+      </button>
+      <button class="justify-center whitespace-nowrap text-sm font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 rounded-md px-3 flex items-center gap-1" style="display: inline-flex; align-items: center; gap: 4px; padding: 8px 12px; font-size: 0.875rem; font-weight: 500; border: 1px solid #d1d5db; background: white; border-radius: 6px; cursor: pointer;" onclick="textGroup('${offeredCarpools[i]._id}')">
+         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-3 w-3" style="height: 12px; width: 12px;">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+         </svg>
+         SMS Group
+      </button>
+      <button class="justify-center whitespace-nowrap text-sm font-medium border border-input bg-background hover:bg-accent h-9 rounded-md px-3 flex items-center gap-1" style="display: inline-flex; align-items: center; gap: 4px; padding: 8px 12px; font-size: 0.875rem; font-weight: 500; border: 1px solid #d1d5db; background: white; border-radius: 6px; cursor: pointer; color: #dc2626;" onclick="preperation()">
+         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-3 w-3" style="height: 12px; width: 12px;">
+            <path d="M3 6h18"></path>
+            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+            <line x1="10" x2="10" y1="11" y2="17"></line>
+            <line x1="14" x2="14" y1="11" y2="17"></line>
+         </svg>
+         Delete
+      </button>
+   </div>
+</div>`
 
                   }
 
@@ -880,10 +924,10 @@
                                           <strong>Riders:</strong> ` + carpoolers.join(", ") + `
                                           <br>
                                           <span class="icon-text" style="margin-top: 0.5rem; display: inline-flex; align-items: center;">
-                                             <span class="icon has-text-success">
-                                                <i class="fas fa-leaf"></i>
+                                             <i class="fa-solid fa-leaf" style="color: #30B700; margin-right: 10px;"></i>
+                                             <span style="font-size: 0.9em; font-weight: bold; color: #30B700;">
+                                                ${joinedCarpools[i].co2Savings ? (joinedCarpools[i].carpoolers.find(c => c.email === '<%= email %>')?.co2Savings || 0).toFixed(2) + ' kg CO₂ saved' : 'Calculating CO₂ savings...'}
                                              </span>
-                                             <span>CO₂ Saved: <strong>${joinedCarpools[i].co2Savings ? (joinedCarpools[i].carpoolers.find(c => c.email === '<%= email %>')?.co2Savings || 0).toFixed(2) + ' kg' : 'Calculating...'}</strong></span>
                                           </span>
                                        </p>
                                     </div>
