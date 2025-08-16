@@ -51,11 +51,8 @@
     .event-card .event-title { font-weight: 700; color: #3273dc; margin-bottom: 6px; }
     .event-card .event-meta { color: #666; font-size: 0.9rem; margin-top: auto; }
 
-    /* Keep filter and title left aligned on small screens */
-    @media (max-width: 768px) {
-      .navbar .navbar-brand .title { font-size: 1.6rem; }
-      #createEventButton { margin-left: 8px; }
-    }
+    .navbar .navbar-brand .title { font-size: 1.9rem; }
+    #createEventButton { margin-left: 8px; }
 
     /* Make the events grid scrollable within its own container */
     #eventsJS {
@@ -814,14 +811,12 @@ function addressAutocomplete(containerElement, idName, callback, options) {
         }
 
         function formatDate(date) {
-          const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
           const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
           var date = new Date(date);
 
-          const day = weekdays[date.getDay()];
           const month = date.getMonth();
           const year = date.getFullYear();
-          return `${day}, ${months[month + 1]} ${date.getDate()}, ${year}`;
+          return `${months[month]} ${date.getDate()}, ${year}`;
         }
 
         function sendData(data) {

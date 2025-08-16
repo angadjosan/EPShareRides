@@ -986,7 +986,6 @@ textarea::placeholder { color: #5c7467; }
 .select:not(.is-multiple):not(.is-loading)::after { border-color: var(--text-muted); }
 
 /* Badges, labels, small UI */
-#co2-savings { color: var(--leaf-700) !important; }
 .co2-equivalents { color: var(--text-muted); }
 
 /* Calendar overrides (keep structure, refresh colors) */
@@ -1047,9 +1046,6 @@ textarea::placeholder { color: #5c7467; }
   .button:hover { transform: none; }
   html, body { animation: none; }
 }
-
-/* CO2 Savings Display Styling */
-#co2-savings { color: var(--leaf-700) !important; }
 
 /* Green bubble outline for CO2 savings display - only target the main navbar CO2 display, not dropdown */
 .is-button.is-link > .navbar-item > a[href="/sustainabilityStatement"] {
