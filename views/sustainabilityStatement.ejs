@@ -14,14 +14,13 @@
   <script src="/co2Tracker.js"></script>
   <style>
     body {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: #f8f9fa;
       min-height: 100vh;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     .sustainability-hero {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
+      background: white;
       border-radius: 20px;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
       margin: 20px;
@@ -29,7 +28,7 @@
     }
 
     .impact-counter {
-      background: linear-gradient(135deg, #30B700, #4CAF50);
+      background: #30B700;
       color: white;
       border-radius: 20px;
       padding: 40px;
@@ -38,22 +37,6 @@
       box-shadow: 0 15px 30px rgba(48, 183, 0, 0.3);
       position: relative;
       overflow: hidden;
-    }
-
-    .impact-counter::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-      animation: shimmer 3s infinite;
-    }
-
-    @keyframes shimmer {
-      0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-      100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
     }
 
     .co2-main-number {
@@ -96,15 +79,15 @@
     }
 
     .equivalent-card.bottles {
-      border-top-color: #2196F3;
+      border-top-color: #3273dc;
     }
 
     .equivalent-card.rice {
-      border-top-color: #FF9800;
+      border-top-color: #30B700;
     }
 
     .equivalent-card.trees {
-      border-top-color: #4CAF50;
+      border-top-color: #30B700;
     }
 
     .equivalent-icon {
@@ -133,7 +116,7 @@
     }
 
     .story-title {
-      color: #30B700;
+      color: #3273dc;
       font-size: 2.2rem;
       font-weight: 700;
       margin-bottom: 25px;
@@ -157,7 +140,7 @@
     }
 
     .stat-card {
-      background: linear-gradient(135deg, #667eea, #764ba2);
+      background: #3273dc;
       color: white;
       padding: 25px;
       border-radius: 12px;
@@ -177,7 +160,7 @@
     }
 
     .back-button {
-      background: linear-gradient(135deg, #30B700, #4CAF50);
+      background: #3273dc;
       color: white;
       border: none;
       padding: 15px 30px;
@@ -186,12 +169,13 @@
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 8px 20px rgba(48, 183, 0, 0.3);
+      box-shadow: 0 8px 20px rgba(50, 115, 220, 0.3);
     }
 
     .back-button:hover {
+      background: #2c5dcd;
       transform: translateY(-2px);
-      box-shadow: 0 12px 25px rgba(48, 183, 0, 0.4);
+      box-shadow: 0 12px 25px rgba(50, 115, 220, 0.4);
     }
 
     .floating-leaves {
@@ -244,8 +228,16 @@
     <section class="hero is-fullheight">
       <div class="hero-body">
         <div class="container">
+          
+          
           <div class="sustainability-hero">
-            
+            <!-- Back Button -->
+            <div style="margin-bottom: 20px;">
+              <button class="button is-link" onclick="window.location.replace('/')"; style="background: #3273dc; border: none; padding: 12px 20px; border-radius: 25px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-arrow-left"></i>
+                Back
+              </button>
+            </div>
             <!-- Header -->
             <div class="has-text-centered" style="margin-bottom: 50px;">
               <span style="font-size: 4rem; color: #30B700;">
@@ -269,7 +261,7 @@
             <!-- Equivalents Grid -->
             <div class="equivalents-grid">
               <div class="equivalent-card bottles">
-                <div class="equivalent-icon" style="color: #2196F3;">
+                <div class="equivalent-icon" style="color: #3273dc;">
                   <i class="fas fa-bottle-water"></i>
                 </div>
                 <div class="equivalent-number" id="bottles-equivalent">0</div>
@@ -277,7 +269,7 @@
               </div>
               
               <div class="equivalent-card rice">
-                <div class="equivalent-icon" style="color: #FF9800;">
+                <div class="equivalent-icon" style="color: #30B700;">
                   <i class="fas fa-seedling"></i>
                 </div>
                 <div class="equivalent-number" id="rice-equivalent">0</div>
@@ -285,7 +277,7 @@
               </div>
               
               <div class="equivalent-card trees">
-                <div class="equivalent-icon" style="color: #4CAF50;">
+                <div class="equivalent-icon" style="color: #30B700;">
                   <i class="fas fa-tree"></i>
                 </div>
                 <div class="equivalent-number" id="trees-equivalent">0</div>

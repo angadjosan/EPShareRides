@@ -17,6 +17,35 @@
       integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <script src="/co2Tracker.js"></script>
+   <style>
+    /* Reduced navbar height */
+    .navbar {
+      min-height: 2.5rem !important;
+      padding: 0.5rem 0 !important;
+    }
+
+    /* Navigation button styling */
+    .navbar-item.nav-link {
+      color: #363636 !important;
+      font-weight: 600;
+      margin: 0 15px;
+      display: flex;
+      align-items: center;
+      padding: 0.5rem 1rem !important;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+    }
+
+    /* Active page highlighting */
+    .navbar-item.nav-link.active {
+      color: #3273dc !important;
+      background-color: rgba(48, 183, 0, 0.1) !important;
+    }
+
+    .navbar-item.nav-link:hover {
+      background-color: rgba(54, 54, 54, 0.1) !important;
+    }
+   </style>
 </head>
 
 <body>
@@ -68,9 +97,11 @@
             </div>
 
             <div id="navbarMenuHeroC" class="navbar-menu">
-              <div class="navbar-end" style="align-items: center;">
-                <a class="navbar-item" href="/" style="color: #3273dc; font-weight: 600; margin-right: 10px; font-size: 0.95rem;">Upcoming Events</a>
-                <a class="navbar-item" href="/mycarpools" style="color: #3273dc; font-weight: 600; margin-right: 12px; font-size: 0.95rem;">My Carpools</a>
+              <div class="navbar-start" style="flex-grow: 1; justify-content: center; display: flex;">
+                <a class="navbar-item nav-link" href="/">Upcoming Events</a>
+                <a class="navbar-item nav-link active" href="/mycarpools">My Carpools</a>
+              </div>
+              <div class="navbar-end">
                 <a href="/sustainabilityStatement" class="navbar-item" style="font-size: 0.95rem; color: #30B700; margin-right: 8px; display:flex; align-items:center;">
                   <i class="fa-solid fa-leaf" style="color: #30B700; margin-right: 8px;"></i>
                   <span id="co2-savings" style="font-size: 0.9em; font-weight: bold;">0 kg CO₂ saved</span>

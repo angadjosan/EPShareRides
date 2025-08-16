@@ -60,7 +60,8 @@ window.addEventListener("click", function (o) {
         (document.getElementById("navbar-dropdown").style.visibility = "hidden");
 });
 
-// Shiny ripple on buttons (works for dynamically added elements)
+// Shiny ripple on buttons - DISABLED
+/* 
 document.addEventListener('click', function (event) {
   const button = event.target.closest('.button, .modern-btn-primary, .modern-btn-secondary');
   if (!button) return;
@@ -89,3 +90,4 @@ document.addEventListener('keydown', function (event) {
   button.appendChild(ripple);
   ripple.addEventListener('animationend', () => ripple.remove());
 });
+*/

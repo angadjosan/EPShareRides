@@ -959,22 +959,11 @@ html, body {
   transform: translateX(260%) rotate(25deg);
 }
 
-/* Ripple effect node */
+/* Ripple effect node - DISABLED */
 .button .ripple,
 .modern-btn-primary .ripple,
 .modern-btn-secondary .ripple {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  background: #ffffff;
-  border-radius: 50%;
-  pointer-events: none;
-  transform: translate(-50%, -50%) scale(0);
-  animation: ripple-animate 600ms ease-out forwards;
-  mix-blend-mode: screen;
-}
-@keyframes ripple-animate {
-  to { transform: translate(-50%, -50%) scale(12); opacity: 0; }
+  display: none;
 }
 
 /* Inputs & selects */
@@ -1063,15 +1052,68 @@ textarea::placeholder { color: #5c7467; }
 #co2-savings { color: var(--leaf-700) !important; }
 
 /* Green bubble outline for CO2 savings display - only target the main navbar CO2 display, not dropdown */
-.is-button.is-link .navbar-item a[href="/sustainabilityStatement"] {
+.is-button.is-link > .navbar-item > a[href="/sustainabilityStatement"] {
   border: 2px solid #30B700 !important;
   border-radius: 25px !important;
-  padding: 8px 15px !important;
+  padding: 2px 15px !important;
   background-color: rgba(48, 183, 0, 0.1) !important;
   transition: all 0.3s ease !important;
 }
 
-.is-button.is-link .navbar-item a[href="/sustainabilityStatement"]:hover {
+.is-button.is-link > .navbar-item > a[href="/sustainabilityStatement"]:hover {
   background-color: rgba(48, 183, 0, 0.2) !important;
   box-shadow: 0 2px 8px rgba(48, 183, 0, 0.3) !important;
+}
+
+/* Ensure dropdown menu sustainability statement link has black styling */
+.navbar-dropdown .navbar-item[href="/sustainabilityStatement"] {
+  color: #363636 !important;
+  background-color: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 0.375rem 1rem !important;
+}
+
+.navbar-dropdown .navbar-item[href="/sustainabilityStatement"]:hover {
+  color: #363636 !important;
+  background-color: #f5f5f5 !important;
+}
+
+/* Disable all animations and spinners that could cause flashing */
+.button.is-loading::after,
+.control.is-loading::after,
+.loader,
+.select.is-loading::after {
+  display: none !important;
+}
+
+/* Disable all Bulma spinAround animations */
+@keyframes spinAround {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(0deg); }
+}
+
+/* Disable all progress bar animations */
+.progress:indeterminate {
+  animation: none !important;
+  background-image: none !important;
+}
+
+/* Disable any other potential flashing animations */
+* {
+  animation-duration: 0s !important;
+  animation-delay: 0s !important;
+  animation-iteration-count: 1 !important;
+}
+
+/* Allow only specific safe animations */
+.leaf,
+.equivalent-card,
+.modern-event-card,
+.back-button,
+.modern-btn-primary,
+.modern-btn-secondary {
+  animation-duration: revert !important;
+  animation-delay: revert !important;
+  animation-iteration-count: revert !important;
 }

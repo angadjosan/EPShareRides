@@ -15,14 +15,32 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
   <script src="/co2Tracker.js"></script>
   <style>
-    /* Remove default page margins so navbar sits flush to the top */
-    html, body { margin: 0; padding: 0; }
-    /* Ensure hero head has no extra spacing */
-    .hero-head { padding-top: 0; }
+    /* Reduced navbar height */
+    .navbar {
+      min-height: 2.5rem !important;
+      padding: 0.5rem 0 !important;
+    }
 
-    /* Adjusted brand title size */
-    .navbar .navbar-brand .title {
-      font-size: 2rem; /* Reduced size slightly */
+    /* Navigation button styling */
+    .navbar-item.nav-link {
+      color: #363636 !important;
+      font-weight: 600;
+      margin: 0 15px;
+      display: flex;
+      align-items: center;
+      padding: 0.5rem 1rem !important;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+    }
+
+    /* Active page highlighting */
+    .navbar-item.nav-link.active {
+      color: #3273dc !important;
+      background-color: rgba(48, 183, 0, 0.1) !important;
+    }
+
+    .navbar-item.nav-link:hover {
+      background-color: rgba(54, 54, 54, 0.1) !important;
     }
 
     /* Responsive events grid: 3 columns on wide screens, 2 on medium, 1 on small */
@@ -93,17 +111,19 @@
               </span>
             </div>
             <div id="navbarMenuHeroC" class="navbar-menu ">
+              <div class="navbar-start" style="flex-grow: 1; justify-content: center; display: flex;">
+                <!-- Centered quick nav links: Upcoming Events and My Carpools -->
+                <a class="navbar-item nav-link active" href="/">Upcoming Events</a>
+                <a class="navbar-item nav-link" href="/mycarpools">My Carpools</a>
+              </div>
               <div class="navbar-end">
-                <!-- Added quick nav links: Upcoming Events and My Carpools -->
-                <a class="navbar-item" href="/" style="color: #3273dc; font-weight: 600; margin-right: 10px;">Upcoming Events</a>
-                <a class="navbar-item" href="/mycarpools" style="color: #3273dc; font-weight: 600; margin-right: 12px;">My Carpools</a>
                 <div class="is-button is-link">
                   <div class="navbar-item">
                     <a href="/sustainabilityStatement" style="font-size: 1em; color: #30B700; float: right; display: flex; align-items: center; margin-right: 15px; text-decoration: none;">
                       <i class="fa-solid fa-leaf" style="color: #30B700; margin-right: 10px;"></i>
 
                       <span>
-                        <span id="co2-savings" style="font-size: 0.9em; font-weight: bold;">0 kg CO₂ saved</span>
+                        <span id="co2-savings" style="font-size: 0.9em; font-weight: bold; color: #30B700;">0 kg CO₂ saved</span>
                         <span id="co2-equivalents" class="co2-equivalents"></span>
 
                       </span>
@@ -161,15 +181,9 @@
           <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 20px; margin-bottom: 15px; width: 100%;">
             <div style="display: flex; align-items: center; gap: 10px;">
               <span style="margin-right: 6px; color: black;">
-                <i class="fas fa-filter" style="font-size: 1.2em; color: black;"></i>
+                <i class="fas fa-search" style="font-size: 1.2em; color: black;"></i>
               </span>
-              <select name="filter" id="filter" style="border: 1px solid #dbdbdb; border-radius: 6px; padding: 8px 12px; background: white; color: black;">
-                <option value="all">All Events</option>
-                <option value="sports">Sports</option>
-                <option value="academic teams">Academic teams</option>
-                <option value="socials">Socials</option>
-                <option value="other">Other</option>
-              </select>
+              <input type="text" id="searchInput" placeholder="Search events..." style="border: 1px solid #dbdbdb; border-radius: 6px; padding: 8px 12px; background: white; color: black; width: 250px;">
             </div>
 
             <div id="createEventButton">
@@ -868,7 +882,7 @@ function addressAutocomplete(containerElement, idName, callback, options) {
                   </div>
                   <div class="modern-action-buttons">
                     <button class="modern-btn-primary js-modal-trigger" data-target="modal-js-register" id="${obj["_id"]}" onclick="sendData('${obj["_id"]}')">Join Carpool</button>
-                    <button class="modern-btn-secondary js-modal-trigger" data-target="modal-js-example" id="${obj["_id"]}_offer" onclick="sendData('${obj["_id"]}')">Create</button>
+                    <button class="modern-btn-secondary js-modal-trigger" data-target="modal-js-example" id="${obj["_id"]}_offer" onclick="sendData('${obj["_id"]}')">Offer Carpool</button>
                   </div>
                 </div>`;
 
@@ -894,20 +908,26 @@ function addressAutocomplete(containerElement, idName, callback, options) {
 
 
 
-            document.getElementById("filter").onchange = filter;
-            function filter() {
-              document.getElementById("eventsJS").innerHTML = ``
-              for (var i = 0; i < eventsW.length; i++) {
-                var obj = eventsW[i];
+            document.getElementById("searchInput").oninput = searchEvents;
+            function searchEvents() {
+              const searchTerm = document.getElementById("searchInput").value.toLowerCase();
+              document.getElementById("eventsJS").innerHTML = ``;
+              
+              for (var i = 0; i < eventsW2.length; i++) {
+                var obj = eventsW2[i];
                 var date = formatDate(obj["date"]);
                 var time = new Date(obj["date"]).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
                 
                 // Calculate available carpools for this event
                 var availableCarpools = userData1.filter(carpool => carpool.nameOfEvent === obj["_id"]).length;
                 
-                if (document.getElementById("filter").value == "all") {
-                  // `<div style="float: right; margin: 10px; width: 35px; height: 35px; background-color: hsl(348, 100%, 61%); border-radius: 5px
-                  //    " <="" div=""></div>`
+                // Check if the search term matches event name, location, or category
+                const matchesSearch = searchTerm === '' || 
+                  obj["eventName"].toLowerCase().includes(searchTerm) ||
+                  obj["wlocation"].toLowerCase().includes(searchTerm) ||
+                  obj["category"].toLowerCase().includes(searchTerm);
+                
+                if (matchesSearch) {
                   document.getElementById("eventsJS").innerHTML += `
                     <div class="modern-event-card">
                       <div class="modern-category-tag">${obj["category"]}</div>
@@ -934,43 +954,10 @@ function addressAutocomplete(containerElement, idName, callback, options) {
                       </div>
                       <div class="modern-action-buttons">
                         <button class="modern-btn-primary js-modal-trigger" data-target="modal-js-register" id="${obj["_id"]}" onclick="sendData('${obj["_id"]}')">Join Carpool</button>
-                        <button class="modern-btn-secondary js-modal-trigger" data-target="modal-js-example" id="${obj["_id"]}_offer" onclick="sendData('${obj["_id"]}')">Create</button>
+                        <button class="modern-btn-secondary js-modal-trigger" data-target="modal-js-example" id="${obj["_id"]}_offer" onclick="sendData('${obj["_id"]}')">Offer Carpool</button>
                       </div>
                     </div>`;
                 }
-
-                else if (document.getElementById("filter").value == obj["category"]) {
-                  document.getElementById("eventsJS").innerHTML += `
-                    <div class="modern-event-card">
-                      <div class="modern-category-tag">${obj["category"]}</div>
-                      <h3 class="modern-event-title">${obj["eventName"]}</h3>
-                      <div class="modern-event-details">
-                        <div class="modern-detail-row">
-                          <div class="modern-detail-icon">
-                            <i class="fa-solid fa-calendar"></i>
-                          </div>
-                          <span>${date} at ${time}</span>
-                        </div>
-                        <div class="modern-detail-row">
-                          <div class="modern-detail-icon">
-                            <i class="fa-solid fa-location-dot"></i>
-                          </div>
-                          <span>${obj["wlocation"]}</span>
-                        </div>
-                        <div class="modern-detail-row">
-                          <div class="modern-detail-icon">
-                            <i class="fa-solid fa-users"></i>
-                          </div>
-                          <span>${availableCarpools} carpool(s) available</span>
-                        </div>
-                      </div>
-                      <div class="modern-action-buttons">
-                        <button class="modern-btn-primary js-modal-trigger" data-target="modal-js-register" id="${obj["_id"]}" onclick="sendData('${obj["_id"]}')">Join Carpool</button>
-                        <button class="modern-btn-secondary js-modal-trigger" data-target="modal-js-example" id="${obj["_id"]}_offer" onclick="sendData('${obj["_id"]}')">Create</button>
-                      </div>
-                    </div>`;
-                }
-
               }
 
               checkIfRegistered(userData1)
