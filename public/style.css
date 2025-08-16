@@ -849,7 +849,6 @@ html, body {
   z-index: 30;
 }
 .navbar {
-  margin-top: 10px;
   padding: 6px 10px;
   border-radius: var(--radius-lg);
   background: #ffffff !important;
