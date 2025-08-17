@@ -486,6 +486,17 @@ function addressAutocomplete(containerElement, idName, callback, options) {
 
                     });
 
+        // Restrict event categories to allowed values
+        try {
+          var catSelect = document.getElementById('ecategory');
+          if (catSelect) {
+            catSelect.innerHTML = "" +
+              "<option value='School'>School</option>" +
+              "<option value='Sports'>Sports</option>" +
+              "<option value='Extra School Events'>Extra School Events</option>";
+          }
+        } catch (e) { console.warn('Failed to set category options', e); }
+
                   }
                 </script>
             </span>
@@ -760,6 +771,20 @@ function addressAutocomplete(containerElement, idName, callback, options) {
           return d > now;
         }
 
+        // Map event category to a CSS class for color coding
+        function getCategoryClass(cat) {
+          switch ((cat || '').toLowerCase()) {
+            case 'school':
+              return 'cat-school';
+            case 'sports':
+              return 'cat-sports';
+            case 'extra school events':
+              return 'cat-extra';
+            default:
+              return 'cat-other';
+          }
+        }
+
         var request = new Request("/api/events", {
           method: "GET",
           headers: new Headers({
@@ -784,7 +809,7 @@ function addressAutocomplete(containerElement, idName, callback, options) {
 
               document.getElementById("eventsJS").innerHTML += `
                 <div class="modern-event-card">
-                  <div class="modern-category-tag">${obj["category"]}</div>
+                  <div class="modern-category-tag ${getCategoryClass(obj["category"])}">${obj["category"]}</div>
                   <h3 class="modern-event-title">${obj["eventName"]}</h3>
                   <div class="modern-event-details">
                     <div class="modern-detail-row">
@@ -856,7 +881,7 @@ function addressAutocomplete(containerElement, idName, callback, options) {
                 if (matchesSearch) {
                   document.getElementById("eventsJS").innerHTML += `
                     <div class="modern-event-card">
-                      <div class="modern-category-tag">${obj["category"]}</div>
+                      <div class="modern-category-tag ${getCategoryClass(obj["category"])}">${obj["category"]}</div>
                       <h3 class="modern-event-title">${obj["eventName"]}</h3>
                       <div class="modern-event-details">
                         <div class="modern-detail-row">
@@ -1399,6 +1424,10 @@ function addressAutocomplete(containerElement, idName, callback, options) {
         hour12: true
       });
       category = document.getElementById("ecategory").value;
+      // Normalize category to allowed values just in case
+      if (["School","Sports","Extra School Events"].indexOf(category) === -1) {
+        category = "School";
+      }
       
       // Get coordinates for the user's address and event location
       const userCoords = await getCoordinates(address);
