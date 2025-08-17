@@ -924,9 +924,11 @@ function addressAutocomplete(containerElement, idName, callback, options) {
       }
     }
 
-    function createEventAndClose() {
-      createevent();
+    async function createEventAndClose() {
+      await createevent();
       closeCreateEventModal();
+      // Refresh the page to show the new event
+      window.location.reload();
     }
   </script>
   <script>
