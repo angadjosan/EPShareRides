@@ -230,13 +230,18 @@ ${approve ? `🌱 By joining this carpool, you've helped save approximately ${(c
   }
 });
 
-// Route to get all events (future only)
+// Route to get all events (current day and future only)
 router.get("/events", homeLimiter, authenticateToken, async (req, res) => {
   let events;
   try {
-    const now = new Date();
-    // Only return events with date after now
-    events = await Event.find({ date: { $gt: now.toISOString() } });
+    const today = new Date();
+    // Set to start of today (00:00:00)
+    today.setHours(0, 0, 0, 0);
+    
+    // Only return events with date >= today (current day and future)
+    events = await Event.find({ 
+      date: { $gte: today.toISOString().split('T')[0] } 
+    });
   } catch (err) {
     console.error("Error getting events: " + err);
     res.status(500).send("Error getting events");
@@ -323,14 +328,34 @@ router.post("/events", homeLimiter, authenticateToken, async (req, res) => {
   return;
 });
 
-// Route to get all carpools
+// Route to get all carpools (current day and future only)
 router.get("/carpools", homeLimiter, authenticateToken, async (req, res) => {
   try {
-    // Only return carpools with arrivalTime after now
-    const carpools = await Carpool.find();
+    const today = new Date();
+    // Set to start of today (00:00:00)
+    today.setHours(0, 0, 0, 0);
+    const todayString = today.toISOString().split('T')[0];
+    
+    // Get all carpools and populate the event information
+    const allCarpools = await Carpool.find().lean();
+    
+    // Filter carpools based on their event date
+    const filteredCarpools = [];
+    for (const carpool of allCarpools) {
+      try {
+        const event = await Event.findById(carpool.nameOfEvent);
+        if (event && event.date >= todayString) {
+          filteredCarpools.push(carpool);
+        }
+      } catch (eventErr) {
+        // If event not found, skip this carpool
+        console.warn(`Event not found for carpool ${carpool._id}:`, eventErr);
+      }
+    }
+    
     // Format arrivalTime to 12-hour AM/PM if present
-    const formattedCarpools = carpools.map(carpool => {
-      let formatted = carpool.toObject();
+    const formattedCarpools = filteredCarpools.map(carpool => {
+      let formatted = { ...carpool };
       if (formatted.arrivalTime && typeof formatted.arrivalTime === "string" && formatted.arrivalTime.match(/^\d{2}:\d{2}$/)) {
         // Convert "HH:mm" to 12-hour format
         const [hour, minute] = formatted.arrivalTime.split(":");
@@ -347,13 +372,31 @@ router.get("/carpools", homeLimiter, authenticateToken, async (req, res) => {
   }
 });
 
-// Route to get user's carpools
+// Route to get user's carpools (current day and future only)
 router.get("/userCarpools", homeLimiter, authenticateToken, async (req, res) => {
   let carpools = [];
   try {
+    const today = new Date();
+    // Set to start of today (00:00:00)
+    today.setHours(0, 0, 0, 0);
+    const todayString = today.toISOString().split('T')[0];
+    
     const carpoolsCreated = await Carpool.find({ userEmail: req.userEmail }).exec();
     const carpoolsJoined = await Carpool.find({ "carpoolers.userEmail": req.userEmail }).exec();
-    carpools = [...carpoolsCreated, ...carpoolsJoined];
+    const allUserCarpools = [...carpoolsCreated, ...carpoolsJoined];
+    
+    // Filter carpools based on their event date
+    for (const carpool of allUserCarpools) {
+      try {
+        const event = await Event.findById(carpool.nameOfEvent);
+        if (event && event.date >= todayString) {
+          carpools.push(carpool);
+        }
+      } catch (eventErr) {
+        // If event not found, skip this carpool
+        console.warn(`Event not found for carpool ${carpool._id}:`, eventErr);
+      }
+    }
   } catch (err) {
     console.error("Error retrieving carpools: " + err);
     res.status(500).send("Error retrieving carpools");

@@ -98,9 +98,6 @@
       <!-- Hero content: will be in the middle -->
       <div class="hero-body hero-body-padding">
         <div class="container container-full-width">
-          <div id="create_event" class="create-event-margin">
-          </div>
-          
           <!-- Upcoming Events Title -->
           <div class="upcoming-events-title">
             <h1 class="title is-3 upcoming-events-h1">Upcoming Events</h1>
@@ -115,7 +112,7 @@
             </div>
 
             <div id="createEventButton">
-              <button id="buttonzx" class="button is-link is-outlined" onclick="var create_event = document.getElementById('create_event'); create_event.style.marginBottom='60px'; create_event.innerHTML = `<form class='box' style='margin-top: -20px'><div class='modal-card-head' style='padding: 0px;margin-bottom: 20px;background-color: white;border: none;'><div class='modal-card-title'>Create Event</div><button class='delete' aria-label='close' onclick='var create_event = document.getElementById(\'create_event\'); create_event.style.marginBottom=\'50px\'; create_event.innerHTML = \'\''></button></div><div class='field'><label class='label' for='ename'>Event name:</label><div class='control'><input class='input' type='text' id='ename' name='name'></div></div><div class='field'><label class='label' for='elocation'>Location name:</label><div class='control'><input class='input' type='text' id='elocation' name='location'></div></div><div class='field'><label class='label' for='address'>Address:</label><div class='autocomplete-container ' id=''><div class='control' id='autocomplete-container3'><!-- South Kirkland Park and Ride, Bellevue, WA 98004, United States of America --></div></div></div><div class='field'><label class='label' for='edate'>Date and time:</label><div class='control'><input class='input' type='datetime-local' id='edate' name='date'></div></div><div class='field'><label class='label' for='ecategory'>Category:</label><div class='control'><div class='select'><select id='ecategory' name='category'><option value='sports'>Sports</option><option value='academic teams'>Academic teams</option><option value='socials'>Socials</option><option value='other'>Other</option></select></div></div></div><div class='field'><label class='label'>Map Preview:</label><div id='map' style='height: 300px; width: 100%; border-radius: 4px; margin-bottom: 1rem;'></div></div><div class='field'><div class='control'><div class='button is-link' type='button' onclick='createevent();'>Submit</div></div></div></form>`; createEventInputs()">Create event</button>
+              <button id="buttonzx" class="button is-link is-outlined" onclick="openCreateEventModal()">Create event</button>
             </div>
           </div>
           <!--Start here  -->
@@ -128,6 +125,203 @@
       <!-- hero-foot removed: navigation links moved to navbar -->
     </section>
   </main>
+  <script></script>
+  <!-- start here -->
+  <div class="modal " id="modal-js-example">
+    <div class="modal-background" class="modal-background-dark"></div>
+    <div class="modal-card">
+      <p class="panel-heading has-text-centered" class="modal-heading-offer">
+        <span class="modal-heading-icon">
+          <i class="fa-solid fa-car-side" class="modal-car-icon"></i>
+        </span>
+        Offer to Carpool
+        <button class="delete" aria-label="close" onclick="closeAllModals()" class="modal-delete-right"></button>
+      </p>
+      <section class="modal-card-body">
+        <div class="container">
+          <label>Carpool information </label>
+          <div class="field">
+            <a class="panel-block" id="carpoolinfo" class="carpool-panel-block">
+              <input class="input carpool-inputs-margin" id="fname" type="fname" placeholder="Driver first name">
+              <input id="lname" class="input" type="lname" placeholder="Driver last name">
+            </a>
+          </div>
+          <div class="field">
+            <a class="panel-block" class="carpool-panel-block">
+              <input class="input carpool-inputs-margin" id="email" class="input" type="email" placeholder="Driver email">
+              <input id="phone" class="input" type="tel" placeholder="Driver phone number">
+            </a>
+          </div>
+          <div class="field" class="field-margin-bottom">
+            <input class="input" id="carmake" type="text" placeholder="Car make and model">
+          </div>
+          <div class="field" class="field-margin-bottom">
+            <input class="input" id="seats" type="number" min="1" max="9" placeholder="Number of available car seats">
+          </div>
+          <div class="pickup-options-container">
+            <div>
+              <label>Pickup Location </label>
+              <div class="field" class="field-margin-bottom">
+                <div class="control">
+                  <div class="select">
+                    <form>
+                      <select id="route-type">
+                        <option value="route">Riders' Homes</option>
+                        <option value="point">Common meeting point</option>
+                        <option value="eps-campus">EPS Campus</option>
+                      </select>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <label>Arrival time</label>
+              <div class="field" class="field-margin-bottom">
+                <input class="input" id="arrivaltime" type="time" placeholder="Time to arrive">
+              </div>
+            </div>
+            <div>
+              <label>Carpool category</label>
+              <div class="field" class="field-margin-bottom">
+                <div class="control">
+                  <div class="select">
+                    <select id="carpool-category">
+                      <option value="sports">Sports</option>
+                      <option value="academic">Academic</option>
+                      <option value="social">Social</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <label id="address-label">Your home address</label>
+            <div class="autocomplete-container" id="">
+              <div class="control" id="autocomplete-container">
+                <div class="clear-button"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <footer class="modal-card-foot" class="modal-footer-custom">
+        <div class="buttons" class="modal-buttons-left">
+          <button class="button is-link " class="modal-button-primary"
+            onclick="offer();window.location.href='/mycarpools'">Create carpool</button>
+          <button class="button" aria-label="close" onclick="closeAllModals()">Cancel</button>
+        </div>
+      </footer>
+    </div>
+  </div>
+  <!-- end here -->
+  <!-- start here -->
+  <div class="modal " id="modal-js-register">
+    <div class="modal-background" class="modal-background-dark"></div>
+    <div class="modal-card">
+      <p class="panel-heading has-text-centered" class="modal-heading-register">
+        <span class="modal-register-icon">
+          <i class="fa-solid fa-users" class="modal-users-icon"></i>
+        </span>
+        Register to a Carpool
+        <button class="delete" aria-label="close" onclick="closeAllModals()" class="modal-delete-right"></button>
+      </p>
+      <section class="modal-card-body">
+        <div class="container">
+          <label id="registerTitle"></label>
+
+          <div class="register-overflow">
+            <div id="registerJS">
+              <!-- <div class="notification" style="padding: 10px;   margin-bottom: 10px;">
+                           <div class="button  selectCarpool" style=" margin-left: 10px; margin-top: 4px; background-color: transparent; float: right" onclick=" if (this.classList[2] == 'is-focused') {unfocus()} else {unfocus(); this.classList.add('is-focused')}">Select</div>
+                                   <div style="float: right; margin-top: 3px;"  >2/6 signed up</div>
+                                                             Organizer: <a style="color: #3273dc" href="mailto:ajosan@eastsideprep.org">ajosan@eastsideprep.org</a>
+                                     <br>  Route type: Riders' Homes
+                           <br> 
+                                 </div>    -->
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <label>Your home address </label>
+          <div class="autocomplete-container " id="">
+            <div class='control' id="autocomplete-container2">
+              <!-- South Kirkland Park and Ride, Bellevue, WA 98004, United States of America -->
+            </div>
+          </div>
+        </div>
+      </section>
+      <footer class="modal-card-foot" class="modal-footer-custom">
+        <var></var>
+        <div class="buttons" class="modal-buttons-left">
+          <button class="button is-link " class="modal-button-primary"
+            onclick="joinCarpool(); window.location.href='/mycarpools'">Join carpool</button>
+          <button class="button" aria-label="close" onclick="closeAllModals()">Cancel</button>
+        </div>
+      </footer>
+    </div>
+  </div>
+  <!-- end here -->
+  <!-- Create Event Modal -->
+  <div class="modal" id="modal-create-event">
+    <div class="modal-background" onclick="closeCreateEventModal()"></div>
+    <div class="modal-card">
+      <div class="modal-card-head">
+        <div class="modal-card-title">Create Event</div>
+        <button class="delete" aria-label="close" onclick="closeCreateEventModal()"></button>
+      </div>
+      <section class="modal-card-body">
+        <div class="field">
+          <label class="label" for="ename">Event name:</label>
+          <div class="control">
+            <input class="input" type="text" id="ename" name="name">
+          </div>
+        </div>
+        <div class="field">
+          <label class="label" for="elocation">Location name:</label>
+          <div class="control">
+            <input class="input" type="text" id="elocation" name="location">
+          </div>
+        </div>
+        <div class="field">
+          <label class="label" for="address">Address:</label>
+          <div class="autocomplete-container" id="">
+            <div class="control" id="autocomplete-container3">
+              <!-- Address autocomplete will be inserted here -->
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <label class="label" for="edate">Date and time:</label>
+          <div class="control">
+            <input class="input" type="datetime-local" id="edate" name="date">
+          </div>
+        </div>
+        <div class="field">
+          <label class="label" for="ecategory">Category:</label>
+          <div class="control">
+            <div class="select">
+              <select id="ecategory" name="category">
+                <option value="sports">Sports</option>
+                <option value="academic teams">Academic teams</option>
+                <option value="socials">Socials</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </section>
+      <footer class="modal-card-foot">
+        <div class="buttons">
+          <button class="button is-link" onclick="createEventAndClose()">Submit</button>
+          <button class="button" onclick="closeCreateEventModal()">Cancel</button>
+        </div>
+      </footer>
+    </div>
+  </div>
+  <!-- end Create Event Modal -->
   <script></script>
   <!-- start here -->
   <div class="modal " id="modal-js-example">
@@ -650,7 +844,92 @@ function addressAutocomplete(containerElement, idName, callback, options) {
     </div>
   </div>
   <!-- end here -->
+  <!-- Create Event Modal -->
+  <div class="modal" id="modal-create-event">
+    <div class="modal-background" onclick="closeCreateEventModal()"></div>
+    <div class="modal-card">
+      <div class="modal-card-head">
+        <div class="modal-card-title">Create Event</div>
+        <button class="delete" aria-label="close" onclick="closeCreateEventModal()"></button>
+      </div>
+      <section class="modal-card-body">
+        <div class="field">
+          <label class="label" for="ename">Event name:</label>
+          <div class="control">
+            <input class="input" type="text" id="ename" name="name">
+          </div>
+        </div>
+        <div class="field">
+          <label class="label" for="elocation">Location name:</label>
+          <div class="control">
+            <input class="input" type="text" id="elocation" name="location">
+          </div>
+        </div>
+        <div class="field">
+          <label class="label" for="address">Address:</label>
+          <div class="autocomplete-container" id="">
+            <div class="control" id="autocomplete-container3">
+              <!-- Address autocomplete will be inserted here -->
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <label class="label" for="edate">Date and time:</label>
+          <div class="control">
+            <input class="input" type="datetime-local" id="edate" name="date">
+          </div>
+        </div>
+        <div class="field">
+          <label class="label" for="ecategory">Category:</label>
+          <div class="control">
+            <div class="select">
+              <select id="ecategory" name="category">
+                <option value="sports">Sports</option>
+                <option value="academic teams">Academic teams</option>
+                <option value="socials">Socials</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </section>
+      <footer class="modal-card-foot">
+        <div class="buttons">
+          <button class="button is-link" onclick="createEventAndClose()">Submit</button>
+          <button class="button" onclick="closeCreateEventModal()">Cancel</button>
+        </div>
+      </footer>
+    </div>
+  </div>
+  <!-- end Create Event Modal -->
   <script type="text/javascript">
+    // Create Event Modal Functions
+    function openCreateEventModal() {
+      document.getElementById('modal-create-event').classList.add('is-active');
+      // Initialize autocomplete for address field when modal opens
+      createEventInputs();
+    }
+
+    function closeCreateEventModal() {
+      document.getElementById('modal-create-event').classList.remove('is-active');
+      // Clear form fields
+      document.getElementById('ename').value = '';
+      document.getElementById('elocation').value = '';
+      document.getElementById('edate').value = '';
+      document.getElementById('ecategory').value = 'sports';
+      // Clear address field if it exists
+      const addressInput = document.getElementById('create_address');
+      if (addressInput) {
+        addressInput.value = '';
+      }
+    }
+
+    function createEventAndClose() {
+      createevent();
+      closeCreateEventModal();
+    }
+  </script>
+  <script>
     //Don't worry about it
     console.error("418 I'm a teapot");
 
@@ -1469,16 +1748,6 @@ function addressAutocomplete(containerElement, idName, callback, options) {
         });
         
         console.log(response);
-        
-        // Emit event for CO2 savings update
-        if (response.ok) {
-          document.dispatchEvent(new CustomEvent('carpool-created', {
-            detail: {
-              distanceMiles: distanceMiles,
-              numPassengers: numPassengers
-            }
-          }));
-        }
       } catch (error) {
         console.error("Error creating event:", error);
       }
