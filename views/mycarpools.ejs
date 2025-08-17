@@ -528,7 +528,7 @@
                return response.json();
             } else {
                console.error('A network error occurred:', error);
-               alert('A network error occurred. Please try again.');
+               // Error handling - network error logged to console
             }
          })
          .then(data => {
@@ -540,7 +540,7 @@
          })
          .catch(error => {
             console.error('A network error occurred:', error);
-            alert('A network error occurred. Please try again.');
+            // Error handling - network error logged to console
          });
    }
 
@@ -574,7 +574,7 @@
          })
          .catch(error => {
             console.error('A network error occurred:', error);
-            alert('A network error occurred. Please try again later.');
+            // Error handling - network error logged to console
          });
    }
 
@@ -1096,7 +1096,7 @@
          })
          .catch(error => {
             console.error('A network error occurred:', error);
-            alert('A network error occurred. Please try again later.');
+            // Error handling - network error logged to console
          });
    }
 
@@ -1474,7 +1474,7 @@
          })
          .catch(error => {
             console.error('Error:', error);
-            alert('Failed to get contact information. Please try again.');
+            // Error handling - failed to get contact information
          });
    }
 
@@ -1491,12 +1491,13 @@
             if (phones) {
                window.location.href = `sms:${phones}`;
             } else {
-               alert('No phone numbers available for this group.');
+               // No phone numbers available for this group
+               console.log('No phone numbers available for this group.');
             }
          })
          .catch(error => {
             console.error('Error:', error);
-            alert('Failed to get contact information. Please try again.');
+            // Error handling - failed to get contact information
          });
    }
 </script>
@@ -1555,13 +1556,13 @@
             return res.json();
          })
          .then(() => {
-            // Display success message
-            alert(approve ? "Request approved successfully!" : "Request denied successfully!");
+            // Request processed successfully
+            console.log(approve ? "Request approved successfully!" : "Request denied successfully!");
             location.reload();
          })
          .catch((error) => {
             console.error('Error:', error);
-            alert(`Failed to update request: ${error.message}`);
+            console.error(`Failed to update request: ${error.message}`);
          });
    }
 

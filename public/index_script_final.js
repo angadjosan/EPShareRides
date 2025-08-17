@@ -493,7 +493,7 @@ async function offerACar(firstName, lastName, email, phone, carMake, seats, rout
     window.location.href = '/mycarpools';
   } catch (error) {
     console.error("Error creating carpool:", error);
-    alert("Failed to create carpool. Please try again.");
+    // Error handling - failed to create carpool
   }
 }
 
