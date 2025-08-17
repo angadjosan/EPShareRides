@@ -36,7 +36,7 @@ const eventSchema = new mongoose.Schema({
     type: String,
     required: true,
   trim: true,
-  enum: ["School", "Sports", "Extra School Events"],
+  enum: ["Sports", "Academic", "Social", "Other"],
   }
 });
 
