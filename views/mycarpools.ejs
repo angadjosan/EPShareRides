@@ -682,15 +682,43 @@
    }
 
    function removePerson(id) {
+      // Find the carpooler in the array to get their info before removing
+      let carpoolerToRemove = null;
       for (let i = 0; i < newCarpoolers.length; i++) {
          if (newCarpoolers[i]._id == id) {
-            newCarpoolers.splice(i, 1)
-            document.getElementById("person_" + id).remove()
-            return; // Exit after finding and removing the person
+            carpoolerToRemove = newCarpoolers[i];
+            // Remove from frontend array immediately for responsiveness
+            newCarpoolers.splice(i, 1);
+            document.getElementById("person_" + id).remove();
+            break;
          }
       }
-      // If we get here, the person wasn't found in newCarpoolers
-      console.error("Person with ID " + id + " not found in carpoolers list");
+      
+      if (!carpoolerToRemove) {
+         console.error("Person with ID " + id + " not found in carpoolers list");
+         return;
+      }
+      
+      // Call the API to remove the carpooler and send email notification
+      fetch(`/api/carpools/${current}/removeCarpooler/${id}`, {
+         method: "PATCH",
+         headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+         }
+      })
+         .then(response => {
+            if (response.ok) {
+               console.log('Successfully removed carpooler and sent notification email.');
+            } else {
+               console.log('Failed to remove carpooler from server, but removed from UI.');
+               // Could optionally re-add to the array and DOM if server update failed
+            }
+         })
+         .catch(error => {
+            console.error('Network error while removing carpooler:', error);
+            // Could optionally re-add to the array and DOM if server update failed
+         });
    }
 
    function getDayOfWeek(string) {
