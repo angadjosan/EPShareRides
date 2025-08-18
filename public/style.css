@@ -593,31 +593,6 @@ body {
   text-transform: capitalize;
 }
 
-/* Category color mappings */
-.modern-category-tag.cat-school {
-  background: #fff8db; /* pale yellow background */
-  color: #a07900;      /* dark yellow/brown text */
-  border: 1px solid #ffe58f;
-}
-
-.modern-category-tag.cat-sports {
-  background: #e8f0ff; /* pale blue */
-  color: #1a5fd0;      /* blue text */
-  border: 1px solid #a3c0ff;
-}
-
-.modern-category-tag.cat-extra {
-  background: #eaf7ef; /* pale green */
-  color: #2f8f4e;      /* green text */
-  border: 1px solid #b9e3c8;
-}
-
-.modern-category-tag.cat-other {
-  background: #f0f0f0;
-  color: #666;
-  border: 1px solid #e0e0e0;
-}
-
 /* Event details container */
 .modern-event-details {
   margin-bottom: 20px;
@@ -835,8 +810,8 @@ html, body {
   z-index: 30;
 }
 .navbar {
-  min-height: 2.5rem;
-  padding: 0.5rem 0;
+  min-height: 2.0rem;
+  padding: 0rem 0;
   border-radius: var(--radius-lg);
   background: #ffffff !important;
   border: 1px solid #e0e0e0;
@@ -906,9 +881,7 @@ html, body {
 /* Buttons */
 .button.is-link,
 .button.is-info {
-  background: var(--brand-gradient) !important;
   border: 1px solid transparent !important;
-  color: #fff !important;
 }
 .button.is-link.is-light,
 .button.is-info.is-light,
@@ -935,7 +908,6 @@ html, body {
   width: 60%;
   height: 300%;
   transform: rotate(25deg);
-  background: #ffffff;
   opacity: 0;
   pointer-events: none;
 }
@@ -1098,21 +1070,49 @@ textarea::placeholder { color: #5c7467; }
 .navbar-item.nav-link {
   color: #363636 !important;
   font-weight: 600;
-  margin: 0 15px;
   display: flex;
   align-items: center;
-  padding: 0.5rem 1rem !important;
-  border-radius: 6px;
   transition: all 0.2s ease;
+  margin-right: 15px;
+  position: relative;
+  background: none !important; /* Remove any background */
+  padding: 0 16px; /* Remove padding that might be causing the grey areas */
+}
+
+.navbar-item.nav-link::before {
+  content: '';
+  position: absolute;
+  top: 25%;
+  height: 50%;
+  left: 0;
+  right: 0;
+  border-radius: 6px;
+  background-color: rgba(54, 54, 54, 0.1);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: -1;
+}
+
+.navbar-item.nav-link:hover::before {
+  opacity: 1;
 }
 
 .navbar-item.nav-link.active {
   color: #3273dc !important;
-  background-color: rgba(48, 183, 0, 0.1) !important;
+  background: none !important; /* Remove any active background */
 }
 
+.navbar-item.nav-link.active::before {
+  background-color: rgba(48, 183, 0, 0.1) !important;
+  opacity: 1;
+}
+
+.navbar-item.nav-link.active:hover::before {
+  background-color: rgba(48, 183, 0, 0.15) !important;
+}
+/* Optional: Keep the subtle lift effect on the main element */
 .navbar-item.nav-link:hover {
-  background-color: rgba(54, 54, 54, 0.1) !important;
+  transform: translateY(-1px);
 }
 
 #eventsJS {
@@ -1189,7 +1189,7 @@ textarea::placeholder { color: #5c7467; }
 
 .info-button {
   position: absolute;
-  top: -5px;
+  top: 5px;
   right: -25px;
   background-color: transparent;
   border: none;
@@ -1203,6 +1203,10 @@ textarea::placeholder { color: #5c7467; }
   flex-grow: 1;
   justify-content: center;
   display: flex;
+}
+
+.co2-item {
+  margin-top: 0.8rem;
 }
 
 .co2-link {
@@ -1227,7 +1231,6 @@ textarea::placeholder { color: #5c7467; }
 }
 
 .user-buttons {
-  margin: 10px;
   margin-right: 0px;
 }
 
@@ -1402,6 +1405,12 @@ textarea::placeholder { color: #5c7467; }
 .signin-logo-bottom {
   margin-top: -20px;
   transform: translate(-6px,10px);
+}
+
+.signin-leaf-link {
+  font-size: 1em;
+  color: #30B700;
+  float: right;
 }
 
 .signin-description {
