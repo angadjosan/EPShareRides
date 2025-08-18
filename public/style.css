@@ -1003,7 +1003,6 @@ textarea::placeholder { color: #5c7467; }
 
 /* Green bubble outline for CO2 savings display - only target the main navbar CO2 display, not dropdown */
 .is-button.is-link > .navbar-item > a[href="/sustainabilityStatement"] {
-  border: 2px solid #30B700 !important;
   border-radius: 25px !important;
   padding: 2px 15px !important;
   background-color: rgba(48, 183, 0, 0.1) !important;
@@ -1542,4 +1541,32 @@ textarea::placeholder { color: #5c7467; }
     background: #3273DC;
     margin-top: 20px;
     margin-bottom: -20px;
+}
+
+/* CO2 styling for carpool cards - preserves original alignment but adds navbar styling */
+.co2-link-2 {
+  display: inline-flex;
+  align-items: center;
+  color: #30B700;
+  text-decoration: none;
+  border-radius: 25px;
+  padding: 2px 15px;
+  background-color: rgba(48, 183, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.co2-link-2:hover {
+  background-color: rgba(48, 183, 0, 0.2);
+  box-shadow: 0 2px 8px rgba(48, 183, 0, 0.3);
+}
+
+.co2-leaf-icon-2 {
+  color: #30B700;
+  margin-right: 8px;
+}
+
+.co2-savings-text-2 {
+  color: #30B700;
+  font-weight: bold;
+  font-size: 0.875rem;
 }
