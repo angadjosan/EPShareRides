@@ -563,6 +563,7 @@ body {
   margin-bottom: 16px;
   position: relative;
   transition: all 0.2s ease;
+  box-sizing: border-box; /* Include padding and border in width calculation */
 }
 
 .modern-event-card:hover {
@@ -575,7 +576,7 @@ body {
   font-size: 1.25rem;
   font-weight: 600;
   color: #1a1a1a;
-  margin: 0 0 12px 0;
+  margin: 0 100px 12px 0; /* Add right margin to avoid category tag overlap */
   line-height: 1.3;
 }
 
@@ -628,6 +629,7 @@ body {
   gap: 8px;
   align-items: center;
   width: 100%;
+  box-sizing: border-box; /* Include padding and border in width calculation */
 }
 
 /* Primary button (Join Carpool) */
@@ -642,7 +644,8 @@ body {
   cursor: pointer;
   transition: all 0.2s ease;
   flex: 1;
-  width: 50%;
+  min-width: 0; /* Allow flex item to shrink below content size */
+  max-width: calc(50% - 4px); /* Ensure it doesn't exceed half width minus half the gap */
   text-align: center;
   text-decoration: none;
   display: inline-flex;
@@ -650,6 +653,7 @@ body {
   justify-content: center;
   position: relative;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .modern-btn-primary:hover {
@@ -669,7 +673,8 @@ body {
   cursor: pointer;
   transition: all 0.2s ease;
   flex: 1;
-  width: 50%;
+  min-width: 0; /* Allow flex item to shrink below content size */
+  max-width: calc(50% - 4px); /* Ensure it doesn't exceed half width minus half the gap */
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -678,6 +683,7 @@ body {
   text-align: center;
   position: relative;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .modern-btn-secondary:hover {
@@ -715,7 +721,7 @@ body {
   
   .modern-event-title {
     font-size: 1.1rem;
-    margin-bottom: 10px;
+    margin: 0 80px 10px 0; /* Adjusted right margin for mobile */
   }
   
   .modern-category-tag {
@@ -1141,6 +1147,10 @@ textarea::placeholder { color: #5c7467; }
   font-weight: 700;
   color: #3273dc;
   margin-bottom: 6px;
+}
+
+.events{
+  padding: 10px;
 }
 
 .event-card .event-meta {
