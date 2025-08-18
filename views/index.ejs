@@ -21,24 +21,19 @@
     <section class="hero is-fullheight">
       <!-- Hero head: will stick at the top -->
       <div class="hero-head">
-        <header class="navbar">
+          <header class="navbar">
           <div class="container">
             <div class="navbar-brand">
               <a class="navbar-item">
-                <div style="position: relative; display: flex; align-items: center;">
+                <div class="logo-container">
                   <img src="EPS Logo - Transparent-4.png" alt="Logo">
-                  <h1 class="title is-3" style="margin-left: 10px; margin-bottom: -10px">EPCarpool</h1>
-                  <span
-                    style="position: absolute; top: -5px; right: -25px; background: #3273DC; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7em; font-weight: bold;">BETA</span>
+                  <h1 class="title title-with-logo">EPCarpool</h1>
+                  <!-- TODO: make the icon blue and remove button background -->
+                  <button class="info-button" onclick="showDisclaimer()">
+                      <i class="fas fa-info-circle"></i>
+                  </button>
                 </div>
               </a>
-              <div class="navbar-item" style="padding: 0.5rem 1.25rem;">
-                <button class="button is-info is-light" onclick="showDisclaimer()">
-                  <span class="icon">
-                    <i class="fas fa-info-circle"></i>
-                  </span>
-                </button>
-              </div>
               <span class="navbar-burger" data-target="navbarMenuHeroC" id="nav-toggle">
                 <span></span>
                 <span></span>
@@ -46,34 +41,34 @@
               </span>
             </div>
             <div id="navbarMenuHeroC" class="navbar-menu ">
+              <div class="navbar-start navbar-center">
+                <!-- Centered quick nav links: Upcoming Events and My Carpools -->
+                <a class="navbar-item nav-link active" href="/">Upcoming Events</a>
+                <a class="navbar-item nav-link" href="/mycarpools">My Carpools</a>
+              </div>
               <div class="navbar-end">
                 <div class="is-button is-link">
                   <div class="navbar-item">
-                    <span style="font-size: 1em; color: #30B700; float: right; display: flex; align-items: center; margin-right: 15px;">
-                      <a class="fa-solid fa-leaf" href="/sustainabilityStatement" style="color: #30B700; margin-right: 10px;"></a>
+                    <a href="/sustainabilityStatement" class="co2-link">
+                      <i class="fa-solid fa-leaf co2-leaf-icon"></i>
 
                       <span>
-                        <span id="co2-savings" style="font-size: 0.9em; font-weight: bold;">0 kg CO₂ saved</span>
+                        <span id="co2-savings" class="co2-savings-text">0 kg CO₂ saved</span>
                         <span id="co2-equivalents" class="co2-equivalents"></span>
 
                       </span>
-                    </span>
-                    <div class="buttons" style="margin: 10px;margin-right: 0px;">
-                      <a class="button is-link is-outlined " href="/logout">
-                        Log out
-                      </a>
+                    </a>
+                    <div class="buttons user-buttons">
                       <div class="navbar-item has-dropdown is-hoverable "
                         onclick="document.getElementById('navbar-dropdown').style.visibility = 'visible';">
-                        <a class="button is-link" id="name_button"
-                          style="background: linear-gradient(105deg, #3273DC, #275CBF);">
+                        <a class="button is-link user-button" id="name_button">
                           <%= firstName %>
                             <%= lastName %>
-                              <i style="margin-left: 5px;" class="fas fa-angle-down" aria-hidden="true"></i>
+                              <i class="fas fa-angle-down user-button-icon" aria-hidden="true"></i>
                         </a>
-                        <div id="filler"
-                          style="width: 130px; background-color: transparent; height: 20px; position: absolute; margin-top: -15px;">
+                        <div id="filler" class="dropdown-filler">
                         </div>
-                        <div class="navbar-dropdown" id="navbar-dropdown">
+                        <div class="navbar-dropdown navbar-dropdown-custom" id="navbar-dropdown">
                           <a class="navbar-item" href="/updateSettings">
                             Update settings
                           </a>
@@ -84,6 +79,9 @@
                             Sustainability statement
                           </a>
                           <hr class="navbar-divider">
+                          <a class="navbar-item" href="/logout">
+                            Log out
+                          </a>
                           <div class="navbar-item">
                             Version <%= process.env.VERSION %>
                           </div>
@@ -98,86 +96,24 @@
         </header>
       </div>
       <!-- Hero content: will be in the middle -->
-      <div class="hero-body" style="padding-bottom: 80px;">
-        <div class="container" style="margin-top: 0px; width: 100%; ">
-          <div id="create_event" style="margin-bottom: 0px">
+      <div class="hero-body hero-body-padding">
+        <div class="container container-full-width">
+          <!-- Upcoming Events Title -->
+          <div class="upcoming-events-title">
+            <h1 class="title is-3 upcoming-events-h1">Upcoming Events</h1>
           </div>
-          <div class=" " style="position: absolute; margin-top: -40px;  width: 100%; ">
-            <label for="filter">Filter by: </label>
-            <select name="filter" id="filter">
-              <option value="all">All</option>
-              <option value="sports">Sports</option>
-              <option value="academic teams">Academic teams</option>
-              <option value="socials">Socials</option>
-              <option value="other">Other</option>
-            </select>
 
-            <span id="createEventButton">
-              <button id="buttonzx" style="
-      padding: 5px 7px;
-      background-color: #f5f5f5;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      color: #333;
-      font-size: 13px;
-      cursor: pointer;
-      margin-left: 3px;
-      " onclick="var create_event = document.getElementById('create_event'); create_event.style.marginBottom='60px'; create_event.innerHTML = `<form class='box' style='margin-top: -20px'><div class='modal-card-head' style='padding: 0px;margin-bottom: 20px;background-color: white;border: none;'>
-        <div class='modal-card-title'>Create Event</div>
-    <button class='delete' aria-label='close' onclick='var create_event = document.getElementById(\'create_event\'); create_event.style.marginBottom=\'50px\'; create_event.innerHTML = \'\''></button>
-    </div>
-    <div class='field'>
-      <label class='label' for='ename'>Event name:</label>
-      <div class='control'>
-        <input class='input' type='text' id='ename' name='name'>
-      </div>
-    </div>
-    <div class='field'>
-      <label class='label' for='elocation'>Location name:</label>
-      <div class='control'>
-        <input class='input' type='text' id='elocation' name='location'>
-      </div>
-    </div>
-    <div class='field'>
-      <label class='label' for='address'>Address:</label>
-      <div class='autocomplete-container ' id=''>
-            <div class='control' id='autocomplete-container3'>
-              <!-- South Kirkland Park and Ride, Bellevue, WA 98004, United States of America -->
+          <div class="search-and-create-container">
+            <div class="search-container">
+              <span class="search-icon">
+                <i class="fas fa-search"></i>
+              </span>
+              <input type="text" id="searchInput" placeholder="Search events..." class="search-input">
             </div>
-          </div>
-    </div>
-    <div class='field'>
-      <label class='label' for='edate'>Date and time:</label>
-      <div class='control'>
-        <input class='input' type='datetime-local' id='edate' name='date'>
-      </div>
-    </div>
-    <div class='field'>
-      <label class='label' for='ecategory'>Category:</label>
-      <div class='control'>
-        <div class='select'>
-          <select id='ecategory' name='category'>
-            <option value='sports'>Sports</option>
-            <option value='academic teams'>Academic teams</option>
-            <option value='socials'>Socials</option>
-            <option value='other'>Other</option>
-          </select>
-        </div>
-      </div>
-    </div>
-    <div class='field'>
-      <label class='label'>Map Preview:</label>
-      <div id='map' style='height: 300px; width: 100%; border-radius: 4px; margin-bottom: 1rem;'></div>
-    </div>
-    <div class='field'>
-      <div class='control'>
-        <div class='button is-link' type='button' onclick='createevent();'>Submit</div>
-      </div>
-    </div>
-  </form>`; createEventInputs()">
-    Create event
-  </button>
-</span>
+
+            <div id="createEventButton">
+              <button id="buttonzx" class="button is-link is-outlined" onclick="openCreateEventModal()">Create event</button>
+            </div>
           </div>
           <!--Start here  -->
           <div id="eventsJS">
@@ -186,55 +122,46 @@
       </div>
 
       <!-- Hero footer: will stick at the bottom -->
-      <div class="hero-foot">
-        <nav class="tabs is-boxed is-fullwidth">
-          <div class="container">
-            <ul>
-              <li class="is-active"><a href="/" class="is-active1">Upcoming Events</a></li>
-              <li><a href="/mycarpools" class="white">My Carpools</a></li>
-            </ul>
-          </div>
-        </nav>
-      </div>
+      <!-- hero-foot removed: navigation links moved to navbar -->
     </section>
   </main>
   <script></script>
   <!-- start here -->
   <div class="modal " id="modal-js-example">
-    <div class="modal-background" style="background-color: rgba(10,10,10,.50)"></div>
+    <div class="modal-background" class="modal-background-dark"></div>
     <div class="modal-card">
-      <p class="panel-heading has-text-centered" style="padding: 15px; padding-left: 20px; display: table">
-        <span style=" display: table-cell;vertical-align: middle; text-align: center; position:absolute">
-          <i class="fa-solid fa-car-side" style='float:left; transform:translate(0px,5px)'></i>
+      <p class="panel-heading has-text-centered" class="modal-heading-offer">
+        <span class="modal-heading-icon">
+          <i class="fa-solid fa-car-side" class="modal-car-icon"></i>
         </span>
         Offer to Carpool
-        <button class="delete" aria-label="close" onclick="closeAllModals()" style="float: right"></button>
+        <button class="delete" aria-label="close" onclick="closeAllModals()" class="modal-delete-right"></button>
       </p>
       <section class="modal-card-body">
         <div class="container">
           <label>Carpool information </label>
           <div class="field">
-            <a class="panel-block" id="carpoolinfo" style="border-radius: 5px; padding:0px;">
-              <input style="margin-right: 10px; " id="fname" class="input" type="fname" placeholder="Driver first name">
+            <a class="panel-block" id="carpoolinfo" class="carpool-panel-block">
+              <input class="input carpool-inputs-margin" id="fname" type="fname" placeholder="Driver first name">
               <input id="lname" class="input" type="lname" placeholder="Driver last name">
             </a>
           </div>
           <div class="field">
-            <a class="panel-block" style="border-radius: 5px; padding:0px;">
-              <input style="margin-right: 10px;" id="email" class="input" type="email" placeholder="Driver email">
+            <a class="panel-block" class="carpool-panel-block">
+              <input class="input carpool-inputs-margin" id="email" class="input" type="email" placeholder="Driver email">
               <input id="phone" class="input" type="tel" placeholder="Driver phone number">
             </a>
           </div>
-          <div class="field" style="margin-bottom: 10px;">
+          <div class="field" class="field-margin-bottom">
             <input class="input" id="carmake" type="text" placeholder="Car make and model">
           </div>
-          <div class="field" style="margin-bottom: 10px;">
+          <div class="field" class="field-margin-bottom">
             <input class="input" id="seats" type="number" min="1" max="9" placeholder="Number of available car seats">
           </div>
-          <div style="display: flex; gap: 10px;">
+          <div class="pickup-options-container">
             <div>
               <label>Pickup Location </label>
-              <div class="field" style="margin-bottom: 10px;">
+              <div class="field" class="field-margin-bottom">
                 <div class="control">
                   <div class="select">
                     <form>
@@ -250,13 +177,195 @@
             </div>
             <div>
               <label>Arrival time</label>
-              <div class="field" style="margin-bottom: 10px;">
+              <div class="field" class="field-margin-bottom">
+                <input class="input" id="arrivaltime" type="time" placeholder="Time to arrive">
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <label id="address-label">Your home address</label>
+            <div class="autocomplete-container" id="">
+              <div class="control" id="autocomplete-container">
+                <div class="clear-button"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <footer class="modal-card-foot" class="modal-footer-custom">
+        <div class="buttons" class="modal-buttons-left">
+          <button class="button is-link " class="modal-button-primary"
+            onclick="offer();window.location.href='/mycarpools'">Create carpool</button>
+          <button class="button" aria-label="close" onclick="closeAllModals()">Cancel</button>
+        </div>
+      </footer>
+    </div>
+  </div>
+  <!-- end here -->
+  <!-- start here -->
+  <div class="modal " id="modal-js-register">
+    <div class="modal-background" class="modal-background-dark"></div>
+    <div class="modal-card">
+      <p class="panel-heading has-text-centered" class="modal-heading-register">
+        <span class="modal-register-icon">
+          <i class="fa-solid fa-users" class="modal-users-icon"></i>
+        </span>
+        Register to a Carpool
+        <button class="delete" aria-label="close" onclick="closeAllModals()" class="modal-delete-right"></button>
+      </p>
+      <section class="modal-card-body">
+        <div class="container">
+          <label id="registerTitle"></label>
+
+          <div class="register-overflow">
+            <div id="registerJS">
+              <!-- <div class="notification" style="padding: 10px;   margin-bottom: 10px;">
+                           <div class="button  selectCarpool" style=" margin-left: 10px; margin-top: 4px; background-color: transparent; float: right" onclick=" if (this.classList[2] == 'is-focused') {unfocus()} else {unfocus(); this.classList.add('is-focused')}">Select</div>
+                                   <div style="float: right; margin-top: 3px;"  >2/6 signed up</div>
+                                                             Organizer: <a style="color: #3273dc" href="mailto:ajosan@eastsideprep.org">ajosan@eastsideprep.org</a>
+                                     <br>  Route type: Riders' Homes
+                           <br> 
+                                 </div>    -->
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <label>Your home address </label>
+          <div class="autocomplete-container " id="">
+            <div class='control' id="autocomplete-container2">
+              <!-- South Kirkland Park and Ride, Bellevue, WA 98004, United States of America -->
+            </div>
+          </div>
+        </div>
+      </section>
+      <footer class="modal-card-foot" class="modal-footer-custom">
+        <var></var>
+        <div class="buttons" class="modal-buttons-left">
+          <button class="button is-link " class="modal-button-primary"
+            onclick="joinCarpool(); window.location.href='/mycarpools'">Join carpool</button>
+          <button class="button" aria-label="close" onclick="closeAllModals()">Cancel</button>
+        </div>
+      </footer>
+    </div>
+  </div>
+  <!-- end here -->
+  <!-- Create Event Modal -->
+  <div class="modal" id="modal-create-event">
+    <div class="modal-background" onclick="closeCreateEventModal()"></div>
+    <div class="modal-card">
+      <div class="modal-card-head">
+        <div class="modal-card-title">Create Event</div>
+        <button class="delete" aria-label="close" onclick="closeCreateEventModal()"></button>
+      </div>
+      <section class="modal-card-body">
+        <div class="field">
+          <label class="label" for="ename">Event name:</label>
+          <div class="control">
+            <input class="input" type="text" id="ename" name="name">
+          </div>
+        </div>
+        <div class="field">
+          <label class="label" for="elocation">Location name:</label>
+          <div class="control">
+            <input class="input" type="text" id="elocation" name="location">
+          </div>
+        </div>
+        <div class="field">
+          <label class="label" for="address">Address:</label>
+          <div class="autocomplete-container" id="">
+            <div class="control" id="autocomplete-container3">
+              <!-- Address autocomplete will be inserted here -->
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <label class="label" for="edate">Date and time:</label>
+          <div class="control">
+            <input class="input" type="datetime-local" id="edate" name="date">
+          </div>
+        </div>
+        <div class="field">
+          <label class="label" for="ecategory">Category:</label>
+          <div class="control">
+            <div class="select">
+              <select id="ecategory" name="category">
+                <option value="sports">Sports</option>
+                <option value="academic teams">Academic teams</option>
+                <option value="socials">Socials</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </section>
+      <footer class="modal-card-foot">
+        <div class="buttons">
+          <button class="button is-link" onclick="createEventAndClose()">Submit</button>
+          <button class="button" onclick="closeCreateEventModal()">Cancel</button>
+        </div>
+      </footer>
+    </div>
+  </div>
+  <!-- end Create Event Modal -->
+  <script></script>
+  <!-- start here -->
+  <div class="modal " id="modal-js-example">
+    <div class="modal-background" class="modal-background-dark"></div>
+    <div class="modal-card">
+      <p class="panel-heading has-text-centered" class="modal-heading-offer">
+        <span class="modal-heading-icon">
+          <i class="fa-solid fa-car-side" class="modal-car-icon"></i>
+        </span>
+        Offer to Carpool
+        <button class="delete" aria-label="close" onclick="closeAllModals()" class="modal-delete-right"></button>
+      </p>
+      <section class="modal-card-body">
+        <div class="container">
+          <label>Carpool information </label>
+          <div class="field">
+            <a class="panel-block" id="carpoolinfo" class="carpool-panel-block">
+              <input class="input carpool-inputs-margin" id="fname" type="fname" placeholder="Driver first name">
+              <input id="lname" class="input" type="lname" placeholder="Driver last name">
+            </a>
+          </div>
+          <div class="field">
+            <a class="panel-block" class="carpool-panel-block">
+              <input class="input carpool-inputs-margin" id="email" class="input" type="email" placeholder="Driver email">
+              <input id="phone" class="input" type="tel" placeholder="Driver phone number">
+            </a>
+          </div>
+          <div class="field" class="field-margin-bottom">
+            <input class="input" id="carmake" type="text" placeholder="Car make and model">
+          </div>
+          <div class="field" class="field-margin-bottom">
+            <input class="input" id="seats" type="number" min="1" max="9" placeholder="Number of available car seats">
+          </div>
+          <div class="pickup-options-container">
+            <div>
+              <label>Pickup Location </label>
+              <div class="field" class="field-margin-bottom">
+                <div class="control">
+                  <div class="select">
+                    <form>
+                      <select id="route-type">
+                        <option value="route">Riders' Homes</option>
+                        <option value="point">Common meeting point</option>
+                        <option value="eps-campus">EPS Campus</option>
+                      </select>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <label>Arrival time</label>
+              <div class="field" class="field-margin-bottom">
                 <input class="input" id="arrivaltime" type="time" placeholder="Time to arrive">
               </div>
             </div>
             <div>
               <label>Carpool category</label>
-              <div class="field" style="margin-bottom: 10px;">
+              <div class="field" class="field-margin-bottom">
                 <div class="control">
                   <div class="select">
                     <select id="carpool-category">
@@ -280,9 +389,9 @@
           </div>
         </div>
       </section>
-      <footer class="modal-card-foot" style="background-color: white; border-width: 1px; padding: 10px; ">
-        <div class="buttons" style="margin-left: 0px;">
-          <button class="button is-link " style="background: linear-gradient(105deg, #3273DC, #275CBF);"
+      <footer class="modal-card-foot" class="modal-footer-custom">
+        <div class="buttons" class="modal-buttons-left">
+          <button class="button is-link " class="modal-button-primary"
             onclick="offer();window.location.href='/mycarpools'">Create carpool</button>
           <button class="button" aria-label="close" onclick="closeAllModals()">Cancel</button>
         </div>
@@ -292,20 +401,20 @@
   <!-- end here -->
   <!-- start here -->
   <div class="modal " id="modal-js-register">
-    <div class="modal-background" style="background-color: rgba(10,10,10,.50)"></div>
+    <div class="modal-background" class="modal-background-dark"></div>
     <div class="modal-card">
-      <p class="panel-heading has-text-centered" style="padding: 15px; display: table;padding-left: 20px">
-        <span style=" display: table-cell;vertical-align: middle; text-align: center;">
-          <i class="fa-solid fa-users" style='float:left; position: absolute; transform: translate(0px, -10px)'></i>
+      <p class="panel-heading has-text-centered" class="modal-heading-register">
+        <span class="modal-register-icon">
+          <i class="fa-solid fa-users" class="modal-users-icon"></i>
         </span>
         Register to a Carpool
-        <button class="delete" aria-label="close" onclick="closeAllModals()" style="float: right"></button>
+        <button class="delete" aria-label="close" onclick="closeAllModals()" class="modal-delete-right"></button>
       </p>
       <section class="modal-card-body">
         <div class="container">
           <label id="registerTitle"></label>
 
-          <div style="overflow: auto;">
+          <div class="register-overflow">
             <div id="registerJS">
               <!-- <div class="notification" style="padding: 10px;   margin-bottom: 10px;">
                            <div class="button  selectCarpool" style=" margin-left: 10px; margin-top: 4px; background-color: transparent; float: right" onclick=" if (this.classList[2] == 'is-focused') {unfocus()} else {unfocus(); this.classList.add('is-focused')}">Select</div>
@@ -326,10 +435,10 @@
           </div>
         </div>
       </section>
-      <footer class="modal-card-foot" style="background-color: white; border-width: 1px; padding: 10px; ">
+      <footer class="modal-card-foot" class="modal-footer-custom">
         <var></var>
-        <div class="buttons" style="margin-left: 0px;">
-          <button class="button is-link " style="background: linear-gradient(105deg, #3273DC, #275CBF);"
+        <div class="buttons" class="modal-buttons-left">
+          <button class="button is-link " class="modal-button-primary"
             onclick="joinCarpool(); window.location.href='/mycarpools'">Join carpool</button>
           <button class="button" aria-label="close" onclick="closeAllModals()">Cancel</button>
         </div>
@@ -556,6 +665,17 @@ function addressAutocomplete(containerElement, idName, callback, options) {
 
                     });
 
+        // Restrict event categories to allowed values
+        try {
+          var catSelect = document.getElementById('ecategory');
+          if (catSelect) {
+            catSelect.innerHTML = "" +
+              "<option value='School'>School</option>" +
+              "<option value='Sports'>Sports</option>" +
+              "<option value='Extra School Events'>Extra School Events</option>";
+          }
+        } catch (e) { console.warn('Failed to set category options', e); }
+
                   }
                 </script>
             </span>
@@ -567,56 +687,46 @@ function addressAutocomplete(containerElement, idName, callback, options) {
       </div>
 
       <!-- Hero footer: will stick at the bottom -->
-      <div class="hero-foot">
-        <nav class="tabs is-boxed is-fullwidth">
-          <div class="container">
-            <ul>
-              <li class="is-active"><a href="/" class="is-active1">Upcoming Events</a></li>
-              <li><a href="/mycarpools" class="white">My Carpools</a></li>
-              <li><a href="/findrides" class="white">Find Rides</a></li>
-            </ul>
-          </div>
-        </nav>
-      </div>
+      <!-- hero-foot removed: navigation links moved to navbar -->
     </section>
   </main>
   <script></script>
   <!-- start here -->
   <div class="modal " id="modal-js-example">
-    <div class="modal-background" style="background-color: rgba(10,10,10,.50)"></div>
+    <div class="modal-background" class="modal-background-dark"></div>
     <div class="modal-card">
-      <p class="panel-heading has-text-centered" style="padding: 15px; padding-left: 20px; display: table">
-        <span style=" display: table-cell;vertical-align: middle; text-align: center; position:absolute">
-          <i class="fa-solid fa-car-side" style='float:left; transform:translate(0px,5px)'></i>
+      <p class="panel-heading has-text-centered" class="modal-heading-offer">
+        <span class="modal-heading-icon">
+          <i class="fa-solid fa-car-side" class="modal-car-icon"></i>
         </span>
         Offer to Carpool
-        <button class="delete" aria-label="close" onclick="closeAllModals()" style="float: right"></button>
+        <button class="delete" aria-label="close" onclick="closeAllModals()" class="modal-delete-right"></button>
       </p>
       <section class="modal-card-body">
         <div class="container">
           <label>Carpool information </label>
           <div class="field">
-            <a class="panel-block" id="carpoolinfo" style="border-radius: 5px; padding:0px;">
-              <input style="margin-right: 10px; " id="fname" class="input" type="fname" placeholder="Driver first name">
+            <a class="panel-block" id="carpoolinfo" class="carpool-panel-block">
+              <input class="input carpool-inputs-margin" id="fname" type="fname" placeholder="Driver first name">
               <input id="lname" class="input" type="lname" placeholder="Driver last name">
             </a>
           </div>
           <div class="field">
-            <a class="panel-block" style="border-radius: 5px; padding:0px;">
-              <input style="margin-right: 10px;" id="email" class="input" type="email" placeholder="Driver email">
+            <a class="panel-block" class="carpool-panel-block">
+              <input class="input carpool-inputs-margin" id="email" class="input" type="email" placeholder="Driver email">
               <input id="phone" class="input" type="tel" placeholder="Driver phone number">
             </a>
           </div>
-          <div class="field" style="margin-bottom: 10px;">
+          <div class="field" class="field-margin-bottom">
             <input class="input" id="carmake" type="text" placeholder="Car make and model">
           </div>
-          <div class="field" style="margin-bottom: 10px;">
+          <div class="field" class="field-margin-bottom">
             <input class="input" id="seats" type="number" min="1" max="9" placeholder="Number of available car seats">
           </div>
-          <div style="display: flex; gap: 10px;">
+          <div class="pickup-options-container">
             <div>
               <label>Pickup Location </label>
-              <div class="field" style="margin-bottom: 10px;">
+              <div class="field" class="field-margin-bottom">
                 <div class="control">
                   <div class="select">
                     <form>
@@ -632,8 +742,23 @@ function addressAutocomplete(containerElement, idName, callback, options) {
             </div>
             <div>
               <label>Arrival time</label>
-              <div class="field" style="margin-bottom: 10px;">
+              <div class="field" class="field-margin-bottom">
                 <input class="input" id="arrivaltime" type="time" placeholder="Time to arrive">
+              </div>
+            </div>
+            <div>
+              <label>Carpool category</label>
+              <div class="field" class="field-margin-bottom">
+                <div class="control">
+                  <div class="select">
+                    <select id="carpool-category">
+                      <option value="sports">Sports</option>
+                      <option value="academic">Academic</option>
+                      <option value="social">Social</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -647,9 +772,9 @@ function addressAutocomplete(containerElement, idName, callback, options) {
           </div>
         </div>
       </section>
-      <footer class="modal-card-foot" style="background-color: white; border-width: 1px; padding: 10px; ">
-        <div class="buttons" style="margin-left: 0px;">
-          <button class="button is-link " style="background: linear-gradient(105deg, #3273DC, #275CBF);"
+      <footer class="modal-card-foot" class="modal-footer-custom">
+        <div class="buttons" class="modal-buttons-left">
+          <button class="button is-link " class="modal-button-primary"
             onclick="offer();window.location.href='/mycarpools'">Create carpool</button>
           <button class="button" aria-label="close" onclick="closeAllModals()">Cancel</button>
         </div>
@@ -659,20 +784,20 @@ function addressAutocomplete(containerElement, idName, callback, options) {
   <!-- end here -->
   <!-- start here -->
   <div class="modal " id="modal-js-register">
-    <div class="modal-background" style="background-color: rgba(10,10,10,.50)"></div>
+    <div class="modal-background" class="modal-background-dark"></div>
     <div class="modal-card">
-      <p class="panel-heading has-text-centered" style="padding: 15px; display: table;padding-left: 20px">
-        <span style=" display: table-cell;vertical-align: middle; text-align: center;">
-          <i class="fa-solid fa-users" style='float:left; position: absolute; transform: translate(0px, -10px)'></i>
+      <p class="panel-heading has-text-centered" class="modal-heading-register">
+        <span class="modal-register-icon">
+          <i class="fa-solid fa-users" class="modal-users-icon"></i>
         </span>
         Register to a Carpool
-        <button class="delete" aria-label="close" onclick="closeAllModals()" style="float: right"></button>
+        <button class="delete" aria-label="close" onclick="closeAllModals()" class="modal-delete-right"></button>
       </p>
       <section class="modal-card-body">
         <div class="container">
           <label id="registerTitle"></label>
 
-          <div style="overflow: auto;">
+          <div class="register-overflow">
             <div id="registerJS">
               <!-- <div class="notification" style="padding: 10px;   margin-bottom: 10px;">
                            <div class="button  selectCarpool" style=" margin-left: 10px; margin-top: 4px; background-color: transparent; float: right" onclick=" if (this.classList[2] == 'is-focused') {unfocus()} else {unfocus(); this.classList.add('is-focused')}">Select</div>
@@ -693,10 +818,10 @@ function addressAutocomplete(containerElement, idName, callback, options) {
           </div>
         </div>
       </section>
-      <footer class="modal-card-foot" style="background-color: white; border-width: 1px; padding: 10px; ">
+      <footer class="modal-card-foot" class="modal-footer-custom">
         <var></var>
-        <div class="buttons" style="margin-left: 0px;">
-          <button class="button is-link " style="background: linear-gradient(105deg, #3273DC, #275CBF);"
+        <div class="buttons" class="modal-buttons-left">
+          <button class="button is-link " class="modal-button-primary"
             onclick="joinCarpool(); window.location.href='/mycarpools'">Join carpool</button>
           <button class="button" aria-label="close" onclick="closeAllModals()">Cancel</button>
         </div>
@@ -704,7 +829,94 @@ function addressAutocomplete(containerElement, idName, callback, options) {
     </div>
   </div>
   <!-- end here -->
+  <!-- Create Event Modal -->
+  <div class="modal" id="modal-create-event">
+    <div class="modal-background" onclick="closeCreateEventModal()"></div>
+    <div class="modal-card">
+      <div class="modal-card-head">
+        <div class="modal-card-title">Create Event</div>
+        <button class="delete" aria-label="close" onclick="closeCreateEventModal()"></button>
+      </div>
+      <section class="modal-card-body">
+        <div class="field">
+          <label class="label" for="ename">Event name:</label>
+          <div class="control">
+            <input class="input" type="text" id="ename" name="name">
+          </div>
+        </div>
+        <div class="field">
+          <label class="label" for="elocation">Location name:</label>
+          <div class="control">
+            <input class="input" type="text" id="elocation" name="location">
+          </div>
+        </div>
+        <div class="field">
+          <label class="label" for="address">Address:</label>
+          <div class="autocomplete-container" id="">
+            <div class="control" id="autocomplete-container3">
+              <!-- Address autocomplete will be inserted here -->
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <label class="label" for="edate">Date and time:</label>
+          <div class="control">
+            <input class="input" type="datetime-local" id="edate" name="date">
+          </div>
+        </div>
+        <div class="field">
+          <label class="label" for="ecategory">Category:</label>
+          <div class="control">
+            <div class="select">
+              <select id="ecategory" name="category">
+                <option value="sports">Sports</option>
+                <option value="academic teams">Academic teams</option>
+                <option value="socials">Socials</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </section>
+      <footer class="modal-card-foot">
+        <div class="buttons">
+          <button class="button is-link" onclick="createEventAndClose()">Submit</button>
+          <button class="button" onclick="closeCreateEventModal()">Cancel</button>
+        </div>
+      </footer>
+    </div>
+  </div>
+  <!-- end Create Event Modal -->
   <script type="text/javascript">
+    // Create Event Modal Functions
+    function openCreateEventModal() {
+      document.getElementById('modal-create-event').classList.add('is-active');
+      // Initialize autocomplete for address field when modal opens
+      createEventInputs();
+    }
+
+    function closeCreateEventModal() {
+      document.getElementById('modal-create-event').classList.remove('is-active');
+      // Clear form fields
+      document.getElementById('ename').value = '';
+      document.getElementById('elocation').value = '';
+      document.getElementById('edate').value = '';
+      document.getElementById('ecategory').value = 'sports';
+      // Clear address field if it exists
+      const addressInput = document.getElementById('create_address');
+      if (addressInput) {
+        addressInput.value = '';
+      }
+    }
+
+    async function createEventAndClose() {
+      await createevent();
+      closeCreateEventModal();
+      // Refresh the page to show the new event
+      window.location.reload();
+    }
+  </script>
+  <script>
     //Don't worry about it
     console.error("418 I'm a teapot");
 
@@ -772,7 +984,7 @@ function addressAutocomplete(containerElement, idName, callback, options) {
             if (carpoolPart == "<%= email %>") {
               carpooledEvent = eventsW2.find((x) => x._id === userData1[i].nameOfEvent)
               if (carpooledEvent != undefined) {
-                carpooledEvents.push(carpooledEvent)
+                carpooledEvents.push(carpooldEvent)
               }
             }
           }
@@ -784,8 +996,15 @@ function addressAutocomplete(containerElement, idName, callback, options) {
         function turnRegistered(eventsToDisable) {
 
           for (var i = 0; i < eventsToDisable.length; i++) {
-            document.getElementById(eventsToDisable[i]._id).disabled = true;
-            document.getElementById(eventsToDisable[i]._id).innerHTML = "Registered for this event"
+            const card = document.getElementById(eventsToDisable[i]._id).closest('.modern-event-card');
+            if (card) {
+              card.classList.add('disabled');
+              const primaryBtn = card.querySelector('.modern-btn-primary');
+              if (primaryBtn) {
+                primaryBtn.disabled = true;
+                primaryBtn.innerHTML = "Registered for this event";
+              }
+            }
           }
         }
 
@@ -800,14 +1019,12 @@ function addressAutocomplete(containerElement, idName, callback, options) {
         }
 
         function formatDate(date) {
-          const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
           const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
           var date = new Date(date);
 
-          const day = weekdays[date.getDay()];
           const month = date.getMonth();
           const year = date.getFullYear();
-          return `${day}, ${months[month + 1]} ${date.getDate()}, ${year}`;
+          return `${months[month]} ${date.getDate()}, ${year}`;
         }
 
         function sendData(data) {
@@ -818,6 +1035,20 @@ function addressAutocomplete(containerElement, idName, callback, options) {
           const now = new Date();
           const d = new Date(dateStr);
           return d > now;
+        }
+
+        // Map event category to a CSS class for color coding
+        function getCategoryClass(cat) {
+          switch ((cat || '').toLowerCase()) {
+            case 'school':
+              return 'cat-school';
+            case 'sports':
+              return 'cat-sports';
+            case 'extra school events':
+              return 'cat-extra';
+            default:
+              return 'cat-other';
+          }
         }
 
         var request = new Request("/api/events", {
@@ -839,39 +1070,38 @@ function addressAutocomplete(containerElement, idName, callback, options) {
               var date = formatDate(obj["date"]);
               var time = new Date(obj["date"]).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
 
+              // Calculate available carpools for this event
+              var availableCarpools = userData1.filter(carpool => carpool.nameOfEvent === obj["_id"]).length;
 
-              document.getElementById("eventsJS").innerHTML += `<article class="panel is-link has-text-centered" style=" margin-top: 10px;" >
-         <div style="float: left; margin: 7px; left:0px; position: absolute " class="booker" >
-          <span class="panel-icon" style='color: white; display: inline'>
-            <i class="fas fa-book" aria-hidden="true" style="margin: 13px; margin-left: 15px;"></i>
-            <p style="color: white; display: inline; font-size: 15px; " >Booked by `+ obj["firstName"] + ` ` + obj["lastName"] + `</p>
-          </span>
-         </div>
-         <p class="panel-heading link-heading" style="margin-top: -10px;background: linear-gradient(105deg, #3273DC, #275CBF); " >
-
-         `+ obj["eventName"] + `
-
-
-         </p>
-
-
-         <div class="panel-block">
-          <p class="control has-icons-left" style="width: 100px;">
-
-            <span style="color: #999999; margin-right: 5px;"><i class="fa-solid fa-location-dot "></i></span>Location: `+ obj["wlocation"] + `<br class="extraspace" style='display: none; '>  <span id="clock"  style="color: #999999; margin-right: 5px; margin-left: 10px;"><i class="fa-solid fa-clock "></i></span> Date: ` + date + `, ` + time + `
-           </p>
-          <div class="buttons upcoming-buttons" style="float: left; display: inline-block;">
-
-          <button class="button js-modal-trigger" style="margin-right: 5px;" data-target="modal-js-example" id="`+ obj["_id"] + `_offer` + `" onclick=sendData('` + obj["_id"] + `')>Offer to carpool</button>
-
-          <button class="button js-modal-trigger" data-target="modal-js-register" id="`+ obj["_id"] + `" onclick=sendData('` + obj["_id"] + `')>Join a carpool</button>
-           </div>
-           </div>
-
-
-
-
-         </article>`;
+              document.getElementById("eventsJS").innerHTML += `
+                <div class="modern-event-card">
+                  <div class="modern-category-tag ${getCategoryClass(obj["category"])}">${obj["category"]}</div>
+                  <h3 class="modern-event-title">${obj["eventName"]}</h3>
+                  <div class="modern-event-details">
+                    <div class="modern-detail-row">
+                      <div class="modern-detail-icon">
+                        <i class="fa-solid fa-calendar"></i>
+                      </div>
+                      <span>${date} at ${time}</span>
+                    </div>
+                    <div class="modern-detail-row">
+                      <div class="modern-detail-icon">
+                        <i class="fa-solid fa-location-dot"></i>
+                      </div>
+                      <span>${obj["wlocation"]}</span>
+                    </div>
+                    <div class="modern-detail-row">
+                      <div class="modern-detail-icon">
+                        <i class="fa-solid fa-users"></i>
+                      </div>
+                      <span>${availableCarpools} carpool(s) available</span>
+                    </div>
+                  </div>
+                  <div class="modern-action-buttons">
+                    <button class="modern-btn-primary js-modal-trigger" data-target="modal-js-register" id="${obj["_id"]}" onclick="sendData('${obj["_id"]}')">Join Carpool</button>
+                    <button class="modern-btn-secondary js-modal-trigger" data-target="modal-js-example" id="${obj["_id"]}_offer" onclick="sendData('${obj["_id"]}')">Offer Carpool</button>
+                  </div>
+                </div>`;
 
             }
             checkIfRegistered(userData1)
@@ -895,85 +1125,56 @@ function addressAutocomplete(containerElement, idName, callback, options) {
 
 
 
-            document.getElementById("filter").onchange = filter;
-            function filter() {
-              document.getElementById("eventsJS").innerHTML = ``
-              for (var i = 0; i < eventsW.length; i++) {
-                var obj = eventsW[i];
+            document.getElementById("searchInput").oninput = searchEvents;
+            function searchEvents() {
+              const searchTerm = document.getElementById("searchInput").value.toLowerCase();
+              document.getElementById("eventsJS").innerHTML = ``;
+              
+              for (var i = 0; i < eventsW2.length; i++) {
+                var obj = eventsW2[i];
                 var date = formatDate(obj["date"]);
                 var time = new Date(obj["date"]).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
-                if (document.getElementById("filter").value == "all") {
-                  // `<div style="float: right; margin: 10px; width: 35px; height: 35px; background-color: hsl(348, 100%, 61%); border-radius: 5px
-                  //    " <="" div=""></div>`
-                  document.getElementById("eventsJS").innerHTML += `<article class="panel is-link has-text-centered" style=" margin-top: 10px;" >
-                     <div style="float: left; margin: 7px; left:0px; position: absolute " class="booker" >
-                       <span class="panel-icon" style='color: white; display: inline'>
-                         <i class="fas fa-book" aria-hidden="true" style="margin: 13px; margin-left: 15px;"></i>
-                         <p style="color: white; display: inline; font-size: 15px; " >Booked by `+ obj["firstName"] + ` ` + obj["lastName"] + `</p>
-                       </span>
-                     </div>
-                     <p class="panel-heading link-heading" style="margin-top: -10px;background: linear-gradient(105deg, #3273DC, #275CBF); " >
-
-                    `+ obj["eventName"] + `
-
-
-                     </p>
-
-
-                     <div class="panel-block">
-                       <p class="control has-icons-left" style="width: 100px;">
-
-                         <span style="color: #999999; margin-right: 5px;"><i class="fa-solid fa-location-dot "></i></span>Location: `+ obj["wlocation"] + `<br class="extraspace" style='display: none; '>  <span id="clock"  style="color: #999999; margin-right: 5px; margin-left: 10px;"><i class="fa-solid fa-clock "></i></span> Date: ` + date + `, ` + time + `
-                        </p>
-                       <div class="buttons upcoming-buttons" style="float: left; display: inline-block;">
-
-                       <button class="button js-modal-trigger" style="margin-right: 5px;" data-target="modal-js-example" id="`+ obj["_id"] + `_offer` + `" onclick=sendData('` + obj["_id"] + `')>Offer to carpool</button>
-
-                       <button class="button js-modal-trigger" data-target="modal-js-register" id="`+ obj["_id"] + `" onclick=sendData('` + obj["_id"] + `')>Join a carpool</button>
+                
+                // Calculate available carpools for this event
+                var availableCarpools = userData1.filter(carpool => carpool.nameOfEvent === obj["_id"]).length;
+                
+                // Check if the search term matches event name, location, or category
+                const matchesSearch = searchTerm === '' || 
+                  obj["eventName"].toLowerCase().includes(searchTerm) ||
+                  obj["wlocation"].toLowerCase().includes(searchTerm) ||
+                  obj["category"].toLowerCase().includes(searchTerm);
+                
+                if (matchesSearch) {
+                  document.getElementById("eventsJS").innerHTML += `
+                    <div class="modern-event-card">
+                      <div class="modern-category-tag ${getCategoryClass(obj["category"])}">${obj["category"]}</div>
+                      <h3 class="modern-event-title">${obj["eventName"]}</h3>
+                      <div class="modern-event-details">
+                        <div class="modern-detail-row">
+                          <div class="modern-detail-icon">
+                            <i class="fa-solid fa-calendar"></i>
+                          </div>
+                          <span>${date} at ${time}</span>
                         </div>
+                        <div class="modern-detail-row">
+                          <div class="modern-detail-icon">
+                            <i class="fa-solid fa-location-dot"></i>
+                          </div>
+                          <span>${obj["wlocation"]}</span>
                         </div>
-
-
-
-
-                    </article>`;
+                        <div class="modern-detail-row">
+                          <div class="modern-detail-icon">
+                            <i class="fa-solid fa-users"></i>
+                          </div>
+                          <span>${availableCarpools} carpool(s) available</span>
+                        </div>
+                      </div>
+                      <div class="modern-action-buttons">
+                        <button class="modern-btn-primary js-modal-trigger" data-target="modal-js-register" id="${obj["_id"]}" onclick="sendData('${obj["_id"]}')">Join Carpool</button>
+                        <button class="modern-btn-secondary js-modal-trigger" data-target="modal-js-example" id="${obj["_id"]}_offer" onclick="sendData('${obj["_id"]}')">Offer Carpool</button>
+                      </div>
+                    </div>`;
                 }
-
-                else if (document.getElementById("filter").value == obj["category"]) {
-                  document.getElementById("eventsJS").innerHTML += `<article class="panel is-link has-text-centered" style=" margin-top: 10px;" >
-                <div style="float: left; margin: 7px; left:0px; position: absolute " class="booker" >
-                  <span class="panel-icon" style='color: white; display: inline'>
-                    <i class="fas fa-book" aria-hidden="true" style="margin: 13px; margin-left: 15px;"></i>
-                    <p style="color: white; display: inline; font-size: 15px; " >Booked by `+ obj["firstName"] + ` ` + obj["lastName"] + `</p>
-                  </span>
-                </div>
-                <p class="panel-heading link-heading" style="margin-top: -10px;background: linear-gradient(105deg, #3273DC, #275CBF); " >
-
-               `+ obj["eventName"] + `
-
-
-                </p>
-
-
-                <div class="panel-block">
-                  <p class="control has-icons-left" style="width: 100px;">
-
-                    <span style="color: #999999; margin-right: 5px;"><i class="fa-solid fa-location-dot "></i></span>Location: `+ obj["wlocation"] + `<br class="extraspace" style='display: none; '>  <span id="clock"  style="color: #999999; margin-right: 5px; margin-left: 10px;"><i class="fa-solid fa-clock "></i></span> Date: ` + date + `, ` + time + `
-                   </p>
-                  <div class="buttons upcoming-buttons" style="float: left; display: inline-block;">
-
-                  <button class="button js-modal-trigger" style="margin-right: 5px;" data-target="modal-js-example" id="`+ obj["_id"] + `_offer` + `" onclick=sendData('` + obj["_id"] + `')>Offer to carpool</button>
-
-                  <button class="button js-modal-trigger" data-target="modal-js-register" id="`+ obj["_id"] + `" onclick=sendData('` + obj["_id"] + `')>Join a carpool</button>
-                   </div>
-                   </div>
-
-
-
-
-               </article>`;
-                }
-
               }
 
               checkIfRegistered(userData1)
@@ -1220,7 +1421,6 @@ function addressAutocomplete(containerElement, idName, callback, options) {
 
 
 
-
       })
       .catch((error) => {
         console.error(error)
@@ -1239,15 +1439,14 @@ function addressAutocomplete(containerElement, idName, callback, options) {
       let CarMake = document.getElementById("carmake").value;
       let Seats = document.getElementById("seats").value;
       let ArrivalTime = document.getElementById("arrivaltime").value;
-      let category = document.getElementById("carpool-category").value;
       let route = document.getElementById("route-type").value;
       let Carpoolers = []
 
-      offerACar(DriverFName, DriverLName, DriverEmail, DriverPhone, CarMake, Seats, route, newArray, Carpoolers, datarray[datarray.length - 1], ArrivalTime, category);
+      offerACar(DriverFName, DriverLName, DriverEmail, DriverPhone, CarMake, Seats, route, newArray, Carpoolers, datarray[datarray.length - 1], ArrivalTime);
     }
 
 
-    async function offerACar(firstName, lastName, email, phone, carMake, seats, route, wlocation, carpoolers, eventId, arrivalTime, category) {
+    async function offerACar(firstName, lastName, email, phone, carMake, seats, route, wlocation, carpoolers, eventId, arrivalTime) {
       try {
       
         // First, fetch the event to get its category and address
@@ -1286,7 +1485,7 @@ function addressAutocomplete(containerElement, idName, callback, options) {
           nameOfEvent: eventId,
           userEmail,
           arrivalTime,
-          category: event.category || 'other',
+          category: event.category,
           distanceMiles,
           numPassengers
         };
@@ -1317,7 +1516,7 @@ function addressAutocomplete(containerElement, idName, callback, options) {
         window.location.href = '/mycarpools';
       } catch (error) {
         console.error("Error:", error);
-        alert('Failed to create carpool. Please try again.');
+        // Error handling - user will see error via page redirect or console
       }
     }
 
@@ -1490,6 +1689,10 @@ function addressAutocomplete(containerElement, idName, callback, options) {
         hour12: true
       });
       category = document.getElementById("ecategory").value;
+      // Normalize category to allowed values just in case
+      if (["School","Sports","Extra School Events"].indexOf(category) === -1) {
+        category = "School";
+      }
       
       // Get coordinates for the user's address and event location
       const userCoords = await getCoordinates(address);
@@ -1531,16 +1734,6 @@ function addressAutocomplete(containerElement, idName, callback, options) {
         });
         
         console.log(response);
-        
-        // Emit event for CO2 savings update
-        if (response.ok) {
-          document.dispatchEvent(new CustomEvent('carpool-created', {
-            detail: {
-              distanceMiles: distanceMiles,
-              numPassengers: numPassengers
-            }
-          }));
-        }
       } catch (error) {
         console.error("Error creating event:", error);
       }
@@ -1583,7 +1776,7 @@ function addressAutocomplete(containerElement, idName, callback, options) {
   <div class="modal" id="disclaimer-modal">
     <div class="modal-background"></div>
     <div class="modal-card">
-      <section class="modal-card-body" style="border-radius: 6px 6px 0px 0px">
+      <section class="modal-card-body disclaimer-modal-body">
         <p class="has-text-centered is-size-5">This is an app maintained by Eastside Prep's Hack Club, a group of Upper
           School students that meet every Thursday at 11:05 pm in TMAC-007. Please email Anmol
           Singh Josan & Nikhil Mahesh, ajosan@eastsideprep.org, nmahesh@eastsideprep.org if you have any questions.</p>
@@ -1597,8 +1790,7 @@ function addressAutocomplete(containerElement, idName, callback, options) {
       </section>
       <footer class="modal-card-foot">
          <div class="buttons">
-            <div class="button center is-link" onclick="closeDisclaimer()"
-              style="background: linear-gradient(105deg, #3273DC, #275CBF); margin-top: 20px; margin-bottom: -20px">Close</div>
+            <div class="button center is-link disclaimer-close-btn" onclick="closeDisclaimer()">Close</div>
           </div>
       </footer>
     </div>

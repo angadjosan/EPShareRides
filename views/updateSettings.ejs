@@ -22,7 +22,7 @@
   <main>
     <section class="hero is-fullheight" id="hero">
       <div class="hero-head">
-        <header class="navbar">
+          <header class="navbar">
           <div class="container">
             <div class="navbar-brand">
               <a class="navbar-item">
@@ -50,13 +50,12 @@
                       <a class="fa-solid fa-leaf" href="/sustainabilityStatement" style="color: #30B700"></a>
                     </span>
                     <div class="buttons" style="margin: 10px;margin-right: 0px;">
-                      <a class="button is-link is-outlined " href="/logout">
-                        Log out
-                      </a>
+                      <a class="navbar-item" href="/" style="color: #3273dc; font-weight: 600; margin-right: 10px;">Upcoming Events</a>
+                      <a class="navbar-item" href="/mycarpools" style="color: #3273dc; font-weight: 600; margin-right: 12px;">My Carpools</a>
                       <div class="navbar-item has-dropdown is-hoverable "
                         onclick="document.getElementById('navbar-dropdown').style.visibility = 'visible';">
                         <a class="button is-link" id="name_button"
-                          style="background: linear-gradient(105deg, #3273DC, #275CBF);">
+                          style="background: #3273DC;">
                           <%= firstName %>
                             <%= lastName %>
                               <i style="margin-left: 5px;" class="fas fa-angle-down" aria-hidden="true"></i>
@@ -64,7 +63,7 @@
                         <div id="filler"
                           style="width: 130px; background-color: transparent; height: 20px; position: absolute; margin-top: -15px;">
                         </div>
-                        <div class="navbar-dropdown" id="navbar-dropdown">
+                        <div class="navbar-dropdown" id="navbar-dropdown" style="background: white; border: 1px solid #dbdbdb;">
                           <a class="navbar-item" href="/updateSettings">
                             Update settings
                           </a>
@@ -75,6 +74,9 @@
                             Sustainability statement
                           </a>
                           <hr class="navbar-divider">
+                          <a class="navbar-item" href="/logout">
+                            Log out
+                          </a>
                           <div class="navbar-item">
                             Version <%= process.env.VERSION %>
                           </div>
@@ -97,7 +99,7 @@
 
 
         <!-- Hero content: will be in the middle -->
-        <div class="hero-body" style="">
+  <div class="hero-body">
           <div class="container has-text-centered vertical-center" id="updatesettings">
 
             <h1 class="title is-3 " style="margin-top: 5px; margin-bottom: 30px">Settings</h1>
@@ -106,10 +108,10 @@
             </p>
             <div class="container" style="margin-top: 10px;margin-bottom: 30px">
 
-              <p style="display: inline-block; font-size: 17px; transform: translate(0px,2px); float: left">Don't show
+              <p style="font-size: 17px; transform: translate(0px,2px); float: left">Don't show
                 my account to other EPS students</p>
               <input class="switch-input" type="checkbox" id="switch"><label class="switch-label"
-                style="display: inline-block; margin-left: 5px; float:right" for="switch" checked="false">Toggle</label>
+                style="margin-left: 5px; float:right" for="switch" checked="false">Toggle</label>
             </div>
 
             <div class="container" style="margin-bottom: 30px;margin-top: 10px">
@@ -153,7 +155,7 @@
 
             <div class="buttons">
               <div onclick="update()" class="button is-link"
-                style="background: linear-gradient(105deg, #3273DC, #275CBF);">
+                style="background: #3273DC;">
                 Update
               </div>
               <div class="button" onclick="window.location.href = '/'">
@@ -515,7 +517,7 @@
       })
       .catch(error => {
         console.error('A network error occurred:', error);
-        alert('A network error occurred. Please try again later.');
+        // Error handling - network error logged to console
       });
   }
 

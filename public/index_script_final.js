@@ -148,65 +148,50 @@ fetch(request)
     console.log(eventsW2);
 
     console.log("length:" + eventsW2.length);
+    document.getElementById("eventsJS").innerHTML = `<div class="carpool-grid">`;
     for (var i = 0; i < eventsW2.length; i++) {
       var obj = eventsW2[i];
       var day = getDayOfWeek(obj["date"]);
 
       document.getElementById("eventsJS").innerHTML +=
-        `<article class="panel is-link has-text-centered" style=" margin-top: 10px;" >
-     <div style="float: left; margin: 7px; left:0px; position: absolute " class="booker" >
-      <span class="panel-icon" style='color: white; display: inline'>
-        <i class="fas fa-book" aria-hidden="true" style="margin: 13px; margin-left: 15px;"></i>
-        <p style="color: white; display: inline; font-size: 15px; " >Booked by ` +
+        `<div class="carpool-tile">
+     <div style="margin-bottom: 10px; color: #3273dc; font-weight: bold;">
+      <i class="fas fa-book" style="margin-right: 5px;"></i>Booked by ` +
         obj["firstName"] +
         ` ` +
         obj["lastName"] +
-        `</p>
-      </span>
-     </div>
-     <p class="panel-heading link-heading" style="margin-top: -10px;background: linear-gradient(105deg, #3273DC, #275CBF); " >
-
-     ` +
+        `</div>
+     <h3 style="color: #3273dc; margin-bottom: 15px; font-size: 1.2em;">` +
         obj["eventName"] +
-        `
-
-
-     </p>
-
-
-     <div class="panel-block">
-      <p class="control has-icons-left" style="width: 100px;">
-
-        <span style="color: #999999; margin-right: 5px;"><i class="fa-solid fa-location-dot "></i></span>Location: ` +
+        `</h3>
+     <div style="margin-bottom: 15px;">
+      <p style="margin-bottom: 5px;">
+        <span style="color: #666; margin-right: 5px;"><i class="fa-solid fa-location-dot"></i></span>Location: ` +
         obj["wlocation"] +
-        `<br class="extraspace" style='display: none; '>  <span id="clock"  style="color: #999999; margin-right: 5px; margin-left: 10px;"><i class="fa-solid fa-clock "></i></span> Date: ` +
+        `</p>
+      <p>
+        <span style="color: #666; margin-right: 5px;"><i class="fa-solid fa-clock"></i></span>Date: ` +
         day +
         `, ` +
         obj["date"] +
-        `
-       </p>
-      <div class="buttons upcoming-buttons" style="float: left; display: inline-block;">
-
-      <button class="button js-modal-trigger" style="margin-right: 5px;" data-target="modal-js-example" id="` +
+        `</p>
+     </div>
+     <div style="display: flex; flex-direction: column; gap: 8px;">
+      <button class="button js-modal-trigger" style="background: #3273dc; color: white;" data-target="modal-js-example" id="` +
         obj["id"] +
         `_offer` +
         `" onclick=sendData('` +
         obj["id"] +
         `')>Offer to carpool</button>
-
-      <button class="button js-modal-trigger" data-target="modal-js-register" id="` +
+      <button class="button js-modal-trigger" style="background: #3273dc; color: white;" data-target="modal-js-register" id="` +
         obj["id"] +
         `" onclick=sendData('` +
         obj["id"] +
         `')>Register for this event</button>
-       </div>
-       </div>
-
-
-
-
-     </article>`;
+     </div>
+     </div>`;
     }
+    document.getElementById("eventsJS").innerHTML += `</div>`;
     checkIfRegistered(userData1);
 
     //sort events by date
@@ -233,124 +218,90 @@ fetch(request)
 
     document.getElementById("filter").onchange = filter;
     function filter() {
-      document.getElementById("eventsJS").innerHTML = ``;
+      document.getElementById("eventsJS").innerHTML = `<div class="carpool-grid">`;
       for (var i = 0; i < eventsW.length; i++) {
         var obj = eventsW[i];
         var day = getDayOfWeek(obj["date"]);
         if (document.getElementById("filter").value == "all") {
-          // `<div style="float: right; margin: 10px; width: 35px; height: 35px; background-color: hsl(348, 100%, 61%); border-radius: 5px
-          //    " <="" div=""></div>`
           document.getElementById("eventsJS").innerHTML +=
-            `<article class="panel is-link has-text-centered" style=" margin-top: 10px;" >
-                 <div style="float: left; margin: 7px; left:0px; position: absolute " class="booker" >
-                   <span class="panel-icon" style='color: white; display: inline'>
-                     <i class="fas fa-book" aria-hidden="true" style="margin: 13px; margin-left: 15px;"></i>
-                     <p style="color: white; display: inline; font-size: 15px; " >Booked by ` +
+            `<div class="carpool-tile">
+                 <div style="margin-bottom: 10px; color: #3273dc; font-weight: bold;">
+                   <i class="fas fa-book" style="margin-right: 5px;"></i>Booked by ` +
             obj["firstName"] +
             ` ` +
             obj["lastName"] +
+            `</div>
+                 <h3 style="color: #3273dc; margin-bottom: 15px; font-size: 1.2em;">` +
+            obj["eventName"] +
+            `</h3>
+                 <div style="margin-bottom: 15px;">
+                   <p style="margin-bottom: 5px;">
+                     <span style="color: #666; margin-right: 5px;"><i class="fa-solid fa-location-dot"></i></span>Location: ` +
+            obj["wlocation"] +
             `</p>
-                   </span>
+                   <p>
+                     <span style="color: #666; margin-right: 5px;"><i class="fa-solid fa-clock"></i></span>Date: ` +
+            day +
+            `, ` +
+            obj["date"] +
+            `</p>
                  </div>
-                 <p class="panel-heading link-heading" style="margin-top: -10px;background: linear-gradient(105deg, #3273DC, #275CBF); " >
-
-                ` +
-            obj["eventName"] +
-            `
-
-
-                 </p>
-
-
-                 <div class="panel-block">
-                   <p class="control has-icons-left" style="width: 100px;">
-
-                     <span style="color: #999999; margin-right: 5px;"><i class="fa-solid fa-location-dot "></i></span>Location: ` +
-            obj["wlocation"] +
-            `<br class="extraspace" style='display: none; '>  <span id="clock"  style="color: #999999; margin-right: 5px; margin-left: 10px;"><i class="fa-solid fa-clock "></i></span> Date: ` +
-            day +
-            `, ` +
-            obj["date"] +
-            `
-                    </p>
-                   <div class="buttons upcoming-buttons" style="float: left; display: inline-block;">
-
-                   <button class="button js-modal-trigger" style="margin-right: 5px;" data-target="modal-js-example" id="` +
+                 <div style="display: flex; flex-direction: column; gap: 8px;">
+                   <button class="button js-modal-trigger" style="background: #3273dc; color: white;" data-target="modal-js-example" id="` +
             obj["id"] +
             `_offer` +
             `" onclick=sendData('` +
             obj["id"] +
             `')>Offer to carpool</button>
-
-                   <button class="button js-modal-trigger" data-target="modal-js-register" id="` +
+                   <button class="button js-modal-trigger" style="background: #3273dc; color: white;" data-target="modal-js-register" id="` +
             obj["id"] +
             `" onclick=sendData('` +
             obj["id"] +
             `')>Register for this event</button>
-                    </div>
-                    </div>
-
-
-
-
-                </article>`;
-        } else if (document.getElementById("filter").value == obj["category"]) {
+                 </div>
+                </div>`;
+                } else if (document.getElementById("filter").value == obj["category"]) {
           document.getElementById("eventsJS").innerHTML +=
-            `<article class="panel is-link has-text-centered" style=" margin-top: 10px;" >
-            <div style="float: left; margin: 7px; left:0px; position: absolute " class="booker" >
-              <span class="panel-icon" style='color: white; display: inline'>
-                <i class="fas fa-book" aria-hidden="true" style="margin: 13px; margin-left: 15px;"></i>
-                <p style="color: white; display: inline; font-size: 15px; " >Booked by ` +
+            `<div class="carpool-tile">
+                 <div style="margin-bottom: 10px; color: #3273dc; font-weight: bold;">
+                   <i class="fas fa-book" style="margin-right: 5px;"></i>Booked by ` +
             obj["firstName"] +
             ` ` +
             obj["lastName"] +
-            `</p>
-              </span>
-            </div>
-            <p class="panel-heading link-heading" style="margin-top: -10px;background: linear-gradient(105deg, #3273DC, #275CBF); " >
-
-           ` +
+            `</div>
+                 <h3 style="color: #3273dc; margin-bottom: 15px; font-size: 1.2em;">` +
             obj["eventName"] +
-            `
-
-
-            </p>
-
-
-            <div class="panel-block">
-              <p class="control has-icons-left" style="width: 100px;">
-
-                <span style="color: #999999; margin-right: 5px;"><i class="fa-solid fa-location-dot "></i></span>Location: ` +
+            `</h3>
+                 <div style="margin-bottom: 15px;">
+                   <p style="margin-bottom: 5px;">
+                     <span style="color: #666; margin-right: 5px;"><i class="fa-solid fa-location-dot"></i></span>Location: ` +
             obj["wlocation"] +
-            `<br class="extraspace" style='display: none; '>  <span id="clock"  style="color: #999999; margin-right: 5px; margin-left: 10px;"><i class="fa-solid fa-clock "></i></span> Date: ` +
+            `</p>
+                   <p>
+                     <span style="color: #666; margin-right: 5px;"><i class="fa-solid fa-clock"></i></span>Date: ` +
             day +
             `, ` +
             obj["date"] +
-            `
-               </p>
-              <div class="buttons upcoming-buttons" style="float: left; display: inline-block;">
-
-              <button class="button js-modal-trigger" style="margin-right: 5px;" data-target="modal-js-example" id="` +
+            `</p>
+                 </div>
+                 <div style="display: flex; flex-direction: column; gap: 8px;">
+                   <button class="button js-modal-trigger" style="background: #3273dc; color: white;" data-target="modal-js-example" id="` +
             obj["id"] +
             `_offer` +
             `" onclick=sendData('` +
             obj["id"] +
             `')>Offer to carpool</button>
-
-              <button class="button js-modal-trigger" data-target="modal-js-register" id="` +
+                   <button class="button js-modal-trigger" style="background: #3273dc; color: white;" data-target="modal-js-register" id="` +
             obj["id"] +
             `" onclick=sendData('` +
             obj["id"] +
             `')>Register for this event</button>
-               </div>
-               </div>
-
-
-
-
-           </article>`;
+                 </div>
+                </div>`;
         }
       }
+      document.getElementById("eventsJS").innerHTML += `</div>`;
+    }
 
       checkIfRegistered(userData1);
       modalFunctions();
@@ -542,7 +493,7 @@ async function offerACar(firstName, lastName, email, phone, carMake, seats, rout
     window.location.href = '/mycarpools';
   } catch (error) {
     console.error("Error creating carpool:", error);
-    alert("Failed to create carpool. Please try again.");
+    // Error handling - failed to create carpool
   }
 }
 

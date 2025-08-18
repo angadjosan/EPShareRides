@@ -77,109 +77,7 @@ router.patch("/updateSettings", homeLimiter, authenticateToken, async (req, res)
   res.redirect("/updateSettings?suc=Settings updated successfully");
 });
 
-// Route to get user interests
-router.get("/user/interests", homeLimiter, authenticateToken, async (req, res) => {
-  try {
-    // Find user settings or create if they don't exist
-    let userSettings = await UserSettings.findOne({ userEmail: req.email });
-    
-    if (!userSettings) {
-      // If no settings exist, create with default interests (empty array)
-      userSettings = new UserSettings({
-        userEmail: req.email,
-        interests: []
-      });
-      await userSettings.save();
-    }
-    
-    // Return the user's interests (or empty array if not set)
-    res.json({ 
-      success: true, 
-      interests: userSettings.interests || [] 
-    });
-    
-  } catch (error) {
-    console.error('Error fetching user interests:', error);
-    res.status(500).json({ 
-      success: false, 
-      error: 'Failed to fetch user interests' 
-    });
-  }
-});
-
-// Route to update user interests
-router.post("/user/interests", homeLimiter, authenticateToken, async (req, res) => {
-  try {
-    const { interests } = req.body;
-    
-    if (!Array.isArray(interests)) {
-      return res.status(400).json({ error: "Interests must be an array" });
-    }
-
-    // Validate interests
-    const validInterests = ['sports', 'academic', 'social', 'other'];
-    const invalidInterests = interests.filter(item => !validInterests.includes(item));
-    
-    if (invalidInterests.length > 0) {
-      return res.status(400).json({ error: `Invalid interest(s): ${invalidInterests.join(', ')}` });
-    }
-
-    // Update user settings with new interests
-    const updatedSettings = await UserSettings.findOneAndUpdate(
-      { userEmail: req.email },
-      { interests },
-      { new: true, upsert: true }
-    );
-
-    res.json({ success: true, interests: updatedSettings.interests });
-  } catch (error) {
-    console.error("Error updating interests:", error);
-    res.status(500).json({ error: "Failed to update interests" });
-  }
-});
-
-// Route to get recommended carpools based on user interests
-router.get("/recommended-carpools", homeLimiter, authenticateToken, async (req, res) => {
-  try {
-    // Get user's interests
-    const settings = await UserSettings.findOne({ userEmail: req.email });
-    
-    if (!settings || !settings.interests || settings.interests.length === 0) {
-      return res.json([]);
-    }
-
-    // Map user interests to the possible carpool categories. Some older
-    // carpools used slightly different category labels (e.g. "academic teams"),
-    // so include those variants as well.
-    const interestMap = {
-      sports: ['sports'],
-      academic: ['academic', 'academic teams'],
-      social: ['social', 'socials'],
-      other: ['other']
-    };
-    
-    // Expand interests into the actual categories stored on carpools and
-    // remove duplicates.
-    const matchCategories = settings.interests
-      .flatMap(i => interestMap[i] || [])
-      .filter((v, i, arr) => arr.indexOf(v) === i);
-
-    // Create case-insensitive regexes so categories like "Academic Teams"
-    // also match.
-    const matchRegexes = matchCategories.map(cat => new RegExp(`^${cat}$`, 'i'));
-
-    // Find carpools that match user's interests and they haven't joined yet
-    const recommendedCarpools = await Carpool.find({
-      category: { $in: matchRegexes },
-      userEmail: { $ne: req.email }, // Not the user's own carpools
-      carpoolers: { $not: { $elemMatch: { email: req.email } } } // Not already joined
-    }).limit(5);
-    res.json(recommendedCarpools);
-  } catch (error) {
-    console.error("Error getting recommended carpools:", error);
-    res.status(500).json({ error: "Failed to get recommended carpools" });
-  }
-});
+// Interests feature removed
 
 // Route to get offer to carpool data
 // Why do we have a req here?
@@ -332,13 +230,18 @@ ${approve ? `🌱 By joining this carpool, you've helped save approximately ${(c
   }
 });
 
-// Route to get all events (future only)
+// Route to get all events (current day and future only)
 router.get("/events", homeLimiter, authenticateToken, async (req, res) => {
   let events;
   try {
-    const now = new Date();
-    // Only return events with date after now
-    events = await Event.find({ date: { $gt: now.toISOString() } });
+    const today = new Date();
+    // Set to start of today (00:00:00)
+    today.setHours(0, 0, 0, 0);
+    
+    // Only return events with date >= today (current day and future)
+    events = await Event.find({ 
+      date: { $gte: today.toISOString().split('T')[0] } 
+    });
   } catch (err) {
     console.error("Error getting events: " + err);
     res.status(500).send("Error getting events");
@@ -425,14 +328,34 @@ router.post("/events", homeLimiter, authenticateToken, async (req, res) => {
   return;
 });
 
-// Route to get all carpools
+// Route to get all carpools (current day and future only)
 router.get("/carpools", homeLimiter, authenticateToken, async (req, res) => {
   try {
-    // Only return carpools with arrivalTime after now
-    const carpools = await Carpool.find();
+    const today = new Date();
+    // Set to start of today (00:00:00)
+    today.setHours(0, 0, 0, 0);
+    const todayString = today.toISOString().split('T')[0];
+    
+    // Get all carpools and populate the event information
+    const allCarpools = await Carpool.find().lean();
+    
+    // Filter carpools based on their event date
+    const filteredCarpools = [];
+    for (const carpool of allCarpools) {
+      try {
+        const event = await Event.findById(carpool.nameOfEvent);
+        if (event && event.date >= todayString) {
+          filteredCarpools.push(carpool);
+        }
+      } catch (eventErr) {
+        // If event not found, skip this carpool
+        console.warn(`Event not found for carpool ${carpool._id}:`, eventErr);
+      }
+    }
+    
     // Format arrivalTime to 12-hour AM/PM if present
-    const formattedCarpools = carpools.map(carpool => {
-      let formatted = carpool.toObject();
+    const formattedCarpools = filteredCarpools.map(carpool => {
+      let formatted = { ...carpool };
       if (formatted.arrivalTime && typeof formatted.arrivalTime === "string" && formatted.arrivalTime.match(/^\d{2}:\d{2}$/)) {
         // Convert "HH:mm" to 12-hour format
         const [hour, minute] = formatted.arrivalTime.split(":");
@@ -449,13 +372,31 @@ router.get("/carpools", homeLimiter, authenticateToken, async (req, res) => {
   }
 });
 
-// Route to get user's carpools
+// Route to get user's carpools (current day and future only)
 router.get("/userCarpools", homeLimiter, authenticateToken, async (req, res) => {
   let carpools = [];
   try {
+    const today = new Date();
+    // Set to start of today (00:00:00)
+    today.setHours(0, 0, 0, 0);
+    const todayString = today.toISOString().split('T')[0];
+    
     const carpoolsCreated = await Carpool.find({ userEmail: req.userEmail }).exec();
     const carpoolsJoined = await Carpool.find({ "carpoolers.userEmail": req.userEmail }).exec();
-    carpools = [...carpoolsCreated, ...carpoolsJoined];
+    const allUserCarpools = [...carpoolsCreated, ...carpoolsJoined];
+    
+    // Filter carpools based on their event date
+    for (const carpool of allUserCarpools) {
+      try {
+        const event = await Event.findById(carpool.nameOfEvent);
+        if (event && event.date >= todayString) {
+          carpools.push(carpool);
+        }
+      } catch (eventErr) {
+        // If event not found, skip this carpool
+        console.warn(`Event not found for carpool ${carpool._id}:`, eventErr);
+      }
+    }
   } catch (err) {
     console.error("Error retrieving carpools: " + err);
     res.status(500).send("Error retrieving carpools");
@@ -660,15 +601,61 @@ router.delete(
     try {
       // Get the carpool ID from the request
       const { id } = req.params;
+      const { transporter } = req;
+
+      // Fetch carpool first to get member emails
+      const carpool = await Carpool.findById(new ObjectId(id));
+      if (!carpool) {
+        return res.status(404).send("Carpool not found");
+      }
+
+      // Build recipient list: driver + carpoolers (unique, non-empty)
+      const recipientSet = new Set([
+        carpool.email,
+        ...((carpool.carpoolers || []).map((c) => c.email)),
+      ]);
+      const recipients = [...recipientSet].filter(Boolean);
+
+      // Try to get event name if available
+      let eventName = "";
+      try {
+        const event = await Event.findById(carpool.nameOfEvent);
+        if (event?.eventName) {
+          eventName = event.eventName;
+        }
+      } catch (e) {
+        // Non-fatal if event lookup fails
+      }
+
+      // Send cancellation email (best-effort)
+      if (transporter && recipients.length > 0) {
+        const mailOptions = {
+          from: process.env.SMTP_USER,
+          to: recipients.join(","),
+          subject: `Carpool Cancelled${eventName ? ": " + eventName : ""}`,
+          text: `The carpool${eventName ? ` for ${eventName}` : ""} has been cancelled and removed.\n\nDriver: ${
+            [carpool.firstName, carpool.lastName].filter(Boolean).join(" ") ||
+            ""
+          }\nPickup: ${carpool.wlocation || ""}\nIf you have questions, reply to this email or contact the driver at ${
+            carpool.email || ""
+          }${carpool.phone ? ` / ${carpool.phone}` : ""}.`,
+        };
+        try {
+          await transporter.sendMail(mailOptions);
+        } catch (e) {
+          console.error("Failed to send carpool cancellation email:", e);
+        }
+      }
+
       // Delete the carpool from the DB
-      const carpools = await Carpool.deleteOne({
+      const deleteResult = await Carpool.deleteOne({
         _id: new ObjectId(id),
       });
       // Send a 200 status code because the carpool was deleted successfully
-      res.json(carpools);
+      res.json(deleteResult);
     } catch (err) {
-      console.error("Error retrieving carpools: " + err);
-      res.status(500).send("Error retrieving carpools");
+      console.error("Error deleting carpool: " + err);
+      res.status(500).send("Error deleting carpool");
     }
   },
 );
@@ -682,8 +669,33 @@ router.patch(
     // Get the carpool ID from the request
     try {
       const { _id, _id2 } = req.body;
+      const { transporter } = req;
       
       console.log("Removing carpooler with ID:", _id, "from carpool with ID:", _id2);
+      
+      // First, get the carpool and carpooler information before removing
+      const carpool = await Carpool.findById(new ObjectId(_id2));
+      if (!carpool) {
+        return res.status(404).send("Carpool not found");
+      }
+      
+      // Find the carpooler being removed
+      const carpoolerToRemove = carpool.carpoolers.find(c => c._id.toString() === _id);
+      if (!carpoolerToRemove) {
+        return res.status(404).send("Carpooler not found in this carpool");
+      }
+      
+      // Get event information if available
+      let eventName = "";
+      try {
+        const event = await Event.findById(carpool.nameOfEvent);
+        if (event?.eventName) {
+          eventName = event.eventName;
+        }
+      } catch (e) {
+        // Non-fatal if event lookup fails
+        console.log("Could not fetch event name:", e.message);
+      }
       
       // Update the carpool to remove the carpooler
       const carpools = await Carpool.updateOne(
@@ -697,6 +709,23 @@ router.patch(
       if (carpools.modifiedCount === 0) {
         console.error("Failed to remove carpooler, no document matched or no changes made");
         return res.status(404).send("Failed to remove carpooler");
+      }
+      
+      // Send notification email to the removed carpooler (best-effort)
+      if (transporter && carpoolerToRemove.email) {
+        const driverName = [carpool.firstName, carpool.lastName].filter(Boolean).join(" ") || "the driver";
+        const mailOptions = {
+          from: process.env.SMTP_USER,
+          to: carpoolerToRemove.email,
+          subject: `Removed from Carpool${eventName ? ": " + eventName : ""}`,
+          text: `You have been removed from the carpool${eventName ? ` for ${eventName}` : ""}.\n\nDriver: ${driverName}\nPickup: ${carpool.wlocation || ""}\n\nIf you have questions about this removal, please contact the driver at ${carpool.email || ""}${carpool.phone ? ` / ${carpool.phone}` : ""}.`,
+        };
+        try {
+          await transporter.sendMail(mailOptions);
+          console.log("Removal notification email sent to:", carpoolerToRemove.email);
+        } catch (e) {
+          console.error("Failed to send carpool removal email:", e);
+        }
       }
       
       // Send the updated carpool as a JSON response
@@ -728,6 +757,79 @@ router.patch("/carpools/:id", homeLimiter, authenticateToken, async (req, res) =
     res.status(500).send("Error updating carpools");
   }
 });
+
+// Route for driver to remove a carpooler (with notification)
+router.patch(
+  "/carpools/:carpoolId/removeCarpooler/:carpoolerId",
+  homeLimiter,
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const { carpoolId, carpoolerId } = req.params;
+      const { transporter } = req;
+      
+      console.log("Driver removing carpooler with ID:", carpoolerId, "from carpool with ID:", carpoolId);
+      
+      // First, get the carpool and carpooler information before removing
+      const carpool = await Carpool.findById(new ObjectId(carpoolId));
+      if (!carpool) {
+        return res.status(404).send("Carpool not found");
+      }
+      
+      // Find the carpooler being removed
+      const carpoolerToRemove = carpool.carpoolers.find(c => c._id.toString() === carpoolerId);
+      if (!carpoolerToRemove) {
+        return res.status(404).send("Carpooler not found in this carpool");
+      }
+      
+      // Get event information if available
+      let eventName = "";
+      try {
+        const event = await Event.findById(carpool.nameOfEvent);
+        if (event?.eventName) {
+          eventName = event.eventName;
+        }
+      } catch (e) {
+        // Non-fatal if event lookup fails
+        console.log("Could not fetch event name:", e.message);
+      }
+      
+      // Update the carpool to remove the carpooler
+      const updateResult = await Carpool.updateOne(
+        { _id: new ObjectId(carpoolId) },
+        { $pull: { carpoolers: { _id: new ObjectId(carpoolerId) } } },
+      );
+      
+      // Check if the update was successful
+      if (updateResult.modifiedCount === 0) {
+        console.error("Failed to remove carpooler, no document matched or no changes made");
+        return res.status(404).send("Failed to remove carpooler");
+      }
+      
+      // Send notification email to the removed carpooler (best-effort)
+      if (transporter && carpoolerToRemove.email) {
+        const driverName = [carpool.firstName, carpool.lastName].filter(Boolean).join(" ") || "the driver";
+        const mailOptions = {
+          from: process.env.SMTP_USER,
+          to: carpoolerToRemove.email,
+          subject: `Removed from Carpool${eventName ? ": " + eventName : ""}`,
+          text: `You have been removed from the carpool${eventName ? ` for ${eventName}` : ""} by the driver.\n\nDriver: ${driverName}\nPickup: ${carpool.wlocation || ""}\n\nIf you have questions about this removal, please contact the driver at ${carpool.email || ""}${carpool.phone ? ` / ${carpool.phone}` : ""}.`,
+        };
+        try {
+          await transporter.sendMail(mailOptions);
+          console.log("Driver removal notification email sent to:", carpoolerToRemove.email);
+        } catch (e) {
+          console.error("Failed to send carpool removal email:", e);
+        }
+      }
+      
+      res.json({ success: true, message: "Carpooler removed and notified" });
+    } catch (err) {
+      console.error("Error removing carpooler: " + err);
+      res.status(500).send("Error removing carpooler");
+    }
+  },
+);
 
 // Route to update user information
 router.patch("/users/update", homeLimiter, async (req, res) => {

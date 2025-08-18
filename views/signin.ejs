@@ -21,8 +21,8 @@
       <article class="message is-danger" id="error">
         <div class="message-header">
           <p>Warning</p>
-          <button class="delete" aria-label="delete" onclick="const element = document.getElementById('error');
-            element.remove();"></button>
+          <button class="delete" aria-label="delete" onclick="const errorElement = document.getElementById('error');
+            errorElement.remove();"></button>
         </div>
         <div class="message-body">
           <%= error %>
@@ -34,8 +34,8 @@
           <article class="message is-success" id="error">
             <div class="message-header">
               <p>Success</p>
-              <button class="delete" aria-label="delete" onclick="const element = document.getElementById('error');
-              element.remove();"></button>
+              <button class="delete" aria-label="delete" onclick="const successElement = document.getElementById('error');
+              successElement.remove();"></button>
             </div>
             <div class="message-body">
               <%= message %>
@@ -43,30 +43,23 @@
           </article>
           <% } %>
 
-            <article id="signin" class="panel is-link vertical-center" style="">
+            <article id="signin" class="panel is-link vertical-center">
               <img id="topLogo" src="EPS Logo - Transparent-4.png
-          " alt="" width="70px"
-                style="/* margin-top: -20px; *//* transform: translate(-6px,10px); */margin-left: auto;margin-right: auto;margin-bottom: 20px;margin-top: 20px;">
-              <p class="panel-heading" style="background: linear-gradient(105deg, #3273DC, #275CBF);">
+          " alt="" width="70px" class="signin-logo-top">
+              <p class="panel-heading signin-panel-heading">
                 <img id="bottomLogo" src="EPS Logo - Transparent-4.png
-            " alt="" width="60px" style="margin-top: -20px;transform: translate(-6px,10px);">
+            " alt="" width="60px" class="signin-logo-bottom">
                 Log in to EPCarpool
-
-                <span style="font-size: 1em; color: #30B700; float: right">
-                  <a class="fa-solid fa-leaf" href="/sustainabilityStatement" style="color: #30B700"></a>
-                </span>
               </p>
 
-              <div class="panel-block" style="text-align: justify">
-                <h1
-                  style="text-align: center; width: 100%; margin-left: auto; margin-right: auto; margin-top: 5px; margin-bottom: 5px">
+              <div class="panel-block signin-description">
+                <h1 class="signin-description">
                   The one place to keep track of all EPS events. Create and sign up for carpools with ease.
                 </h1>
               </div>
 
-              <button class="button is-fullwidth is-link is-outlined"
-                id = "sign-in"
-                style="margin: 5px;margin-top: 5px;  width: calc(100% - 10px)">
+              <button class="button is-fullwidth is-link is-outlined signin-button"
+                id = "sign-in">
                 @EASTSIDEPREP.ORG LOGIN
               </button>
 

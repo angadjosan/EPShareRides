@@ -60,12 +60,6 @@ const carpoolSchema = new mongoose.Schema({
   updatedAt: {
     type: Date,
     default: Date.now
-  },
-  // Category of the carpool (sports, academic, social, other)
-  category: {
-    type: String,
-    enum: ['sports', 'academic', 'social', 'other'],
-    default: 'other'
   }
 });
 

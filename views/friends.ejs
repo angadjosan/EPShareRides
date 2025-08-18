@@ -21,7 +21,7 @@
     <section class="hero is-fullheight">
       <!-- Hero head: will stick at the top -->
       <div class="hero-head">
-        <header class="navbar">
+          <header class="navbar">
           <div class="container">
             <div class="navbar-brand">
               <a class="navbar-item">
@@ -45,13 +45,12 @@
                       <a class="fa-solid fa-leaf" href="/sustainabilityStatement" style="color: #30B700"></a>
                     </span>
                     <div class="buttons" style="margin: 10px;margin-right: 0px;">
-                      <a class="button is-link is-outlined " href="/logout">
-                        Log out
-                      </a>
+                      <a class="navbar-item" href="/" style="color: #3273dc; font-weight: 600; margin-right: 10px;">Upcoming Events</a>
+                      <a class="navbar-item" href="/mycarpools" style="color: #3273dc; font-weight: 600; margin-right: 12px;">My Carpools</a>
                       <div class="navbar-item has-dropdown is-hoverable "
                         onclick="document.getElementById('navbar-dropdown').style.visibility = 'visible';">
                         <a class="button is-link" id="name_button"
-                          style="background: linear-gradient(105deg, #3273DC, #275CBF);">
+                          style="background: #3273DC;">
                           <%= firstName %>
                             <%= lastName %>
                               <i style="margin-left: 5px;" class="fas fa-angle-down" aria-hidden="true"></i>
@@ -59,7 +58,7 @@
                         <div id="filler"
                           style="width: 130px; background-color: transparent; height: 20px; position: absolute; margin-top: -15px;">
                         </div>
-                        <div class="navbar-dropdown" id="navbar-dropdown">
+                        <div class="navbar-dropdown" id="navbar-dropdown" style="background: white; border: 1px solid #dbdbdb;">
                           <a class="navbar-item" href="/updateSettings">
                             Update settings
                           </a>
@@ -70,6 +69,9 @@
                             Sustainability statement
                           </a>
                           <hr class="navbar-divider">
+                          <a class="navbar-item" href="/logout">
+                            Log out
+                          </a>
                           <div class="navbar-item">
                             Version Beta 0.1.0
                           </div>
@@ -85,7 +87,7 @@
         </header>
       </div>
       <!-- Hero content: will be in the middle -->
-      <div class="hero-body" style="">
+  <div class="hero-body">
         <div class="container has-text-centered">
           <!-- <p class="title">
               Title
@@ -112,18 +114,7 @@
           </table>
         </div>
       </div>
-      <!-- Hero footer: will stick at the bottom -->
-      <div class="hero-foot">
-        <nav class="tabs is-boxed is-fullwidth">
-          <div class="container">
-            <ul>
-              <li><a href="/" class="white">Upcoming Events</a></li>
-              <li "><a href=" /mycarpools" class="white">My Carpools</a></li>
-              <li class="is-active"><a href="/friends" class="is-active1">Friends</a></li>
-            </ul>
-          </div>
-        </nav>
-      </div>
+      <!-- hero-foot removed: navigation links moved to navbar -->
     </section>
   </main>
   <script defer>

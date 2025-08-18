@@ -23,54 +23,26 @@ function formatNumber(value) {
  * @param {number} kgSavings - CO2 savings in kilograms
  */
 function updateCO2Equivalents(kgSavings) {
-  // A sibling element #co2-equivalents is placed near #co2-savings
-  const details = document.getElementById('co2-equivalents');
-  if (!details) return;
-  const grams = kgSavings * 1000;
-  const bottles = Math.round(grams / 83);
-  const servings = Math.round(grams / 330);
-  details.textContent = `= the CO2 that goes into ${bottles} plastic water bottles or ${servings} servings of rice`;
-
+  // Equivalents removed per user request
+  return;
 }
 
 /**
- * Update the CO2 savings display in the UI with animation
+ * Update the CO2 savings display in the UI without animation
  * @param {number} newSavings - The new CO2 savings value in kg
  */
 function updateCO2SavingsDisplay(newSavings) {
   const co2Element = document.getElementById('co2-savings');
   if (!co2Element) return;
 
-  // Animate the value change
-  const start = currentSavings;
+  // Update directly without animation
   const end = parseFloat(newSavings);
-  const duration = CONFIG.animationDuration;
-  const startTime = performance.now();
-
-  function animate(currentTime) {
-    const elapsed = currentTime - startTime;
-    const progress = Math.min(elapsed / duration, 1);
-    
-    // Ease-in-out function for smooth animation
-    const easedProgress = 0.5 - Math.cos(progress * Math.PI) / 2;
-    const currentValue = start + (end - start) * easedProgress;
-    
-    // Update the display
-    co2Element.textContent = `${formatNumber(currentValue)} kg CO₂ saved`;
-    
-    // Continue animation if not complete
-    if (progress < 1) {
-      requestAnimationFrame(animate);
-    } else {
-      currentSavings = end; // Update the current value after animation completes
-
-      updateCO2Equivalents(currentSavings);
-
-    }
-  }
-
-  // Start the animation
-  requestAnimationFrame(animate);
+  currentSavings = end;
+  
+  // Update the display immediately
+  co2Element.textContent = `${formatNumber(currentSavings)} kg CO₂ saved`;
+  
+  // Skip equivalents update since it's removed
 }
 
 /**
