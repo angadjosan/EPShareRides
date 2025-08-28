@@ -64,7 +64,7 @@ app.use('/', authRoutes);
 // Simple rate limiter to prevent abuse
 const homeLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
+  max: 1000000000000000 // limit each IP to 100 requests per windowMs
 });
 
 app.get("/", homeLimiter, authenticateToken, async (req, res) => {
