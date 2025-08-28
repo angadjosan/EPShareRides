@@ -7,7 +7,7 @@ const rateLimit = require('express-rate-limit');
 const mongoose = require("mongoose");
 
 const RATE_LIMITER_TIME_PERIOD = 15 * 60 * 1000
-const RATE_LIMITER_REQUESTS = 100;
+const RATE_LIMITER_REQUESTS = 10000000000000000000000000000000000;
 
 const User = require("../schemas/User.model.js");
 const Event = require("../schemas/Event.model.js");
