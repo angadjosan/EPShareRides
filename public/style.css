@@ -693,7 +693,7 @@ body {
 }
 
 /* Plus icon for create button */
-.modern-btn-secondary::before {
+.modern-btn-secondary:not([id$="_offer"])::before {
   content: "+";
   font-weight: bold;
   font-size: 1.1rem;

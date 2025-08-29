@@ -21,7 +21,7 @@
     <section class="hero is-fullheight">
       <!-- Hero head: will stick at the top -->
       <div class="hero-head">
-          <header class="navbar">
+        <header class="navbar">
           <div class="container">
             <div class="navbar-brand">
               <a class="navbar-item">
@@ -30,7 +30,7 @@
                   <h1 class="title title-with-logo">EPCarpool</h1>
                   <!-- TODO: make the icon blue and remove button background -->
                   <button class="info-button" onclick="showDisclaimer()">
-                      <i class="fas fa-info-circle"></i>
+                    <i class="fas fa-info-circle"></i>
                   </button>
                 </div>
               </a>
@@ -112,7 +112,8 @@
             </div>
 
             <div id="createEventButton">
-              <button id="buttonzx" class="button is-link is-outlined" onclick="openCreateEventModal()">Create event</button>
+              <button id="buttonzx" class="button is-link is-outlined" onclick="openCreateEventModal()">Create
+                event</button>
             </div>
           </div>
           <!--Start here  -->
@@ -148,7 +149,8 @@
           </div>
           <div class="field">
             <a class="panel-block" class="carpool-panel-block">
-              <input class="input carpool-inputs-margin" id="email" class="input" type="email" placeholder="Driver email">
+              <input class="input carpool-inputs-margin" id="email" class="input" type="email"
+                placeholder="Driver email">
               <input id="phone" class="input" type="tel" placeholder="Driver phone number">
             </a>
           </div>
@@ -330,7 +332,8 @@
           </div>
           <div class="field">
             <a class="panel-block" class="carpool-panel-block">
-              <input class="input carpool-inputs-margin" id="email" class="input" type="email" placeholder="Driver email">
+              <input class="input carpool-inputs-margin" id="email" class="input" type="email"
+                placeholder="Driver email">
               <input id="phone" class="input" type="tel" placeholder="Driver phone number">
             </a>
           </div>
@@ -450,245 +453,244 @@
     //Don't worry about it
     console.error("HTTP ERROR: 418 I'm a teapot");
 
-function addressAutocomplete(containerElement, idName, callback, options) {
-          // create input element
-          var inputElement = document.createElement("input");
-          inputElement.setAttribute("type", "text");
-          inputElement.setAttribute("placeholder", options.placeholder);
-          inputElement.setAttribute("id", idName);
-          inputElement.classList.add("input");
-          containerElement.appendChild(inputElement);
+    function addressAutocomplete(containerElement, idName, callback, options) {
+      // create input element
+      var inputElement = document.createElement("input");
+      inputElement.setAttribute("type", "text");
+      inputElement.setAttribute("placeholder", options.placeholder);
+      inputElement.setAttribute("id", idName);
+      inputElement.classList.add("input");
+      containerElement.appendChild(inputElement);
 
 
 
-          // add input field clear button
-          var clearButton = document.createElement("div");
-          clearButton.classList.add("clear-button");
-          addIcon(clearButton);
-          clearButton.addEventListener("click", (e) => {
-            e.stopPropagation();
-            inputElement.value = '';
-            callback(null);
-            clearButton.classList.remove("visible");
-            closeDropDownList();
-          });
-          containerElement.appendChild(clearButton);
+      // add input field clear button
+      var clearButton = document.createElement("div");
+      clearButton.classList.add("clear-button");
+      addIcon(clearButton);
+      clearButton.addEventListener("click", (e) => {
+        e.stopPropagation();
+        inputElement.value = '';
+        callback(null);
+        clearButton.classList.remove("visible");
+        closeDropDownList();
+      });
+      containerElement.appendChild(clearButton);
 
-          /* Current autocomplete items data (GeoJSON.Feature) */
-          var currentItems;
+      /* Current autocomplete items data (GeoJSON.Feature) */
+      var currentItems;
 
-          /* Active request promise reject function. To be able to cancel the promise when a new request comes */
-          var currentPromiseReject;
+      /* Active request promise reject function. To be able to cancel the promise when a new request comes */
+      var currentPromiseReject;
 
-          /* Focused item in the autocomplete list. This variable is used to navigate with buttons */
-          var focusedItemIndex;
+      /* Focused item in the autocomplete list. This variable is used to navigate with buttons */
+      var focusedItemIndex;
 
-          /* Execute a function when someone writes in the text field: */
-          inputElement.addEventListener("input", function (e) {
-            var currentValue = this.value;
+      /* Execute a function when someone writes in the text field: */
+      inputElement.addEventListener("input", function (e) {
+        var currentValue = this.value;
 
-            // Add null checks before accessing classList
-            var ac1 = document.getElementById("autocomplete-container");
-            var ac2 = document.getElementById("autocomplete-container2");
-            var ac3 = document.getElementById("autocomplete-container3");
-            if (ac1) ac1.classList.add("is-loading");
-            if (ac2) ac2.classList.add("is-loading");
-            if (ac3) ac3.classList.add("is-loading");
+        // Add null checks before accessing classList
+        var ac1 = document.getElementById("autocomplete-container");
+        var ac2 = document.getElementById("autocomplete-container2");
+        var ac3 = document.getElementById("autocomplete-container3");
+        if (ac1) ac1.classList.add("is-loading");
+        if (ac2) ac2.classList.add("is-loading");
+        if (ac3) ac3.classList.add("is-loading");
 
-            /* Close any already open dropdown list */
-            closeDropDownList();
+        /* Close any already open dropdown list */
+        closeDropDownList();
 
-            // Cancel previous request promise
-            if (currentPromiseReject) {
-              currentPromiseReject({
-                canceled: true
-              });
-            }
-
-            if (!currentValue) {
-              clearButton.classList.remove("visible");
-              return false;
-            }
-
-            // Show clearButton when there is a text
-            clearButton.classList.add("visible");
-
-            /* Create a new promise and send geocoding request */
-            var promise = new Promise((resolve, reject) => {
-              currentPromiseReject = reject;
-
-              // TODO: Fix this
-              var apiKey = "992ef3d60d434f2283ea8c6d70a4898d";
-              var url = `https://api.geoapify.com/v1/geocode/autocomplete?text=${encodeURIComponent(currentValue)}&limit=5&apiKey=${apiKey}`;
-
-              if (options.type) {
-                url += `&type=${options.type}`;
-              }
-
-              fetch(url)
-                .then(response => {
-                  // check if the call was successful
-                  if (response.ok) {
-                    response.json().then(data => resolve(data));
-
-                  } else {
-                    response.json().then(data => reject(data));
-                  }
-                });
-            });
-
-            promise.then((data) => {
-              if (ac1) ac1.classList.remove("is-loading");
-              if (ac2) ac2.classList.remove("is-loading");
-              if (ac3) ac3.classList.remove("is-loading");
-              currentItems = data.features;
-
-              /*create a DIV element that will contain the items (values):*/
-              var autocompleteItemsElement = document.createElement("div");
-              autocompleteItemsElement.setAttribute("class", "autocomplete-items");
-              containerElement.appendChild(autocompleteItemsElement);
-
-              /* For each item in the results */
-              data.features.forEach((feature, index) => {
-                /* Create a DIV element for each element: */
-                var itemElement = document.createElement("DIV");
-                /* Set formatted address as item value */
-                itemElement.innerHTML = feature.properties.formatted;
-                itemElement.classList.add("hoverAddress");
-                /* Set the value for the autocomplete text field and notify: */
-                itemElement.addEventListener("click", function (e) {
-                  inputElement.value = currentItems[index].properties.formatted;
-
-
-
-                  callback(currentItems[index]);
-
-                  /* Close the list of autocompleted values: */
-                  closeDropDownList();
-                });
-
-                autocompleteItemsElement.appendChild(itemElement);
-              });
-            }, (err) => {
-              if (!err.canceled) {
-                console.log(err);
-              }
-            });
-          });
-
-          /* Add support for keyboard navigation */
-          inputElement.addEventListener("keydown", function (e) {
-            var autocompleteItemsElement = containerElement.querySelector(".autocomplete-items");
-            if (autocompleteItemsElement) {
-              var itemElements = autocompleteItemsElement.getElementsByTagName("div");
-              if (e.keyCode == 40) {
-                e.preventDefault();
-                /*If the arrow DOWN key is pressed, increase the focusedItemIndex variable:*/
-                focusedItemIndex = focusedItemIndex !== itemElements.length - 1 ? focusedItemIndex + 1 : 0;
-             /*and and make the current item more visible:*/-
-                  setActive(itemElements, focusedItemIndex);
-              } else if (e.keyCode == 38) {
-                e.preventDefault();
-
-                /*If the arrow UP key is pressed, decrease the focusedItemIndex variable:*/
-                focusedItemIndex = focusedItemIndex !== 0 ? focusedItemIndex - 1 : focusedItemIndex = (itemElements.length - 1);
-                /*and and make the current item more visible:*/
-                setActive(itemElements, focusedItemIndex);
-              } else if (e.keyCode == 13) {
-                /* If the ENTER key is pressed and value as selected, close the list*/
-                e.preventDefault();
-                if (focusedItemIndex > -1) {
-                  closeDropDownList();
-                }
-              }
-            } else {
-              if (e.keyCode == 40) {
-                /* Open dropdown list again */
-                var event = document.createEvent('Event');
-                event.initEvent('input', true, true);
-                inputElement.dispatchEvent(event);
-              }
-            }
-          });
-
-          function setActive(items, index) {
-            if (!items || !items.length) return false;
-
-            for (var i = 0; i < items.length; i++) {
-              items[i].classList.remove("autocomplete-active");
-            }
-
-            /* Add class "autocomplete-active" to the active element*/
-            items[index].classList.add("autocomplete-active");
-
-            // Change input value and notify
-            inputElement.value = currentItems[index].properties.formatted;
-            callback(currentItems[index]);
-          }
-
-          function closeDropDownList() {
-            var autocompleteItemsElement = containerElement.querySelector(".autocomplete-items");
-            if (autocompleteItemsElement) {
-              containerElement.removeChild(autocompleteItemsElement);
-            }
-
-            focusedItemIndex = -1;
-          }
-
-          function addIcon(buttonElement) {
-            var svgElement = document.createElementNS("", 'svg');
-            svgElement.setAttribute('viewBox', "0 0 24 24");
-            svgElement.setAttribute('height', "24");
-
-
-          }
-    /* Close the autocomplete dropdown when the document is clicked. 
-          Skip, when a user clicks on the input field */
-          document.addEventListener("click", function (e) {
-            if (e.target !== inputElement) {
-              closeDropDownList();
-            } else if (!containerElement.querySelector(".autocomplete-items")) {
-              // open dropdown list again
-              var event = document.createEvent('Event');
-              event.initEvent('input', true, true);
-              inputElement.dispatchEvent(event);
-            }
+        // Cancel previous request promise
+        if (currentPromiseReject) {
+          currentPromiseReject({
+            canceled: true
           });
         }
 
+        if (!currentValue) {
+          clearButton.classList.remove("visible");
+          return false;
+        }
+
+        // Show clearButton when there is a text
+        clearButton.classList.add("visible");
+
+        /* Create a new promise and send geocoding request */
+        var promise = new Promise((resolve, reject) => {
+          currentPromiseReject = reject;
+
+          // TODO: Fix this
+          var apiKey = "992ef3d60d434f2283ea8c6d70a4898d";
+          var url = `https://api.geoapify.com/v1/geocode/autocomplete?text=${encodeURIComponent(currentValue)}&limit=5&apiKey=${apiKey}`;
+
+          if (options.type) {
+            url += `&type=${options.type}`;
+          }
+
+          fetch(url)
+            .then(response => {
+              // check if the call was successful
+              if (response.ok) {
+                response.json().then(data => resolve(data));
+
+              } else {
+                response.json().then(data => reject(data));
+              }
+            });
+        });
+
+        promise.then((data) => {
+          if (ac1) ac1.classList.remove("is-loading");
+          if (ac2) ac2.classList.remove("is-loading");
+          if (ac3) ac3.classList.remove("is-loading");
+          currentItems = data.features;
+
+          /*create a DIV element that will contain the items (values):*/
+          var autocompleteItemsElement = document.createElement("div");
+          autocompleteItemsElement.setAttribute("class", "autocomplete-items");
+          containerElement.appendChild(autocompleteItemsElement);
+
+          /* For each item in the results */
+          data.features.forEach((feature, index) => {
+            /* Create a DIV element for each element: */
+            var itemElement = document.createElement("DIV");
+            /* Set formatted address as item value */
+            itemElement.innerHTML = feature.properties.formatted;
+            itemElement.classList.add("hoverAddress");
+            /* Set the value for the autocomplete text field and notify: */
+            itemElement.addEventListener("click", function (e) {
+              inputElement.value = currentItems[index].properties.formatted;
+
+
+
+              callback(currentItems[index]);
+
+              /* Close the list of autocompleted values: */
+              closeDropDownList();
+            });
+
+            autocompleteItemsElement.appendChild(itemElement);
+          });
+        }, (err) => {
+          if (!err.canceled) {
+            console.log(err);
+          }
+        });
+      });
+
+      /* Add support for keyboard navigation */
+      inputElement.addEventListener("keydown", function (e) {
+        var autocompleteItemsElement = containerElement.querySelector(".autocomplete-items");
+        if (autocompleteItemsElement) {
+          var itemElements = autocompleteItemsElement.getElementsByTagName("div");
+          if (e.keyCode == 40) {
+            e.preventDefault();
+            /*If the arrow DOWN key is pressed, increase the focusedItemIndex variable:*/
+            focusedItemIndex = focusedItemIndex !== itemElements.length - 1 ? focusedItemIndex + 1 : 0;
+             /*and and make the current item more visible:*/-
+              setActive(itemElements, focusedItemIndex);
+          } else if (e.keyCode == 38) {
+            e.preventDefault();
+
+            /*If the arrow UP key is pressed, decrease the focusedItemIndex variable:*/
+            focusedItemIndex = focusedItemIndex !== 0 ? focusedItemIndex - 1 : focusedItemIndex = (itemElements.length - 1);
+            /*and and make the current item more visible:*/
+            setActive(itemElements, focusedItemIndex);
+          } else if (e.keyCode == 13) {
+            /* If the ENTER key is pressed and value as selected, close the list*/
+            e.preventDefault();
+            if (focusedItemIndex > -1) {
+              closeDropDownList();
+            }
+          }
+        } else {
+          if (e.keyCode == 40) {
+            /* Open dropdown list again */
+            var event = document.createEvent('Event');
+            event.initEvent('input', true, true);
+            inputElement.dispatchEvent(event);
+          }
+        }
+      });
+
+      function setActive(items, index) {
+        if (!items || !items.length) return false;
+
+        for (var i = 0; i < items.length; i++) {
+          items[i].classList.remove("autocomplete-active");
+        }
+
+        /* Add class "autocomplete-active" to the active element*/
+        items[index].classList.add("autocomplete-active");
+
+        // Change input value and notify
+        inputElement.value = currentItems[index].properties.formatted;
+        callback(currentItems[index]);
+      }
+
+      function closeDropDownList() {
+        var autocompleteItemsElement = containerElement.querySelector(".autocomplete-items");
+        if (autocompleteItemsElement) {
+          containerElement.removeChild(autocompleteItemsElement);
+        }
+
+        focusedItemIndex = -1;
+      }
+
+      function addIcon(buttonElement) {
+        var svgElement = document.createElementNS("", 'svg');
+        svgElement.setAttribute('viewBox', "0 0 24 24");
+        svgElement.setAttribute('height', "24");
+
+
+      }
+      /* Close the autocomplete dropdown when the document is clicked. 
+            Skip, when a user clicks on the input field */
+      document.addEventListener("click", function (e) {
+        if (e.target !== inputElement) {
+          closeDropDownList();
+        } else if (!containerElement.querySelector(".autocomplete-items")) {
+          // open dropdown list again
+          var event = document.createEvent('Event');
+          event.initEvent('input', true, true);
+          inputElement.dispatchEvent(event);
+        }
+      });
+    }
+
     function createEventInputs() {
+      if (!document.getElementById("create_address")) {
         addressAutocomplete(document.getElementById("autocomplete-container3"), "create_address", (data) => {
           arr.push(data.properties.formatted);
         }, {
-
           placeholder: "Enter an address here"
+        });
+      }
+    }
+    // Restrict event categories to allowed values
+    try {
+      var catSelect = document.getElementById('ecategory');
+      if (catSelect) {
+        catSelect.innerHTML = "" +
+          "<option value='School'>School</option>" +
+          "<option value='Sports'>Sports</option>" +
+          "<option value='Extra School Events'>Extra School Events</option>";
+      }
+    } catch (e) { console.warn('Failed to set category options', e); }
 
-                    });
+  </script>
+  </span>
+  </div>
+  <!--Start here  -->
+  <div id="eventsJS">
+  </div>
+  </div>
+  </div>
 
-        // Restrict event categories to allowed values
-        try {
-          var catSelect = document.getElementById('ecategory');
-          if (catSelect) {
-            catSelect.innerHTML = "" +
-              "<option value='School'>School</option>" +
-              "<option value='Sports'>Sports</option>" +
-              "<option value='Extra School Events'>Extra School Events</option>";
-          }
-        } catch (e) { console.warn('Failed to set category options', e); }
-
-                  }
-                </script>
-            </span>
-          </div>
-          <!--Start here  -->
-          <div id="eventsJS">
-          </div>
-        </div>
-      </div>
-
-      <!-- Hero footer: will stick at the bottom -->
-      <!-- hero-foot removed: navigation links moved to navbar -->
-    </section>
+  <!-- Hero footer: will stick at the bottom -->
+  <!-- hero-foot removed: navigation links moved to navbar -->
+  </section>
   </main>
   <script></script>
   <!-- start here -->
@@ -713,7 +715,8 @@ function addressAutocomplete(containerElement, idName, callback, options) {
           </div>
           <div class="field">
             <a class="panel-block" class="carpool-panel-block">
-              <input class="input carpool-inputs-margin" id="email" class="input" type="email" placeholder="Driver email">
+              <input class="input carpool-inputs-margin" id="email" class="input" type="email"
+                placeholder="Driver email">
               <input id="phone" class="input" type="tel" placeholder="Driver phone number">
             </a>
           </div>
@@ -1129,21 +1132,21 @@ function addressAutocomplete(containerElement, idName, callback, options) {
             function searchEvents() {
               const searchTerm = document.getElementById("searchInput").value.toLowerCase();
               document.getElementById("eventsJS").innerHTML = ``;
-              
+
               for (var i = 0; i < eventsW2.length; i++) {
                 var obj = eventsW2[i];
                 var date = formatDate(obj["date"]);
                 var time = new Date(obj["date"]).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
-                
+
                 // Calculate available carpools for this event
                 var availableCarpools = userData1.filter(carpool => carpool.nameOfEvent === obj["_id"]).length;
-                
+
                 // Check if the search term matches event name, location, or category
-                const matchesSearch = searchTerm === '' || 
+                const matchesSearch = searchTerm === '' ||
                   obj["eventName"].toLowerCase().includes(searchTerm) ||
                   obj["wlocation"].toLowerCase().includes(searchTerm) ||
                   obj["category"].toLowerCase().includes(searchTerm);
-                
+
                 if (matchesSearch) {
                   document.getElementById("eventsJS").innerHTML += `
                     <div class="modern-event-card">
@@ -1187,11 +1190,6 @@ function addressAutocomplete(containerElement, idName, callback, options) {
 
               function openModal($el) {
                 $el.classList.add('is-active');
-
-
-
-
-
 
                 document.getElementById("registerJS").innerHTML = ``;
 
@@ -1324,9 +1322,9 @@ function addressAutocomplete(containerElement, idName, callback, options) {
 
 
 
-        
-      
-        
+
+
+
 
         addressAutocomplete(document.getElementById("autocomplete-container"), "address-input", (data) => {
           arr.push(data.properties.formatted);
@@ -1336,7 +1334,7 @@ function addressAutocomplete(containerElement, idName, callback, options) {
 
         });
 
-    
+
         addressAutocomplete(document.getElementById("autocomplete-container2"), "address-input2", (data) => {
           arr.push(data.properties.formatted);
         }, {
@@ -1344,9 +1342,9 @@ function addressAutocomplete(containerElement, idName, callback, options) {
           placeholder: "Enter an address here"
 
         });
-        
 
-       
+
+
 
         // Code for the second function
 
@@ -1448,7 +1446,7 @@ function addressAutocomplete(containerElement, idName, callback, options) {
 
     async function offerACar(firstName, lastName, email, phone, carMake, seats, route, wlocation, carpoolers, eventId, arrivalTime) {
       try {
-      
+
         // First, fetch the event to get its category and address
         const eventResponse = await fetch(`/api/events/${eventId}`);
         if (!eventResponse.ok) {
@@ -1577,11 +1575,11 @@ function addressAutocomplete(containerElement, idName, callback, options) {
       const R = 3958.8; // Radius of the Earth in miles
       const dLat = (lat2 - lat1) * Math.PI / 180;
       const dLon = (lon2 - lon1) * Math.PI / 180;
-      const a = 
-        Math.sin(dLat/2) * Math.sin(dLat/2) +
-        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-        Math.sin(dLon/2) * Math.sin(dLon/2);
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
       return R * c; // Distance in miles
     }
 
@@ -1590,7 +1588,7 @@ function addressAutocomplete(containerElement, idName, callback, options) {
       var personName = "<%= firstName %> <%= lastName %>";
       var email = "<%= email %>";
       var carpoool;
-      
+
       if (selectedCarpool != null) {
         for (var i = 0; i < userData1.length; i++) {
           carpoool = userData1[i];
@@ -1598,20 +1596,20 @@ function addressAutocomplete(containerElement, idName, callback, options) {
             // Get coordinates for the user's address and carpool address
             const userCoords = await getCoordinates(newArray);
             const carpoolCoords = await getCoordinates(carpoool.wlocation || carpoool.address);
-            
+
             // Calculate straight-line distance in miles
             let distanceMiles = calculateDistance(
-              userCoords.lat, 
-              userCoords.lng, 
-              carpoolCoords.lat, 
+              userCoords.lat,
+              userCoords.lng,
+              carpoolCoords.lat,
               carpoolCoords.lng
             );
-            
+
             // Ensure minimum distance of 1 mile and round to 1 decimal place
             distanceMiles = Math.max(1, parseFloat(distanceMiles.toFixed(1)));
-            
+
             const numPassengers = carpoool.carpoolers.length + 1; // Including the new passenger
-            
+
             carpoool["carpoolers"].push({
               "address": newArray,
               "carpool": selectedCarpool
@@ -1645,7 +1643,7 @@ function addressAutocomplete(containerElement, idName, callback, options) {
                     numPassengers: numPassengers
                   }
                 }));
-                
+
                 window.location.href = response.url;
               }
             } catch (error) {
@@ -1690,27 +1688,27 @@ function addressAutocomplete(containerElement, idName, callback, options) {
       });
       category = document.getElementById("ecategory").value;
       // Normalize category to allowed values just in case
-      if (["School","Sports","Extra School Events"].indexOf(category) === -1) {
+      if (["School", "Sports", "Extra School Events"].indexOf(category) === -1) {
         category = "School";
       }
-      
+
       // Get coordinates for the user's address and event location
       const userCoords = await getCoordinates(address);
       const eventCoords = await getCoordinates(wlocation);
-      
+
       // Calculate straight-line distance in miles
       let distanceMiles = calculateDistance(
-        userCoords.lat, 
-        userCoords.lng, 
-        eventCoords.lat, 
+        userCoords.lat,
+        userCoords.lng,
+        eventCoords.lat,
         eventCoords.lng
       );
-      
+
       // Ensure minimum distance of 1 mile and round to 1 decimal place
       distanceMiles = Math.max(1, parseFloat(distanceMiles.toFixed(1)));
-      
+
       const numPassengers = 1; // Just the driver initially
-      
+
       const data = {
         eventName,
         wlocation,
@@ -1732,7 +1730,7 @@ function addressAutocomplete(containerElement, idName, callback, options) {
           },
           body: jsonData,
         });
-        
+
         console.log(response);
       } catch (error) {
         console.error("Error creating event:", error);
@@ -1789,9 +1787,9 @@ function addressAutocomplete(containerElement, idName, callback, options) {
           Praneel, and Angad.</p>
       </section>
       <footer class="modal-card-foot">
-         <div class="buttons">
-            <div class="button center is-link disclaimer-close-btn" onclick="closeDisclaimer()">Close</div>
-          </div>
+        <div class="buttons">
+          <div class="button center is-link disclaimer-close-btn" onclick="closeDisclaimer()">Close</div>
+        </div>
       </footer>
     </div>
   </div>
@@ -1804,7 +1802,7 @@ function addressAutocomplete(containerElement, idName, callback, options) {
       document.getElementById('disclaimer-modal').classList.remove('is-active');
     }
   </script>
-  
+
   <!-- CO2 Tracking Scripts -->
   <script src="/js/co2Utils.js"></script>
   <script>
@@ -1813,10 +1811,10 @@ function addressAutocomplete(containerElement, idName, callback, options) {
       try {
         const { distanceMiles, numPassengers } = event.detail;
         const result = await updateCO2SavingsForCarpool(distanceMiles, numPassengers);
-        
+
         if (result.success) {
           console.log(`CO2 savings updated: ${formatCO2Savings(result.co2Savings)}`);
-          
+
           // Show a success message to the user
           const notification = document.createElement('div');
           notification.className = 'notification is-success is-light';
@@ -1831,7 +1829,7 @@ function addressAutocomplete(containerElement, idName, callback, options) {
             <p>Your total CO₂ savings: <strong>${formatCO2Savings(parseFloat(document.getElementById('co2-savings').textContent) + result.co2Savings)}</strong></p>
           `;
           document.body.appendChild(notification);
-          
+
           // Auto-remove notification after 5 seconds
           setTimeout(() => {
             notification.remove();
@@ -1843,7 +1841,7 @@ function addressAutocomplete(containerElement, idName, callback, options) {
         console.error('Error handling carpool creation:', error);
       }
     });
-    
+
     // Also listen for carpool-joined events (same as created for now)
     document.addEventListener('carpool-joined', (event) => {
       document.dispatchEvent(new CustomEvent('carpool-created', { detail: event.detail }));
