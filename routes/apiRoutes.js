@@ -132,7 +132,11 @@ router.post("/joinCarpool", homeLimiter, authenticateToken, async (req, res) => 
       text: `${user.firstName} ${user.lastName} (${user.email}) has requested to join your carpool for the event: ${event ? event.eventName : 'Unknown Event'}.\n\nPlease log in to the app to approve or deny this request.`
     };
     try {
-      await transporter.sendMail(mailOptionsToOwner);
+      if (transporter) {
+        await transporter.sendMail(mailOptionsToOwner);
+      } else {
+        console.warn('Transporter not configured, skipping join request email to owner');
+      }
     } catch (e) {
       console.error('Failed to send join request email to owner:', e);
     }
@@ -218,7 +222,11 @@ router.post("/carpools/:id/approve", homeLimiter, authenticateToken, async (req,
 ${approve ? `🌱 By joining this carpool, you've helped save approximately ${(carpool.distanceMiles * 0.4).toFixed(2)} kg of CO2 emissions!` : ''}`
     };
     try {
-      await transporter.sendMail(mailOptionsToRequester);
+      if (transporter) {
+        await transporter.sendMail(mailOptionsToRequester);
+      } else {
+        console.warn('Transporter not configured, skipping approval/denial email to requester');
+      }
     } catch (e) {
       console.error('Failed to send approval/denial email to requester:', e);
     }

@@ -35,6 +35,24 @@ const {
   authenticateToken,
 } = require("./utils/authUtils");
 
+// Configure nodemailer (needs to be defined before middleware usage)
+// Only configure if SMTP credentials are available
+let transporter = null;
+if (process.env["SMTP_USER"] && process.env["SMTP_PASS"]) {
+  transporter = nodemailer.createTransport({
+    service: "Gmail",
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: {
+      user: process.env["SMTP_USER"],
+      pass: process.env["SMTP_PASS"]
+    }
+  });
+} else {
+  console.warn('SMTP credentials not found. Email functionality will be disabled.');
+}
+
 // Initialize Express server
 const app = express();
 
@@ -215,18 +233,6 @@ app.use((req, res) => {
   res.status(404).render("404"); // Render 404 page
 });
 
-// Configure nodemailer (replace with your SMTP credentials)
-const transporter = nodemailer.createTransport({
-  service: "Gmail",
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env["SMTP_USER"],
-    pass: process.env["SMTP_PASS"]
-  }
-});
-
 // Cron job: every 5 minutes, check for carpools 2 hours from now
 cron.schedule('*/5 * * * *', async () => {
   const now = new Date();
@@ -256,7 +262,11 @@ If you have questions, contact your driver at ${carpool.email} or ${carpool.phon
 `
     };
     try {
-      await transporter.sendMail(mailOptions);
+      if (transporter) {
+        await transporter.sendMail(mailOptions);
+      } else {
+        console.warn('Transporter not configured, skipping email notification');
+      }
     } catch (e) {
       console.error('Failed to send carpool reminder email:', e);
     }
@@ -284,8 +294,8 @@ mongoose
     console.log("Successfully connected to MongoDB");
     console.log("MongoDB connection state:", mongoose.connection.readyState);
 
-    app.listen(process.env["PORT"], () => {
-      console.log(`Server started on port ${process.env["PORT"]}`);
+    app.listen(port, () => {
+      console.log(`Server started on port ${port}`);
     });
   })
   .catch((err) => {
