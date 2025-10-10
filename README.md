@@ -25,7 +25,12 @@ and the app will start in dev using nodemon.
 - `schemas/`: Contains Mongoose schemas for the database models.
 - `utils/`: Contains utility functions for authentication.
 
+## Codebase Statistics
+
+- Total lines of code: 27862
+
 ## Contributing
+
 1. **Code Style Guidelines**:
    - Use camelCase for variables and functions.
    - Use PascalCase for classes and models.
