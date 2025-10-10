@@ -1543,6 +1543,12 @@ textarea::placeholder { color: #5c7467; }
     margin-bottom: -20px;
 }
 
+/* Fix button movement on hover by maintaining consistent dimensions */
+.disclaimer-close-btn:hover {
+    transform: translate(-50%, -50%) !important;
+    box-shadow: none !important;
+}
+
 /* CO2 styling for carpool cards - preserves original alignment but adds navbar styling */
 .co2-link-2 {
   display: inline-flex;
