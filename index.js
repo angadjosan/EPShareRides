@@ -14,7 +14,6 @@ const cron = require('node-cron');
 const nodemailer = require('nodemailer');
  
 
-
 // Import Schemas from MongoDB
 const User = require("./schemas/User.model.js");
 const Event = require("./schemas/Event.model.js");
