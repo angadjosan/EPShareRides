@@ -27,7 +27,7 @@ and the app will start in dev using nodemon.
 
 ## Codebase Statistics
 
-- Total lines of code: 27862
+- Total lines of code: 10871
 
 ## Contributing
 

@@ -14,6 +14,7 @@ def main():
     for dirpath, dirnames, filenames in os.walk(root_dir):
         if 'node_modules' in dirnames:
             dirnames.remove('node_modules')
+            filenames.remove('package-lock.json')
         for filename in filenames:
             if any(filename.endswith(ext) for ext in extensions) and 'min.' not in filename:
                 filepath = os.path.join(dirpath, filename)
