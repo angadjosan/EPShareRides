@@ -102,7 +102,7 @@
                           <a class="navbar-item" href="/updateSettings">
                             Update settings
                           </a>
-                          <a class="navbar-item" href="https://forms.office.com/r/deCSjA7bCR">
+                          <a class="navbar-item" href="https://forms.office.com/Pages/ResponsePage.aspx?id=ix5osiDdz0axYzcaLXxgFJEzcgSzDSBAmZEyMRzHSWZUODNISkdGQzZWMEs2RFc4RTY1REFEQktDMS4u">
                             Report a bug
                           </a>
                           <a class="navbar-item" href="/sustainabilityStatement">
@@ -112,8 +112,8 @@
                           <a class="navbar-item" href="/logout">
                             Log out
                           </a>
-                          <div class="navbar-item">
-                            Version <%= process.env.VERSION %>
+                          <div class="navbar-item" style="color: #b5b5b5; cursor: default; pointer-events: none;">
+                            v<%= process.env.VERSION %>
                           </div>
                         </div>
                       </div>
@@ -1280,14 +1280,20 @@
       /* Focused item in the autocomplete list. This variable is used to navigate with buttons */
       var focusedItemIndex;
 
+      /* Debounce timer */
+      var debounceTimer;
+
       /* Execute a function when someone writes in the text field: */
       inputElement.addEventListener("input", function (e) {
          var currentValue = this.value;
 
-         document.getElementById("autocomplete-container").classList.add("is-loading");
-
          /* Close any already open dropdown list */
          closeDropDownList();
+
+         // Clear debounce timer
+         if (debounceTimer) {
+            clearTimeout(debounceTimer);
+         }
 
          // Cancel previous request promise
          if (currentPromiseReject) {
@@ -1298,70 +1304,85 @@
 
          if (!currentValue) {
             clearButton.classList.remove("visible");
+            document.getElementById("autocomplete-container").classList.remove("is-loading");
             return false;
          }
 
          // Show clearButton when there is a text
          clearButton.classList.add("visible");
 
-         /* Create a new promise and send geocoding request */
-         var promise = new Promise((resolve, reject) => {
-            currentPromiseReject = reject;
-
-            var apiKey = "992ef3d60d434f2283ea8c6d70a4898d";
-            var url = `https://api.geoapify.com/v1/geocode/autocomplete?text=${encodeURIComponent(currentValue)}&limit=5&apiKey=${apiKey}`;
-
-            if (options.type) {
-               url += `&type=${options.type}`;
-            }
-
-            fetch(url)
-               .then(response => {
-                  // check if the call was successful
-                  if (response.ok) {
-                     response.json().then(data => resolve(data));
-
-                  } else {
-                     response.json().then(data => reject(data));
-                  }
-               });
-         });
-
-         promise.then((data) => {
+         // Minimum length check
+         if (currentValue.length < 3) {
             document.getElementById("autocomplete-container").classList.remove("is-loading");
-            currentItems = data.features;
+            return false;
+         }
 
-            /*create a DIV element that will contain the items (values):*/
-            var autocompleteItemsElement = document.createElement("div");
-            autocompleteItemsElement.setAttribute("class", "autocomplete-items");
-            containerElement.appendChild(autocompleteItemsElement);
+         // Debounce API calls
+         debounceTimer = setTimeout(() => {
+            document.getElementById("autocomplete-container").classList.add("is-loading");
 
-            /* For each item in the results */
-            data.features.forEach((feature, index) => {
-               /* Create a DIV element for each element: */
-               var itemElement = document.createElement("DIV");
-               /* Set formatted address as item value */
-               itemElement.innerHTML = feature.properties.formatted;
-               itemElement.classList.add("hoverAddress");
-               /* Set the value for the autocomplete text field and notify: */
-               itemElement.addEventListener("click", function (e) {
-                  inputElement.value = currentItems[index].properties.formatted;
+            /* Create a new promise and send geocoding request */
+            var promise = new Promise((resolve, reject) => {
+               currentPromiseReject = reject;
 
+               var apiKey = "992ef3d60d434f2283ea8c6d70a4898d";
+               var url = `https://api.geoapify.com/v1/geocode/autocomplete?text=${encodeURIComponent(currentValue)}&limit=5&apiKey=${apiKey}`;
 
+               if (options.type) {
+                  url += `&type=${options.type}`;
+               }
 
-                  callback(currentItems[index]);
-
-                  /* Close the list of autocompleted values: */
-                  closeDropDownList();
-               });
-
-               autocompleteItemsElement.appendChild(itemElement);
+               fetch(url)
+                  .then(response => {
+                     // check if the call was successful
+                     if (response.ok) {
+                        response.json().then(data => resolve(data));
+                     } else {
+                        response.json().then(data => reject(data));
+                     }
+                  })
+                  .catch(error => {
+                     reject(error);
+                  });
             });
-         }, (err) => {
-            if (!err.canceled) {
-               console.log(err);
-            }
-         });
+
+            promise.then((data) => {
+               document.getElementById("autocomplete-container").classList.remove("is-loading");
+               currentItems = data.features;
+
+               /*create a DIV element that will contain the items (values):*/
+               var autocompleteItemsElement = document.createElement("div");
+               autocompleteItemsElement.setAttribute("class", "autocomplete-items");
+               containerElement.appendChild(autocompleteItemsElement);
+
+               /* For each item in the results */
+               data.features.forEach((feature, index) => {
+                  /* Create a DIV element for each element: */
+                  var itemElement = document.createElement("DIV");
+                  /* Set formatted address as item value */
+                  itemElement.innerHTML = feature.properties.formatted;
+                  itemElement.classList.add("hoverAddress");
+                  /* Set the value for the autocomplete text field and notify: */
+                  itemElement.addEventListener("click", function (e) {
+                     inputElement.value = currentItems[index].properties.formatted;
+
+
+
+                     callback(currentItems[index]);
+
+                     /* Close the list of autocompleted values: */
+                     closeDropDownList();
+                  });
+
+                  autocompleteItemsElement.appendChild(itemElement);
+               });
+            }, (err) => {
+               document.getElementById("autocomplete-container").classList.remove("is-loading");
+               if (!err.canceled) {
+                  console.log(err);
+               }
+            });
+         }, 300); // 300ms debounce delay
       });
 
       /* Add support for keyboard navigation */

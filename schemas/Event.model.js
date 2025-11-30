@@ -20,8 +20,9 @@ const eventSchema = new mongoose.Schema({
   },
   wlocation: {
     type: String,
-    required: true,
-    trim: true
+    required: false,
+    trim: true,
+    default: ''
   },
   address: {
     type: String,
@@ -35,8 +36,12 @@ const eventSchema = new mongoose.Schema({
   category: {
     type: String,
     required: true,
-  trim: true,
-  enum: ["Sports", "Academic", "Social", "Other"],
+    trim: true
+  },
+  customCategory: {
+    type: String,
+    trim: true,
+    default: null
   }
 });
 

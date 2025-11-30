@@ -72,7 +72,7 @@
                           <a class="navbar-item" href="/updateSettings">
                             Update settings
                           </a>
-                          <a class="navbar-item" href="https://forms.office.com/r/deCSjA7bCR">
+                          <a class="navbar-item" href="https://forms.office.com/Pages/ResponsePage.aspx?id=ix5osiDdz0axYzcaLXxgFJEzcgSzDSBAmZEyMRzHSWZUODNISkdGQzZWMEs2RFc4RTY1REFEQktDMS4u">
                             Report a bug
                           </a>
                           <a class="navbar-item" href="/sustainabilityStatement">
@@ -82,8 +82,8 @@
                           <a class="navbar-item" href="/logout">
                             Log out
                           </a>
-                          <div class="navbar-item">
-                            Version <%= process.env.VERSION %>
+                          <div class="navbar-item" style="color: #b5b5b5; cursor: default; pointer-events: none;">
+                            v<%= process.env.VERSION %>
                           </div>
                         </div>
                       </div>
@@ -261,9 +261,9 @@
       </div>
       <section class="modal-card-body">
         <div class="field">
-          <label class="label" for="ename">Event name:</label>
+          <label class="label" for="ename">Event name:<span class="required">*</span></label>
           <div class="control">
-            <input class="input" type="text" id="ename" name="name">
+            <input class="input" type="text" id="ename" name="name" required>
           </div>
         </div>
         <div class="field">
@@ -273,7 +273,7 @@
           </div>
         </div>
         <div class="field">
-          <label class="label" for="address">Address:</label>
+          <label class="label" for="address">Address:<span class="required">*</span></label>
           <div class="autocomplete-container" id="">
             <div class="control" id="autocomplete-container3">
               <!-- Address autocomplete will be inserted here -->
@@ -281,22 +281,28 @@
           </div>
         </div>
         <div class="field">
-          <label class="label" for="edate">Date and time:</label>
+          <label class="label" for="edate">Date and time:<span class="required">*</span></label>
           <div class="control">
-            <input class="input" type="datetime-local" id="edate" name="date">
+            <input class="input" type="datetime-local" id="edate" name="date" required>
           </div>
         </div>
         <div class="field">
-          <label class="label" for="ecategory">Category:</label>
+          <label class="label" for="ecategory">Category:<span class="required">*</span></label>
           <div class="control">
             <div class="select">
-              <select id="ecategory" name="category">
+              <select id="ecategory" name="category" onchange="toggleCustomCategory()">
                 <option value="sports">Sports</option>
                 <option value="academic teams">Academic teams</option>
                 <option value="socials">Socials</option>
                 <option value="other">Other</option>
               </select>
             </div>
+          </div>
+        </div>
+        <div class="field" id="custom-category-field" style="display: none;">
+          <label class="label" for="ecustom-category">Custom Category:<span class="required">*</span></label>
+          <div class="control">
+            <input class="input" type="text" id="ecustom-category" name="customCategory" placeholder="Enter custom category">
           </div>
         </div>
       </section>
@@ -450,8 +456,6 @@
   </div>
   <!-- end here -->
   <script type="text/javascript">
-    //Don't worry about it
-    console.error("HTTP ERROR: 418 I'm a teapot");
 
     function addressAutocomplete(containerElement, idName, callback, options) {
       // create input element
@@ -486,6 +490,9 @@
       /* Focused item in the autocomplete list. This variable is used to navigate with buttons */
       var focusedItemIndex;
 
+      /* Debounce timer */
+      var debounceTimer;
+
       /* Execute a function when someone writes in the text field: */
       inputElement.addEventListener("input", function (e) {
         var currentValue = this.value;
@@ -494,12 +501,14 @@
         var ac1 = document.getElementById("autocomplete-container");
         var ac2 = document.getElementById("autocomplete-container2");
         var ac3 = document.getElementById("autocomplete-container3");
-        if (ac1) ac1.classList.add("is-loading");
-        if (ac2) ac2.classList.add("is-loading");
-        if (ac3) ac3.classList.add("is-loading");
 
         /* Close any already open dropdown list */
         closeDropDownList();
+
+        // Clear debounce timer
+        if (debounceTimer) {
+          clearTimeout(debounceTimer);
+        }
 
         // Cancel previous request promise
         if (currentPromiseReject) {
@@ -510,73 +519,96 @@
 
         if (!currentValue) {
           clearButton.classList.remove("visible");
+          if (ac1) ac1.classList.remove("is-loading");
+          if (ac2) ac2.classList.remove("is-loading");
+          if (ac3) ac3.classList.remove("is-loading");
           return false;
         }
 
         // Show clearButton when there is a text
         clearButton.classList.add("visible");
 
-        /* Create a new promise and send geocoding request */
-        var promise = new Promise((resolve, reject) => {
-          currentPromiseReject = reject;
-
-          // TODO: Fix this
-          var apiKey = "992ef3d60d434f2283ea8c6d70a4898d";
-          var url = `https://api.geoapify.com/v1/geocode/autocomplete?text=${encodeURIComponent(currentValue)}&limit=5&apiKey=${apiKey}`;
-
-          if (options.type) {
-            url += `&type=${options.type}`;
-          }
-
-          fetch(url)
-            .then(response => {
-              // check if the call was successful
-              if (response.ok) {
-                response.json().then(data => resolve(data));
-
-              } else {
-                response.json().then(data => reject(data));
-              }
-            });
-        });
-
-        promise.then((data) => {
+        // Minimum length check
+        if (currentValue.length < 3) {
           if (ac1) ac1.classList.remove("is-loading");
           if (ac2) ac2.classList.remove("is-loading");
           if (ac3) ac3.classList.remove("is-loading");
-          currentItems = data.features;
+          return false;
+        }
 
-          /*create a DIV element that will contain the items (values):*/
-          var autocompleteItemsElement = document.createElement("div");
-          autocompleteItemsElement.setAttribute("class", "autocomplete-items");
-          containerElement.appendChild(autocompleteItemsElement);
+        // Debounce API calls
+        debounceTimer = setTimeout(() => {
+          if (ac1) ac1.classList.add("is-loading");
+          if (ac2) ac2.classList.add("is-loading");
+          if (ac3) ac3.classList.add("is-loading");
 
-          /* For each item in the results */
-          data.features.forEach((feature, index) => {
-            /* Create a DIV element for each element: */
-            var itemElement = document.createElement("DIV");
-            /* Set formatted address as item value */
-            itemElement.innerHTML = feature.properties.formatted;
-            itemElement.classList.add("hoverAddress");
-            /* Set the value for the autocomplete text field and notify: */
-            itemElement.addEventListener("click", function (e) {
-              inputElement.value = currentItems[index].properties.formatted;
+          /* Create a new promise and send geocoding request */
+          var promise = new Promise((resolve, reject) => {
+            currentPromiseReject = reject;
 
+            // TODO: Fix this
+            var apiKey = "992ef3d60d434f2283ea8c6d70a4898d";
+            var url = `https://api.geoapify.com/v1/geocode/autocomplete?text=${encodeURIComponent(currentValue)}&limit=5&apiKey=${apiKey}`;
 
+            if (options.type) {
+              url += `&type=${options.type}`;
+            }
 
-              callback(currentItems[index]);
-
-              /* Close the list of autocompleted values: */
-              closeDropDownList();
-            });
-
-            autocompleteItemsElement.appendChild(itemElement);
+            fetch(url)
+              .then(response => {
+                // check if the call was successful
+                if (response.ok) {
+                  response.json().then(data => resolve(data));
+                } else {
+                  response.json().then(data => reject(data));
+                }
+              })
+              .catch(error => {
+                reject(error);
+              });
           });
-        }, (err) => {
-          if (!err.canceled) {
-            console.log(err);
-          }
-        });
+
+          promise.then((data) => {
+            if (ac1) ac1.classList.remove("is-loading");
+            if (ac2) ac2.classList.remove("is-loading");
+            if (ac3) ac3.classList.remove("is-loading");
+            currentItems = data.features;
+
+            /*create a DIV element that will contain the items (values):*/
+            var autocompleteItemsElement = document.createElement("div");
+            autocompleteItemsElement.setAttribute("class", "autocomplete-items");
+            containerElement.appendChild(autocompleteItemsElement);
+
+            /* For each item in the results */
+            data.features.forEach((feature, index) => {
+              /* Create a DIV element for each element: */
+              var itemElement = document.createElement("DIV");
+              /* Set formatted address as item value */
+              itemElement.innerHTML = feature.properties.formatted;
+              itemElement.classList.add("hoverAddress");
+              /* Set the value for the autocomplete text field and notify: */
+              itemElement.addEventListener("click", function (e) {
+                inputElement.value = currentItems[index].properties.formatted;
+
+
+
+                callback(currentItems[index]);
+
+                /* Close the list of autocompleted values: */
+                closeDropDownList();
+              });
+
+              autocompleteItemsElement.appendChild(itemElement);
+            });
+          }, (err) => {
+            if (ac1) ac1.classList.remove("is-loading");
+            if (ac2) ac2.classList.remove("is-loading");
+            if (ac3) ac3.classList.remove("is-loading");
+            if (!err.canceled) {
+              console.log(err);
+            }
+          });
+        }, 300); // 300ms debounce delay
       });
 
       /* Add support for keyboard navigation */
@@ -670,22 +702,33 @@
     }
     // Restrict event categories to allowed values
     try {
-      var catSelect = document.getElementById('ecategory');
-      if (catSelect) {
+      var catSelects = document.querySelectorAll('select#ecategory, select[name="category"]');
+      catSelects.forEach(function(catSelect) {
         catSelect.innerHTML = "" +
-          "<option value='School'>School</option>" +
-          "<option value='Sports'>Sports</option>" +
-          "<option value='Extra School Events'>Extra School Events</option>";
-      }
+          "<option value='sports'>Sports</option>" +
+          "<option value='academic teams'>Academic teams</option>" +
+          "<option value='socials'>Socials</option>" +
+          "<option value='other'>Other</option>";
+      });
     } catch (e) { console.warn('Failed to set category options', e); }
+
+    function toggleCustomCategory() {
+      var categorySelect = document.getElementById('ecategory');
+      var customCategoryField = document.getElementById('custom-category-field');
+      var customCategoryInput = document.getElementById('ecustom-category');
+      
+      if (categorySelect.value.toLowerCase() === 'other') {
+        customCategoryField.style.display = 'block';
+        customCategoryInput.required = true;
+      } else {
+        customCategoryField.style.display = 'none';
+        customCategoryInput.required = false;
+        customCategoryInput.value = '';
+      }
+    }
 
   </script>
   </span>
-  </div>
-  <!--Start here  -->
-  <div id="eventsJS">
-  </div>
-  </div>
   </div>
 
   <!-- Hero footer: will stick at the bottom -->
@@ -693,145 +736,6 @@
   </section>
   </main>
   <script></script>
-  <!-- start here -->
-  <div class="modal " id="modal-js-example">
-    <div class="modal-background" class="modal-background-dark"></div>
-    <div class="modal-card">
-      <p class="panel-heading has-text-centered" class="modal-heading-offer">
-        <span class="modal-heading-icon">
-          <i class="fa-solid fa-car-side" class="modal-car-icon"></i>
-        </span>
-        Offer to Carpool
-        <button class="delete" aria-label="close" onclick="closeAllModals()" class="modal-delete-right"></button>
-      </p>
-      <section class="modal-card-body">
-        <div class="container">
-          <label>Carpool information </label>
-          <div class="field">
-            <a class="panel-block" id="carpoolinfo" class="carpool-panel-block">
-              <input class="input carpool-inputs-margin" id="fname" type="fname" placeholder="Driver first name">
-              <input id="lname" class="input" type="lname" placeholder="Driver last name">
-            </a>
-          </div>
-          <div class="field">
-            <a class="panel-block" class="carpool-panel-block">
-              <input class="input carpool-inputs-margin" id="email" class="input" type="email"
-                placeholder="Driver email">
-              <input id="phone" class="input" type="tel" placeholder="Driver phone number">
-            </a>
-          </div>
-          <div class="field" class="field-margin-bottom">
-            <input class="input" id="carmake" type="text" placeholder="Car make and model">
-          </div>
-          <div class="field" class="field-margin-bottom">
-            <input class="input" id="seats" type="number" min="1" max="9" placeholder="Number of available car seats">
-          </div>
-          <div class="pickup-options-container">
-            <div>
-              <label>Pickup Location </label>
-              <div class="field" class="field-margin-bottom">
-                <div class="control">
-                  <div class="select">
-                    <form>
-                      <select id="route-type">
-                        <option value="route">Riders' Homes</option>
-                        <option value="point">Common meeting point</option>
-                        <option value="eps-campus">EPS Campus</option>
-                      </select>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div>
-              <label>Arrival time</label>
-              <div class="field" class="field-margin-bottom">
-                <input class="input" id="arrivaltime" type="time" placeholder="Time to arrive">
-              </div>
-            </div>
-            <div>
-              <label>Carpool category</label>
-              <div class="field" class="field-margin-bottom">
-                <div class="control">
-                  <div class="select">
-                    <select id="carpool-category">
-                      <option value="sports">Sports</option>
-                      <option value="academic">Academic</option>
-                      <option value="social">Social</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="field">
-            <label id="address-label">Your home address</label>
-            <div class="autocomplete-container" id="">
-              <div class="control" id="autocomplete-container">
-                <div class="clear-button"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-      <footer class="modal-card-foot" class="modal-footer-custom">
-        <div class="buttons" class="modal-buttons-left">
-          <button class="button is-link " class="modal-button-primary"
-            onclick="offer();window.location.href='/mycarpools'">Create carpool</button>
-          <button class="button" aria-label="close" onclick="closeAllModals()">Cancel</button>
-        </div>
-      </footer>
-    </div>
-  </div>
-  <!-- end here -->
-  <!-- start here -->
-  <div class="modal " id="modal-js-register">
-    <div class="modal-background" class="modal-background-dark"></div>
-    <div class="modal-card">
-      <p class="panel-heading has-text-centered" class="modal-heading-register">
-        <span class="modal-register-icon">
-          <i class="fa-solid fa-users" class="modal-users-icon"></i>
-        </span>
-        Register to a Carpool
-        <button class="delete" aria-label="close" onclick="closeAllModals()" class="modal-delete-right"></button>
-      </p>
-      <section class="modal-card-body">
-        <div class="container">
-          <label id="registerTitle"></label>
-
-          <div class="register-overflow">
-            <div id="registerJS">
-              <!-- <div class="notification" style="padding: 10px;   margin-bottom: 10px;">
-                           <div class="button  selectCarpool" style=" margin-left: 10px; margin-top: 4px; background-color: transparent; float: right" onclick=" if (this.classList[2] == 'is-focused') {unfocus()} else {unfocus(); this.classList.add('is-focused')}">Select</div>
-                                   <div style="float: right; margin-top: 3px;"  >2/6 signed up</div>
-                                                             Organizer: <a style="color: #3273dc" href="mailto:ajosan@eastsideprep.org">ajosan@eastsideprep.org</a>
-                                     <br>  Route type: Riders' Homes
-                           <br> 
-                                 </div>    -->
-            </div>
-          </div>
-        </div>
-        <div class="field">
-          <label>Your home address </label>
-          <div class="autocomplete-container " id="">
-            <div class='control' id="autocomplete-container2">
-              <!-- South Kirkland Park and Ride, Bellevue, WA 98004, United States of America -->
-            </div>
-          </div>
-        </div>
-      </section>
-      <footer class="modal-card-foot" class="modal-footer-custom">
-        <var></var>
-        <div class="buttons" class="modal-buttons-left">
-          <button class="button is-link " class="modal-button-primary"
-            onclick="joinCarpool(); window.location.href='/mycarpools'">Join carpool</button>
-          <button class="button" aria-label="close" onclick="closeAllModals()">Cancel</button>
-        </div>
-      </footer>
-    </div>
-  </div>
-  <!-- end here -->
   <!-- Create Event Modal -->
   <div class="modal" id="modal-create-event">
     <div class="modal-background" onclick="closeCreateEventModal()"></div>
@@ -842,9 +746,9 @@
       </div>
       <section class="modal-card-body">
         <div class="field">
-          <label class="label" for="ename">Event name:</label>
+          <label class="label" for="ename">Event name:<span class="required">*</span></label>
           <div class="control">
-            <input class="input" type="text" id="ename" name="name">
+            <input class="input" type="text" id="ename" name="name" required>
           </div>
         </div>
         <div class="field">
@@ -854,7 +758,7 @@
           </div>
         </div>
         <div class="field">
-          <label class="label" for="address">Address:</label>
+          <label class="label" for="address">Address:<span class="required">*</span></label>
           <div class="autocomplete-container" id="">
             <div class="control" id="autocomplete-container3">
               <!-- Address autocomplete will be inserted here -->
@@ -862,22 +766,28 @@
           </div>
         </div>
         <div class="field">
-          <label class="label" for="edate">Date and time:</label>
+          <label class="label" for="edate">Date and time:<span class="required">*</span></label>
           <div class="control">
-            <input class="input" type="datetime-local" id="edate" name="date">
+            <input class="input" type="datetime-local" id="edate" name="date" required>
           </div>
         </div>
         <div class="field">
-          <label class="label" for="ecategory">Category:</label>
+          <label class="label" for="ecategory">Category:<span class="required">*</span></label>
           <div class="control">
             <div class="select">
-              <select id="ecategory" name="category">
+              <select id="ecategory" name="category" onchange="toggleCustomCategory()">
                 <option value="sports">Sports</option>
                 <option value="academic teams">Academic teams</option>
                 <option value="socials">Socials</option>
                 <option value="other">Other</option>
               </select>
             </div>
+          </div>
+        </div>
+        <div class="field" id="custom-category-field" style="display: none;">
+          <label class="label" for="ecustom-category">Custom Category:<span class="required">*</span></label>
+          <div class="control">
+            <input class="input" type="text" id="ecustom-category" name="customCategory" placeholder="Enter custom category">
           </div>
         </div>
       </section>
@@ -891,6 +801,27 @@
   </div>
   <!-- end Create Event Modal -->
   <script type="text/javascript">
+    // Show toast notification function
+    function showToast(message, type = 'warning') {
+      const toast = document.createElement('div');
+      toast.className = `notification is-${type} is-light`;
+      toast.style.position = 'fixed';
+      toast.style.bottom = '20px';
+      toast.style.right = '20px';
+      toast.style.zIndex = '1000';
+      toast.style.minWidth = '300px';
+      toast.innerHTML = `
+        <button class="delete" onclick="this.parentElement.remove()"></button>
+        ${message}
+      `;
+      document.body.appendChild(toast);
+
+      // Auto-remove toast after 5 seconds
+      setTimeout(() => {
+        toast.remove();
+      }, 5000);
+    }
+
     // Create Event Modal Functions
     function openCreateEventModal() {
       document.getElementById('modal-create-event').classList.add('is-active');
@@ -913,6 +844,27 @@
     }
 
     async function createEventAndClose() {
+      // Validate required fields
+      const eventName = document.getElementById('ename').value.trim();
+      const address = document.getElementById('create_address') ? document.getElementById('create_address').value.trim() : '';
+      const dateTime = document.getElementById('edate').value;
+
+      // Check if required fields are filled
+      if (!eventName) {
+        showToast('Please enter an event name.', 'warning');
+        return;
+      }
+
+      if (!address) {
+        showToast('Please enter an address.', 'warning');
+        return;
+      }
+
+      if (!dateTime) {
+        showToast('Please select a date and time.', 'warning');
+        return;
+      }
+
       await createevent();
       closeCreateEventModal();
       // Refresh the page to show the new event
@@ -920,8 +872,6 @@
     }
   </script>
   <script>
-    //Don't worry about it
-    console.error("418 I'm a teapot");
 
     let value2;
     let data1;
@@ -987,7 +937,7 @@
             if (carpoolPart == "<%= email %>") {
               carpooledEvent = eventsW2.find((x) => x._id === userData1[i].nameOfEvent)
               if (carpooledEvent != undefined) {
-                carpooledEvents.push(carpooldEvent)
+                carpooledEvents.push(carpooledEvent)
               }
             }
           }
@@ -1035,9 +985,17 @@
         }
 
         function isFuture(dateStr) {
+          if (!dateStr) return false;
           const now = new Date();
+          now.setHours(0, 0, 0, 0); // Set to start of today
           const d = new Date(dateStr);
-          return d > now;
+          if (isNaN(d.getTime())) {
+            // If date parsing fails, log it but don't filter it out
+            console.warn('Could not parse date:', dateStr);
+            return true; // Include it anyway
+          }
+          d.setHours(0, 0, 0, 0); // Set to start of event day
+          return d >= now; // Include today and future
         }
 
         // Map event category to a CSS class for color coding
@@ -1054,6 +1012,77 @@
           }
         }
 
+        // Sort events by date
+        function sortJSON(arr, key, way) {
+          return arr.sort(function (a, b) {
+            var datex = a[key]; 
+            var datey = b[key];
+            datex = new Date(datex);
+            datey = new Date(datey);
+            x = datex.getTime() / 1000;
+            y = datey.getTime() / 1000;
+            if (way === '123') { 
+              return ((x < y) ? -1 : ((x > y) ? 1 : 0)); 
+            }
+            if (way === '321') { 
+              return ((x > y) ? -1 : ((x < y) ? 1 : 0)); 
+            }
+          });
+        }
+
+        // Render events to the DOM
+        function renderEvents(eventsToRender) {
+          if (!eventsToRender || eventsToRender.length === 0) {
+            console.log('No events to render');
+            document.getElementById("eventsJS").innerHTML = '<p style="text-align: center; padding: 20px; color: #666;">No upcoming events found.</p>';
+            return;
+          }
+          
+          document.getElementById("eventsJS").innerHTML = '';
+          
+          for (var i = 0; i < eventsToRender.length; i++) {
+            var obj = eventsToRender[i];
+            var date = formatDate(obj["date"]);
+            var time = new Date(obj["date"]).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
+
+            // Calculate available carpools for this event
+            var availableCarpools = userData1 ? userData1.filter(carpool => carpool.nameOfEvent === obj["_id"]).length : 0;
+
+            document.getElementById("eventsJS").innerHTML += `
+              <div class="modern-event-card">
+                <div class="modern-category-tag ${getCategoryClass(obj["category"])}">${obj["category"]}</div>
+                <h3 class="modern-event-title">${obj["eventName"]}</h3>
+                <div class="modern-event-details">
+                  <div class="modern-detail-row">
+                    <div class="modern-detail-icon">
+                      <i class="fa-solid fa-calendar"></i>
+                    </div>
+                    <span>${date} at ${time}</span>
+                  </div>
+                  <div class="modern-detail-row">
+                    <div class="modern-detail-icon">
+                      <i class="fa-solid fa-location-dot"></i>
+                    </div>
+                    <span>${obj["wlocation"]}</span>
+                  </div>
+                  <div class="modern-detail-row">
+                    <div class="modern-detail-icon">
+                      <i class="fa-solid fa-users"></i>
+                    </div>
+                    <span>${availableCarpools} carpool(s) available</span>
+                  </div>
+                </div>
+                <div class="modern-action-buttons">
+                  <button class="modern-btn-primary js-modal-trigger" data-target="modal-js-register" id="${obj["_id"]}" onclick="sendData('${obj["_id"]}')">Join Carpool</button>
+                  <button class="modern-btn-secondary js-modal-trigger" data-target="modal-js-example" id="${obj["_id"]}_offer" onclick="sendData('${obj["_id"]}')">Offer Carpool</button>
+                </div>
+              </div>`;
+          }
+          
+          checkIfRegistered(userData1);
+          modalFunctions();
+        }
+
         var request = new Request("/api/events", {
           method: "GET",
           headers: new Headers({
@@ -1064,125 +1093,38 @@
         fetch(request)
           .then((response) => response.json())
           .then((data) => {
-
-            eventsW = data.filter(e => isFuture(e.date));
+            console.log('Events fetched from API:', data.length, data);
+            
+            // Filter to current day and future events
+            eventsW = data.filter(e => {
+              const isFutureEvent = isFuture(e.date);
+              if (!isFutureEvent) {
+                console.log('Filtered out past event:', e.eventName, e.date);
+              }
+              return isFutureEvent;
+            });
+            
+            console.log('Events after filtering:', eventsW.length);
+            
             eventsW2 = sortJSON(eventsW, 'date', '123');
-
-            for (var i = 0; i < eventsW2.length; i++) {
-              var obj = eventsW2[i];
-              var date = formatDate(obj["date"]);
-              var time = new Date(obj["date"]).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
-
-              // Calculate available carpools for this event
-              var availableCarpools = userData1.filter(carpool => carpool.nameOfEvent === obj["_id"]).length;
-
-              document.getElementById("eventsJS").innerHTML += `
-                <div class="modern-event-card">
-                  <div class="modern-category-tag ${getCategoryClass(obj["category"])}">${obj["category"]}</div>
-                  <h3 class="modern-event-title">${obj["eventName"]}</h3>
-                  <div class="modern-event-details">
-                    <div class="modern-detail-row">
-                      <div class="modern-detail-icon">
-                        <i class="fa-solid fa-calendar"></i>
-                      </div>
-                      <span>${date} at ${time}</span>
-                    </div>
-                    <div class="modern-detail-row">
-                      <div class="modern-detail-icon">
-                        <i class="fa-solid fa-location-dot"></i>
-                      </div>
-                      <span>${obj["wlocation"]}</span>
-                    </div>
-                    <div class="modern-detail-row">
-                      <div class="modern-detail-icon">
-                        <i class="fa-solid fa-users"></i>
-                      </div>
-                      <span>${availableCarpools} carpool(s) available</span>
-                    </div>
-                  </div>
-                  <div class="modern-action-buttons">
-                    <button class="modern-btn-primary js-modal-trigger" data-target="modal-js-register" id="${obj["_id"]}" onclick="sendData('${obj["_id"]}')">Join Carpool</button>
-                    <button class="modern-btn-secondary js-modal-trigger" data-target="modal-js-example" id="${obj["_id"]}_offer" onclick="sendData('${obj["_id"]}')">Offer Carpool</button>
-                  </div>
-                </div>`;
-
-            }
-            checkIfRegistered(userData1)
-
-            //sort events by date
-            function sortJSON(arr, key, way) {
-              return arr.sort(function (a, b) {
-                var datex = a[key]; var datey = b[key];
-
-                datex = new Date(datex)
-                datey = new Date(datey)
-                x = datex.getTime() / 1000
-                y = datey.getTime() / 1000
-                if (way === '123') { return ((x < y) ? -1 : ((x > y) ? 1 : 0)); }
-                if (way === '321') { return ((x > y) ? -1 : ((x < y) ? 1 : 0)); }
-              });
-            }
-
-            // eventsW2 = sortJSON(eventsW,'date', '123'); 
-
-
-
-
-            document.getElementById("searchInput").oninput = searchEvents;
-            function searchEvents() {
+            
+            // Initial render of all events
+            renderEvents(eventsW2);
+            
+            // Search events function
+            document.getElementById("searchInput").oninput = function searchEvents() {
               const searchTerm = document.getElementById("searchInput").value.toLowerCase();
-              document.getElementById("eventsJS").innerHTML = ``;
-
-              for (var i = 0; i < eventsW2.length; i++) {
-                var obj = eventsW2[i];
-                var date = formatDate(obj["date"]);
-                var time = new Date(obj["date"]).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
-
-                // Calculate available carpools for this event
-                var availableCarpools = userData1.filter(carpool => carpool.nameOfEvent === obj["_id"]).length;
-
-                // Check if the search term matches event name, location, or category
-                const matchesSearch = searchTerm === '' ||
+              
+              // Filter events based on search term
+              const filteredEvents = eventsW2.filter(obj => {
+                return searchTerm === '' ||
                   obj["eventName"].toLowerCase().includes(searchTerm) ||
                   obj["wlocation"].toLowerCase().includes(searchTerm) ||
                   obj["category"].toLowerCase().includes(searchTerm);
-
-                if (matchesSearch) {
-                  document.getElementById("eventsJS").innerHTML += `
-                    <div class="modern-event-card">
-                      <div class="modern-category-tag ${getCategoryClass(obj["category"])}">${obj["category"]}</div>
-                      <h3 class="modern-event-title">${obj["eventName"]}</h3>
-                      <div class="modern-event-details">
-                        <div class="modern-detail-row">
-                          <div class="modern-detail-icon">
-                            <i class="fa-solid fa-calendar"></i>
-                          </div>
-                          <span>${date} at ${time}</span>
-                        </div>
-                        <div class="modern-detail-row">
-                          <div class="modern-detail-icon">
-                            <i class="fa-solid fa-location-dot"></i>
-                          </div>
-                          <span>${obj["wlocation"]}</span>
-                        </div>
-                        <div class="modern-detail-row">
-                          <div class="modern-detail-icon">
-                            <i class="fa-solid fa-users"></i>
-                          </div>
-                          <span>${availableCarpools} carpool(s) available</span>
-                        </div>
-                      </div>
-                      <div class="modern-action-buttons">
-                        <button class="modern-btn-primary js-modal-trigger" data-target="modal-js-register" id="${obj["_id"]}" onclick="sendData('${obj["_id"]}')">Join Carpool</button>
-                        <button class="modern-btn-secondary js-modal-trigger" data-target="modal-js-example" id="${obj["_id"]}_offer" onclick="sendData('${obj["_id"]}')">Offer Carpool</button>
-                      </div>
-                    </div>`;
-                }
-              }
-
-              checkIfRegistered(userData1)
-              modalFunctions()
-            }
+              });
+              
+              renderEvents(filteredEvents);
+            };
 
 
             function modalFunctions() {
@@ -1687,10 +1629,6 @@
         hour12: true
       });
       category = document.getElementById("ecategory").value;
-      // Normalize category to allowed values just in case
-      if (["School", "Sports", "Extra School Events"].indexOf(category) === -1) {
-        category = "School";
-      }
 
       // Get coordinates for the user's address and event location
       const userCoords = await getCoordinates(address);

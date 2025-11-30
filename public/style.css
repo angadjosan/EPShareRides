@@ -4,6 +4,12 @@ body {
     margin: 0;
 }
 
+/* Required field indicator */
+.required {
+    color: #ff3860;
+    margin-left: 4px;
+}
+
 .wrapper {
     max-width: 1100px;
     margin: 15px auto;
@@ -263,6 +269,7 @@ body {
   padding: 3px;
   padding-left: 5px;
   padding-right: 5px;
+  cursor: pointer;
 }
 
 
@@ -987,7 +994,7 @@ textarea::placeholder { color: #5c7467; }
 .modal-background { background-color: #000000 !important; opacity: 0.4; }
 
 /* Hover affordances */
-.hoverAddress:hover { background-color: #f0f0f0; }
+.hoverAddress:hover { background-color: #f0f0f0; cursor: pointer; }
 
 /* Make white-background solid everywhere */
 .white-background {
