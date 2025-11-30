@@ -1,6 +1,6 @@
 // Initialize map variables
 let map, markersGroup, points = [];
-let geocode = {}, carpools;
+let geocode = {}, carpools, events;
 const center = [47.64371189816165, -122.19894455582242];
 function parseGeocode(res){
   if(res.features && res.features[0]){
@@ -46,7 +46,202 @@ function initMap() {
 // Initialize map when the page loads
 document.addEventListener('DOMContentLoaded', function () {
     initMap();
-}); fetch("/api/events", { method: "GET" }).then(o => o.json()).then(o => { events = o, fetch("/api/userCarpools", { method: "GET" }).then(o => o.json()).then(o => { carpools = o, console.log(carpools); for (let e = 0; e < carpools.length; e++) { var r; carpools[e].carpoolers.forEach(o => { a(o.address) }), ((r = events.find(o => o._id === carpools[e].nameOfEvent)) && a(r.address)), a(carpools[e].wlocation) } function a(o) { let e = `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(o)}&apiKey=992ef3d60d434f2283ea8c6d70a4898d`; fetch(new Request(e, { method: "GET", headers: new Headers({ Accept: "application/json", "Content-Type": "application/json" }) })).then(o => o.json()).then(e => { console.log(e), geocode[o] = parseGeocode(e) }).catch(o => { console.error(o) }) } }).catch(o => console.error("Error:", o)) }).catch(o => console.error("Error:", o)); var polylines = []; function add(o) { addDirectionsButton(o), polylines.forEach(function (o) { map.removeLayer(o) }), markersGroup.clearLayers(); let e = carpools.find(e => e._id === o); var r = []; e.carpoolers.forEach(o => { addPoint(o.firstName, o.address, geocode[o.address]), r.push(geocode[o.address]) }); var a = events.find(o => o._id === e.nameOfEvent); if ("route" == e.route) { console.log("route"); var s, t, n = L.marker(geocode[e.wlocation]).addTo(markersGroup); n.options.shadowSize = [0, 0], n.bindPopup('<i class="fa-solid fa-house" style="color: Dodgerblue; font-size: 15px"></i> ' + e.firstName + "'s house<br> " + e.wlocation); var d, i, l, p, c, n = L.marker(geocode[a.address]).addTo(markersGroup); let u; n.options.shadowSize = [0, 0], n.bindPopup('<i class="fa-solid fa-location-dot" style="color: Tomato; font-size: 15px"></i> ' + a.wlocation + "<br>" + a.address), r.push(geocode[e.wlocation]), d = r, i = geocode[a.address], c = d, console.log(c), u = (l = c, p = i, l.sort((o, e) => { let r = m(o, p), a = m(e, p); return console.log(r, a), a - r })), console.log(u), s = L.polyline(u, { color: "#3273dc", dashArray: "4 8" }).addTo(map), t = L.polyline([u[u.length - 1], i], { color: "#00d1b2" }).addTo(map), polylines.push(s, t), map.fitBounds(s.getBounds()) } else if ("point" == e.route) { console.log("point"); var n = L.marker(geocode[e.wlocation]).addTo(markersGroup); n.options.shadowSize = [0, 0], n.bindPopup('<i class="fa-solid fa-location-crosshairs" style="color: #00d1b2; font-size: 15px"></i> Meeting point<br>' + e.wlocation); var n = L.marker(geocode[a.address]).addTo(markersGroup); n.options.shadowSize = [0, 0], n.bindPopup('<i class="fa-solid fa-location-dot" style="color: Tomato; font-size: 15px"></i> ' + a.wlocation + "<br> " + a.address), function o(e, r, a) { for (var s = 0; s < r.length; s++) { var t = [e, r[s]], n = L.polyline(t, { color: "#3273dc", dashArray: "4 8" }).addTo(map); polylines.push(n) } var d = L.polyline([e, a], { color: "#00d1b2" }).addTo(map); polylines.push(d), map.fitBounds(d.getBounds()) }(geocode[e.wlocation], r, geocode[a.address]) } function m(o, e) { return Math.sqrt(Math.pow(e[0] - o[0], 2) + Math.pow(e[1] - o[1], 2)) } } function stuff() { for (let o = 0; o < points.length; o++)points[o].addTo(markersGroup) } function addPoint(o, e, r) { console.log(r); var a = L.marker(r).addTo(markersGroup); a.options.shadowSize = [0, 0], a.bindPopup('<i class="fa-solid fa-house" style="color: Dodgerblue; font-size: 15px"></i> ' + o + "'s house<br> " + e) } // Add EPS marker when map is ready
+    loadData();
+});
+
+// Load events and carpools data in parallel
+async function loadData() {
+    try {
+        // Fetch both events and carpools in parallel
+        const [eventsResponse, carpoolsResponse] = await Promise.all([
+            fetch("/api/events", { method: "GET" }),
+            fetch("/api/userCarpools", { method: "GET" })
+        ]);
+        
+        events = await eventsResponse.json();
+        carpools = await carpoolsResponse.json();
+        console.log(events);
+        console.log(carpools);
+        
+        // Collect all unique addresses to geocode
+        const addressesToGeocode = new Set();
+        
+        for (const carpool of carpools) {
+            // Add carpooler addresses
+            carpool.carpoolers.forEach(carpooler => {
+                if (carpooler.address) {
+                    addressesToGeocode.add(carpooler.address);
+                }
+            });
+            
+            // Add event address
+            const event = events.find(e => e._id === carpool.nameOfEvent);
+            if (event?.address) {
+                addressesToGeocode.add(event.address);
+            }
+            
+            // Add meeting location
+            if (carpool.wlocation) {
+                addressesToGeocode.add(carpool.wlocation);
+            }
+        }
+        
+        // Geocode all addresses in parallel
+        await Promise.all(
+            Array.from(addressesToGeocode).map(address => geocodeAddress(address))
+        );
+        
+    } catch (error) {
+        console.error("Error loading data:", error);
+    }
+}
+
+async function geocodeAddress(address) {
+    const url = `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(address)}&apiKey=992ef3d60d434f2283ea8c6d70a4898d`;
+    
+    try {
+        const response = await fetch(url, {
+            method: "GET",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json"
+            }
+        });
+        
+        const data = await response.json();
+        console.log(data);
+        geocode[address] = parseGeocode(data);
+    } catch (error) {
+        console.error(`Error geocoding ${address}:`, error);
+    }
+}
+
+var polylines = [];
+
+function add(carpoolId) {
+    addDirectionsButton(carpoolId);
+    
+    // Clear existing polylines and markers
+    polylines.forEach(function (polyline) {
+        map.removeLayer(polyline);
+    });
+    markersGroup.clearLayers();
+    
+    let carpool = carpools.find(c => c._id === carpoolId);
+    var carpoolerLocations = [];
+    
+    // Add markers for each carpooler
+    carpool.carpoolers.forEach(carpooler => {
+        addPoint(carpooler.firstName, carpooler.address, geocode[carpooler.address]);
+        carpoolerLocations.push(geocode[carpooler.address]);
+    });
+    
+    var event = events.find(e => e._id === carpool.nameOfEvent);
+    
+    if (carpool.route === "route") {
+        console.log("route");
+        
+        // Add marker for meeting location (driver's house)
+        const meetingMarker = L.marker(geocode[carpool.wlocation]).addTo(markersGroup);
+        meetingMarker.options.shadowSize = [0, 0];
+        meetingMarker.bindPopup('<i class="fa-solid fa-house" style="color: Dodgerblue; font-size: 15px"></i> ' + 
+            carpool.firstName + "'s house<br> " + carpool.wlocation);
+        
+        // Add marker for event location
+        const eventMarker = L.marker(geocode[event.address]).addTo(markersGroup);
+        eventMarker.options.shadowSize = [0, 0];
+        eventMarker.bindPopup('<i class="fa-solid fa-location-dot" style="color: Tomato; font-size: 15px"></i> ' + 
+            event.wlocation + "<br>" + event.address);
+        
+        // Add meeting location to route
+        carpoolerLocations.push(geocode[carpool.wlocation]);
+        
+        // Sort locations by distance from event (furthest first)
+        const sortedLocations = sortByDistance(carpoolerLocations, geocode[event.address]);
+        console.log(sortedLocations);
+        
+        // Draw route through all locations
+        const routePolyline = L.polyline(sortedLocations, {
+            color: "#3273dc",
+            dashArray: "4 8"
+        }).addTo(map);
+        
+        // Draw final segment to event
+        const finalSegment = L.polyline([sortedLocations[sortedLocations.length - 1], geocode[event.address]], {
+            color: "#00d1b2"
+        }).addTo(map);
+        
+        polylines.push(routePolyline, finalSegment);
+        map.fitBounds(routePolyline.getBounds());
+        
+    } else if (carpool.route === "point") {
+        console.log("point");
+        
+        // Add marker for meeting point
+        const meetingMarker = L.marker(geocode[carpool.wlocation]).addTo(markersGroup);
+        meetingMarker.options.shadowSize = [0, 0];
+        meetingMarker.bindPopup('<i class="fa-solid fa-location-crosshairs" style="color: #00d1b2; font-size: 15px"></i> Meeting point<br>' + 
+            carpool.wlocation);
+        
+        // Add marker for event location
+        const eventMarker = L.marker(geocode[event.address]).addTo(markersGroup);
+        eventMarker.options.shadowSize = [0, 0];
+        eventMarker.bindPopup('<i class="fa-solid fa-location-dot" style="color: Tomato; font-size: 15px"></i> ' + 
+            event.wlocation + "<br> " + event.address);
+        
+        // Draw lines from meeting point to each carpooler
+        drawMeetingPointRoutes(geocode[carpool.wlocation], carpoolerLocations, geocode[event.address]);
+    }
+    
+    function sortByDistance(locations, destination) {
+        return locations.sort((a, b) => {
+            let distA = calculateDistance(a, destination);
+            let distB = calculateDistance(b, destination);
+            console.log(distA, distB);
+            return distB - distA; // Sort descending (furthest first)
+        });
+    }
+    
+    function calculateDistance(point1, point2) {
+        return Math.sqrt(Math.pow(point2[0] - point1[0], 2) + Math.pow(point2[1] - point1[1], 2));
+    }
+}
+
+function drawMeetingPointRoutes(meetingPoint, carpoolerLocations, eventLocation) {
+    // Draw dashed lines from each carpooler to meeting point
+    for (let i = 0; i < carpoolerLocations.length; i++) {
+        const route = [meetingPoint, carpoolerLocations[i]];
+        const polyline = L.polyline(route, {
+            color: "#3273dc",
+            dashArray: "4 8"
+        }).addTo(map);
+        polylines.push(polyline);
+    }
+    
+    // Draw solid line from meeting point to event
+    const finalRoute = L.polyline([meetingPoint, eventLocation], {
+        color: "#00d1b2"
+    }).addTo(map);
+    polylines.push(finalRoute);
+    map.fitBounds(finalRoute.getBounds());
+}
+
+function stuff() {
+    for (let i = 0; i < points.length; i++) {
+        points[i].addTo(markersGroup);
+    }
+}
+
+function addPoint(name, address, location) {
+    console.log(location);
+    const marker = L.marker(location).addTo(markersGroup);
+    marker.options.shadowSize = [0, 0];
+    marker.bindPopup('<i class="fa-solid fa-house" style="color: Dodgerblue; font-size: 15px"></i> ' + 
+        name + "'s house<br> " + address);
+}
+
+// Add EPS marker when map is ready
+
 if (map) {
     const epsMarker = L.marker(center).addTo(markersGroup);
     epsMarker.options.shadowSize = [0, 0];
