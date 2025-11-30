@@ -4,6 +4,12 @@ body {
     margin: 0;
 }
 
+/* Required field indicator */
+.required {
+    color: #ff3860;
+    margin-left: 4px;
+}
+
 .wrapper {
     max-width: 1100px;
     margin: 15px auto;
