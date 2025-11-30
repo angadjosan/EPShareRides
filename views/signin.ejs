@@ -67,6 +67,17 @@
             <!-- <p class="has-text-centered" style="top: calc(100% - 40px); width: 100%; bottom: 0px; position: absolute;">Don't have an account? <a href="/signup">Sign up here</a></p> -->
 
   </main>
+  <script>
+    // Clean URL parameters after displaying messages to prevent them from persisting
+    if (window.location.search) {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('message') || urlParams.has('err')) {
+        // Replace the URL without the query parameters
+        const cleanUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, cleanUrl);
+      }
+    }
+  </script>
   <script type="module" src="./signin.js"></script>
 </body>
 
