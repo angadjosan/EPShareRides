@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>EPShare Rides</title>
+  <title>EPCarpool</title>
   <link href="./bulma.min.css" rel="stylesheet" type="text/css" />
   <link href="./style.css" rel="stylesheet" type="text/css" />
   <script src="https://kit.fontawesome.com/16ae8e710d.js" crossorigin="anonymous"></script>
@@ -16,26 +16,27 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/co2Tracker.js"></script>
 </head>
 
 <body>
   <main>
     <section class="hero is-fullheight" id="hero">
+      <!-- Hero head: will stick at the top -->
       <div class="hero-head">
-          <header class="navbar">
+        <header class="navbar">
           <div class="container">
             <div class="navbar-brand">
               <a class="navbar-item">
-                <img src="EPS Logo - Transparent-4.png" alt="Logo">
-                <h1 class="title is-3" style="margin-left: 10px">EPShare Rides</h1>
-              </a>
-              <div class="navbar-item" style="padding: 0.5rem 0.75rem;">
-                <button class="button is-info is-light" onclick="showDisclaimer()">
-                  <span class="icon">
+                <div class="logo-container">
+                  <img src="EPS Logo - Transparent-4.png" alt="Logo">
+                  <h1 class="title title-with-logo">EPCarpool</h1>
+                  <!-- TODO: make the icon blue and remove button background -->
+                  <button class="info-button" onclick="showDisclaimer()">
                     <i class="fas fa-info-circle"></i>
-                  </span>
-                </button>
-              </div>
+                  </button>
+                </div>
+              </a>
               <span class="navbar-burger" data-target="navbarMenuHeroC" id="nav-toggle">
                 <span></span>
                 <span></span>
@@ -43,27 +44,34 @@
               </span>
             </div>
             <div id="navbarMenuHeroC" class="navbar-menu ">
+              <div class="navbar-start navbar-center">
+                <!-- Centered quick nav links: Upcoming Events and My Carpools -->
+                <a class="navbar-item nav-link" href="/">Upcoming Events</a>
+                <a class="navbar-item nav-link" href="/mycarpools">My Carpools</a>
+              </div>
               <div class="navbar-end">
                 <div class="is-button is-link">
-                  <div class="navbar-item">
-                    <span style="font-size: 1em; color: #30B700; float: right">
-                      <a class="fa-solid fa-leaf" href="/sustainabilityStatement" style="color: #30B700"></a>
-                    </span>
-                    <div class="buttons" style="margin: 10px;margin-right: 0px;">
-                      <a class="navbar-item" href="/" style="color: #3273dc; font-weight: 600; margin-right: 10px;">Upcoming Events</a>
-                      <a class="navbar-item" href="/mycarpools" style="color: #3273dc; font-weight: 600; margin-right: 12px;">My Carpools</a>
+                  <div class="navbar-item co2-item">
+                    <a href="/sustainabilityStatement" class="co2-link">
+                      <i class="fa-solid fa-leaf co2-leaf-icon"></i>
+
+                      <span>
+                        <span id="co2-savings" class="co2-savings-text">0 kg CO₂ saved</span>
+                        <span id="co2-equivalents" class="co2-equivalents"></span>
+
+                      </span>
+                    </a>
+                    <div class="buttons user-buttons">
                       <div class="navbar-item has-dropdown is-hoverable "
                         onclick="document.getElementById('navbar-dropdown').style.visibility = 'visible';">
-                        <a class="button is-link" id="name_button"
-                          style="background: #3273DC;">
+                        <a class="button is-link user-button" id="name_button">
                           <%= firstName %>
                             <%= lastName %>
-                              <i style="margin-left: 5px;" class="fas fa-angle-down" aria-hidden="true"></i>
+                              <i class="fas fa-angle-down user-button-icon" aria-hidden="true"></i>
                         </a>
-                        <div id="filler"
-                          style="width: 130px; background-color: transparent; height: 20px; position: absolute; margin-top: -15px;">
+                        <div id="filler" class="dropdown-filler">
                         </div>
-                        <div class="navbar-dropdown" id="navbar-dropdown" style="background: white; border: 1px solid #dbdbdb;">
+                        <div class="navbar-dropdown navbar-dropdown-custom" id="navbar-dropdown">
                           <a class="navbar-item" href="/updateSettings">
                             Update settings
                           </a>
@@ -82,7 +90,6 @@
                           </div>
                         </div>
                       </div>
-                      </nav>
                     </div>
                   </div>
                 </div>
@@ -91,9 +98,7 @@
           </div>
         </header>
       </div>
-
-
-      <section class="hero is-fullheight">
+      <!-- Hero content: will be in the middle -->
         <!-- Hero head: will stick at the top -->
 
 
@@ -102,7 +107,7 @@
   <div class="hero-body">
           <div class="container has-text-centered vertical-center" id="updatesettings">
 
-            <h1 class="title is-3 " style="margin-top: 5px; margin-bottom: 30px">Settings</h1>
+            <h1 class="title is-3 " style="margin-top: 30px; margin-bottom: 30px">Settings</h1>
 
             <p class="subtitle is-6" style=" width: 100%; margin-bottom: 0px; text-align: left"><strong>Privacy</strong>
             </p>
