@@ -46,11 +46,21 @@ function initMap() {
 // Initialize map when the page loads
 document.addEventListener('DOMContentLoaded', function () {
     initMap();
-    loadData();
+    // Only load data if map was successfully initialized
+    if (map) {
+        loadData();
+    }
 });
 
-// Load events and carpools data in parallel
+// Load events and carpools data in parallel (ONLY for map functionality)
+// NOTE: Events are fetched separately in index.ejs for display purposes
+// This fetch is only for getting event addresses to display on the map
 async function loadData() {
+    // Only load data if map exists (this script is used on pages with maps)
+    if (!document.getElementById('map')) {
+        return;
+    }
+    
     try {
         // Fetch both events and carpools in parallel
         const [eventsResponse, carpoolsResponse] = await Promise.all([
@@ -60,8 +70,6 @@ async function loadData() {
         
         events = await eventsResponse.json();
         carpools = await carpoolsResponse.json();
-        console.log(events);
-        console.log(carpools);
         
         // Collect all unique addresses to geocode
         const addressesToGeocode = new Set();

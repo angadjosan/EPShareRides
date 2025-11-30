@@ -242,14 +242,9 @@ ${approve ? `🌱 By joining this carpool, you've helped save approximately ${(c
 router.get("/events", homeLimiter, authenticateToken, async (req, res) => {
   let events;
   try {
-    const today = new Date();
-    // Set to start of today (00:00:00)
-    today.setHours(0, 0, 0, 0);
-    
-    // Only return events with date >= today (current day and future)
-    events = await Event.find({ 
-      date: { $gte: today.toISOString().split('T')[0] } 
-    });
+    // Get all events - date filtering will be done on frontend
+    // because dates are stored as strings in various formats
+    events = await Event.find({});
   } catch (err) {
     console.error("Error getting events: " + err);
     res.status(500).send("Error getting events");
