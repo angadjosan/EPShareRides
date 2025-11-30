@@ -263,7 +263,7 @@
         <div class="field">
           <label class="label" for="ename">Event name:</label>
           <div class="control">
-            <input class="input" type="text" id="ename" name="name">
+            <input class="input" type="text" id="ename" name="name" required>
           </div>
         </div>
         <div class="field">
@@ -283,7 +283,7 @@
         <div class="field">
           <label class="label" for="edate">Date and time:</label>
           <div class="control">
-            <input class="input" type="datetime-local" id="edate" name="date">
+            <input class="input" type="datetime-local" id="edate" name="date" required>
           </div>
         </div>
         <div class="field">
@@ -844,7 +844,7 @@
         <div class="field">
           <label class="label" for="ename">Event name:</label>
           <div class="control">
-            <input class="input" type="text" id="ename" name="name">
+            <input class="input" type="text" id="ename" name="name" required>
           </div>
         </div>
         <div class="field">
@@ -864,7 +864,7 @@
         <div class="field">
           <label class="label" for="edate">Date and time:</label>
           <div class="control">
-            <input class="input" type="datetime-local" id="edate" name="date">
+            <input class="input" type="datetime-local" id="edate" name="date" required>
           </div>
         </div>
         <div class="field">
@@ -891,6 +891,27 @@
   </div>
   <!-- end Create Event Modal -->
   <script type="text/javascript">
+    // Show toast notification function
+    function showToast(message, type = 'warning') {
+      const toast = document.createElement('div');
+      toast.className = `notification is-${type} is-light`;
+      toast.style.position = 'fixed';
+      toast.style.bottom = '20px';
+      toast.style.right = '20px';
+      toast.style.zIndex = '1000';
+      toast.style.minWidth = '300px';
+      toast.innerHTML = `
+        <button class="delete" onclick="this.parentElement.remove()"></button>
+        ${message}
+      `;
+      document.body.appendChild(toast);
+
+      // Auto-remove toast after 5 seconds
+      setTimeout(() => {
+        toast.remove();
+      }, 5000);
+    }
+
     // Create Event Modal Functions
     function openCreateEventModal() {
       document.getElementById('modal-create-event').classList.add('is-active');
@@ -913,6 +934,27 @@
     }
 
     async function createEventAndClose() {
+      // Validate required fields
+      const eventName = document.getElementById('ename').value.trim();
+      const address = document.getElementById('create_address') ? document.getElementById('create_address').value.trim() : '';
+      const dateTime = document.getElementById('edate').value;
+
+      // Check if required fields are filled
+      if (!eventName) {
+        showToast('Please enter an event name.', 'warning');
+        return;
+      }
+
+      if (!address) {
+        showToast('Please enter an address.', 'warning');
+        return;
+      }
+
+      if (!dateTime) {
+        showToast('Please select a date and time.', 'warning');
+        return;
+      }
+
       await createevent();
       closeCreateEventModal();
       // Refresh the page to show the new event
