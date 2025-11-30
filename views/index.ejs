@@ -456,8 +456,6 @@
   </div>
   <!-- end here -->
   <script type="text/javascript">
-    //Don't worry about it
-    console.error("HTTP ERROR: 418 I'm a teapot");
 
     function addressAutocomplete(containerElement, idName, callback, options) {
       // create input element
@@ -704,14 +702,14 @@
     }
     // Restrict event categories to allowed values
     try {
-      var catSelect = document.getElementById('ecategory');
-      if (catSelect) {
+      var catSelects = document.querySelectorAll('select#ecategory, select[name="category"]');
+      catSelects.forEach(function(catSelect) {
         catSelect.innerHTML = "" +
-          "<option value='School'>School</option>" +
-          "<option value='Sports'>Sports</option>" +
-          "<option value='Extra School Events'>Extra School Events</option>" +
-          "<option value='Other'>Other</option>";
-      }
+          "<option value='sports'>Sports</option>" +
+          "<option value='academic teams'>Academic teams</option>" +
+          "<option value='socials'>Socials</option>" +
+          "<option value='other'>Other</option>";
+      });
     } catch (e) { console.warn('Failed to set category options', e); }
 
     function toggleCustomCategory() {
@@ -1018,8 +1016,6 @@
     }
   </script>
   <script>
-    //Don't worry about it
-    console.error("418 I'm a teapot");
 
     let value2;
     let data1;
@@ -1785,10 +1781,6 @@
         hour12: true
       });
       category = document.getElementById("ecategory").value;
-      // Normalize category to allowed values just in case
-      if (["School", "Sports", "Extra School Events"].indexOf(category) === -1) {
-        category = "School";
-      }
 
       // Get coordinates for the user's address and event location
       const userCoords = await getCoordinates(address);
