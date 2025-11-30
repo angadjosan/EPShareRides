@@ -148,16 +148,16 @@
             </a>
           </div>
           <div class="field">
-            <a class="panel-block" class="carpool-panel-block">
-              <input class="input carpool-inputs-margin" id="email" class="input" type="email"
+            <a class="panel-block carpool-panel-block">
+              <input class="input carpool-inputs-margin" id="email" type="email"
                 placeholder="Driver email">
               <input id="phone" class="input" type="tel" placeholder="Driver phone number">
             </a>
           </div>
-          <div class="field" class="field-margin-bottom">
+          <div class="field field-margin-bottom">
             <input class="input" id="carmake" type="text" placeholder="Car make and model">
           </div>
-          <div class="field" class="field-margin-bottom">
+          <div class="field field-margin-bottom">
             <input class="input" id="seats" type="number" min="1" max="9" placeholder="Number of available car seats">
           </div>
           <div class="pickup-options-container">
@@ -179,7 +179,7 @@
             </div>
             <div>
               <label>Arrival time</label>
-              <div class="field" class="field-margin-bottom">
+              <div class="field field-margin-bottom">
                 <input class="input" id="arrivaltime" type="time" placeholder="Time to arrive">
               </div>
             </div>
@@ -317,7 +317,7 @@
   <!-- end Create Event Modal -->
   <script></script>
   <!-- start here -->
-  <div class="modal " id="modal-js-example">
+  <div class="modal " id="modal-js-example-edit">
     <div class="modal-background" class="modal-background-dark"></div>
     <div class="modal-card">
       <p class="panel-heading has-text-centered" class="modal-heading-offer">
@@ -337,16 +337,16 @@
             </a>
           </div>
           <div class="field">
-            <a class="panel-block" class="carpool-panel-block">
-              <input class="input carpool-inputs-margin" id="email" class="input" type="email"
+            <a class="panel-block carpool-panel-block">
+              <input class="input carpool-inputs-margin" id="email" type="email"
                 placeholder="Driver email">
               <input id="phone" class="input" type="tel" placeholder="Driver phone number">
             </a>
           </div>
-          <div class="field" class="field-margin-bottom">
+          <div class="field field-margin-bottom">
             <input class="input" id="carmake" type="text" placeholder="Car make and model">
           </div>
-          <div class="field" class="field-margin-bottom">
+          <div class="field field-margin-bottom">
             <input class="input" id="seats" type="number" min="1" max="9" placeholder="Number of available car seats">
           </div>
           <div class="pickup-options-container">
@@ -368,7 +368,7 @@
             </div>
             <div>
               <label>Arrival time</label>
-              <div class="field" class="field-margin-bottom">
+              <div class="field field-margin-bottom">
                 <input class="input" id="arrivaltime" type="time" placeholder="Time to arrive">
               </div>
             </div>
@@ -728,7 +728,6 @@
     }
 
   </script>
-  </span>
   </div>
 
   <!-- Hero footer: will stick at the bottom -->
@@ -1030,6 +1029,112 @@
           });
         }
 
+        function modalFunctions() {
+
+
+          function openModal($el) {
+            $el.classList.add('is-active');
+
+            document.getElementById("registerJS").innerHTML = ``;
+
+            //checks if the carpools id matches an events id
+
+            for (var i = 0; i < eventsW2.length; i++) {
+              if (eventsW2[i]._id == datarray[datarray.length - 1]) {
+                eventTime = new Date(eventsW2[i].date);
+
+                let dayOfWeek = eventTime.getDay();
+                const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+                let day = weekdays[dayOfWeek];
+
+                // Format time as AM/PM
+                eventTime = eventTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
+
+                document.getElementById("registerTitle").innerText = "Choose a carpool · " + day + " at " + eventTime
+              }
+            }
+
+
+            for (var i = 0; i < userData1.length; i++) {
+              var obj = userData1[i];
+
+              if (obj["nameOfEvent"] == datarray[datarray.length - 1]) {
+
+
+
+                //datarray[datarray.length - 1]
+
+
+
+                if (obj["route"] == "route") {
+                  routeType = "Riders' Homes"
+                }
+                else if (obj["route"] == "point") {
+                  routeType = "Common meeting point"
+                }
+                else if (obj["route"] == "eps-campus") {
+                  routeType = "EPS Campus"
+                }
+
+                document.getElementById("registerJS").innerHTML +=
+                  `<div class="notification"  style="padding: 10px;   margin-bottom: 10px;">
+                                                  <div class="button  selectCarpool" style=" margin-left: 10px; margin-top: 4px; background-color: transparent; float: right" onclick=" selectCarpool(this)" id="` + obj["_id"] + `">Select</div>
+                                                          <div style="float: right; margin-top: 3px;"  >` + obj["carpoolers"].length + `/` + obj["seats"] + ` signed up</div>
+                                                                                    Organizer: <a style="color: #3273dc" href="mailto:` + obj["email"] + `">` + obj["email"] + `</a>
+                                                            <br> Driver name: ` + obj["firstName"] + ` ` + obj["lastName"] + `
+                                                            <br> Phone: ` + obj["phone"] + `
+                                                            <br> Car: ` + obj["carMake"] + `
+                                                            <br> Route type: ` + routeType + `
+                                                            <br> Arrival time: ` + obj["arrivalTime"] + `
+                   <br>                                                                                          </div>   `
+              }
+            }
+
+            if (value2 != "none" && value2 != null && value2 != false) {
+              document.getElementById("address-input").value = value2;
+              document.getElementById("address-input2").value = value2;
+            }
+          }
+
+          function closeModal($el) {
+            $el.classList.remove('is-active');
+          }
+
+          function closeAllModals() {
+            (document.querySelectorAll('.modal') || []).forEach(($modal) => {
+              closeModal($modal);
+            });
+          }
+
+          // Add a click event on buttons to open a specific modal
+          document.getElementById('eventsJS').addEventListener('click', (e) => {
+            if (e.target.classList.contains('js-modal-trigger')) {
+              const modal = e.target.dataset.target;
+              const $target = document.getElementById(modal);
+              openModal($target);
+            }
+          });
+
+          // Add a click event on various child elements to close the parent modal
+          (document.querySelectorAll('.modal-background, .modal-close, .modal-card-head .delete, .modal-card-foot .cancel') || []).forEach(($close) => {
+            const $target = $close.closest('.modal');
+
+            $close.addEventListener('click', () => {
+              closeModal($target);
+            });
+          });
+
+          // Add a keyboard event to close all modals
+          document.addEventListener('keydown', (event) => {
+            const e = event || window.event;
+
+            if (e.keyCode === 27) { // Escape key
+              closeAllModals();
+            }
+          });
+
+        }
+
         // Render events to the DOM
         function renderEvents(eventsToRender) {
           if (!eventsToRender || eventsToRender.length === 0) {
@@ -1080,7 +1185,6 @@
           }
           
           checkIfRegistered(userData1);
-          modalFunctions();
         }
 
         var request = new Request("/api/events", {
@@ -1127,112 +1231,6 @@
             };
 
 
-            function modalFunctions() {
-
-
-              function openModal($el) {
-                $el.classList.add('is-active');
-
-                document.getElementById("registerJS").innerHTML = ``;
-
-                //checks if the carpools id matches an events id
-
-                for (var i = 0; i < eventsW2.length; i++) {
-                  if (eventsW2[i]._id == datarray[datarray.length - 1]) {
-                    eventTime = new Date(eventsW2[i].date);
-
-                    let dayOfWeek = eventTime.getDay();
-                    const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-                    let day = weekdays[dayOfWeek];
-
-                    // Format time as AM/PM
-                    eventTime = eventTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
-
-                    document.getElementById("registerTitle").innerText = "Choose a carpool · " + day + " at " + eventTime
-                  }
-                }
-
-
-                for (var i = 0; i < userData1.length; i++) {
-                  var obj = userData1[i];
-
-                  if (obj["nameOfEvent"] == datarray[datarray.length - 1]) {
-
-
-
-                    //datarray[datarray.length - 1]
-
-
-
-                    if (obj["route"] == "route") {
-                      routeType = "Riders' Homes"
-                    }
-                    else if (obj["route"] == "point") {
-                      routeType = "Common meeting point"
-                    }
-                    else if (obj["route"] == "eps-campus") {
-                      routeType = "EPS Campus"
-                    }
-
-                    document.getElementById("registerJS").innerHTML +=
-                      `<div class="notification"  style="padding: 10px;   margin-bottom: 10px;">
-                                                      <div class="button  selectCarpool" style=" margin-left: 10px; margin-top: 4px; background-color: transparent; float: right" onclick=" selectCarpool(this)" id="` + obj["_id"] + `">Select</div>
-                                                              <div style="float: right; margin-top: 3px;"  >` + obj["carpoolers"].length + `/` + obj["seats"] + ` signed up</div>
-                                                                                        Organizer: <a style="color: #3273dc" href="mailto:` + obj["email"] + `">` + obj["email"] + `</a>
-                                                                <br> Driver name: ` + obj["firstName"] + ` ` + obj["lastName"] + `
-                                                                <br> Phone: ` + obj["phone"] + `
-                                                                <br> Car: ` + obj["carMake"] + `
-                                                                <br> Route type: ` + routeType + `
-                                                                <br> Arrival time: ` + obj["arrivalTime"] + `
-                       <br>                                                                                          </div>   `
-                  }
-                }
-
-                if (value2 != "none" && value2 != null && value2 != false) {
-                  document.getElementById("address-input").value = value2;
-                  document.getElementById("address-input2").value = value2;
-                }
-              }
-
-              function closeModal($el) {
-                $el.classList.remove('is-active');
-              }
-
-              function closeAllModals() {
-                (document.querySelectorAll('.modal') || []).forEach(($modal) => {
-                  closeModal($modal);
-                });
-              }
-
-              // Add a click event on buttons to open a specific modal
-              (document.querySelectorAll('.js-modal-trigger') || []).forEach(($trigger) => {
-                const modal = $trigger.dataset.target;
-                const $target = document.getElementById(modal);
-
-                $trigger.addEventListener('click', () => {
-                  openModal($target);
-                });
-              });
-
-              // Add a click event on various child elements to close the parent modal
-              (document.querySelectorAll('.modal-background, .modal-close, .modal-card-head .delete, .modal-card-foot .cancel') || []).forEach(($close) => {
-                const $target = $close.closest('.modal');
-
-                $close.addEventListener('click', () => {
-                  closeModal($target);
-                });
-              });
-
-              // Add a keyboard event to close all modals
-              document.addEventListener('keydown', (event) => {
-                const e = event || window.event;
-
-                if (e.keyCode === 27) { // Escape key
-                  closeAllModals();
-                }
-              });
-
-            }
             modalFunctions()
 
           })

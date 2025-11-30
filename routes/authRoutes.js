@@ -90,7 +90,6 @@ router.post("/login", homeLimiter, async (req, res) => {
       lastName: lastName,
       email: email,
       admin: false,
-      address: false,
       privacy: false,
     });
 
