@@ -290,13 +290,19 @@
           <label class="label" for="ecategory">Category:</label>
           <div class="control">
             <div class="select">
-              <select id="ecategory" name="category">
+              <select id="ecategory" name="category" onchange="toggleCustomCategory()">
                 <option value="sports">Sports</option>
                 <option value="academic teams">Academic teams</option>
                 <option value="socials">Socials</option>
                 <option value="other">Other</option>
               </select>
             </div>
+          </div>
+        </div>
+        <div class="field" id="custom-category-field" style="display: none;">
+          <label class="label" for="ecustom-category">Custom Category:</label>
+          <div class="control">
+            <input class="input" type="text" id="ecustom-category" name="customCategory" placeholder="Enter custom category">
           </div>
         </div>
       </section>
@@ -675,9 +681,25 @@
         catSelect.innerHTML = "" +
           "<option value='School'>School</option>" +
           "<option value='Sports'>Sports</option>" +
-          "<option value='Extra School Events'>Extra School Events</option>";
+          "<option value='Extra School Events'>Extra School Events</option>" +
+          "<option value='Other'>Other</option>";
       }
     } catch (e) { console.warn('Failed to set category options', e); }
+
+    function toggleCustomCategory() {
+      var categorySelect = document.getElementById('ecategory');
+      var customCategoryField = document.getElementById('custom-category-field');
+      var customCategoryInput = document.getElementById('ecustom-category');
+      
+      if (categorySelect.value.toLowerCase() === 'other') {
+        customCategoryField.style.display = 'block';
+        customCategoryInput.required = true;
+      } else {
+        customCategoryField.style.display = 'none';
+        customCategoryInput.required = false;
+        customCategoryInput.value = '';
+      }
+    }
 
   </script>
   </span>
@@ -871,13 +893,19 @@
           <label class="label" for="ecategory">Category:</label>
           <div class="control">
             <div class="select">
-              <select id="ecategory" name="category">
+              <select id="ecategory" name="category" onchange="toggleCustomCategory()">
                 <option value="sports">Sports</option>
                 <option value="academic teams">Academic teams</option>
                 <option value="socials">Socials</option>
                 <option value="other">Other</option>
               </select>
             </div>
+          </div>
+        </div>
+        <div class="field" id="custom-category-field" style="display: none;">
+          <label class="label" for="ecustom-category">Custom Category:</label>
+          <div class="control">
+            <input class="input" type="text" id="ecustom-category" name="customCategory" placeholder="Enter custom category">
           </div>
         </div>
       </section>

@@ -107,6 +107,16 @@ function createevent() {
   });
 
   category = document.getElementById("ecategory").value;
+  let customCategory = null;
+  
+  // If "Other" is selected, use the custom category text
+  if (category.toLowerCase() === 'other') {
+    const customCategoryInput = document.getElementById("ecustom-category");
+    if (customCategoryInput && customCategoryInput.value.trim()) {
+      customCategory = customCategoryInput.value.trim();
+    }
+  }
+  
   const data = {
     firstName,
     lastName,
@@ -114,6 +124,7 @@ function createevent() {
     wlocation,
     date,
     category,
+    customCategory,
   };
   console.log(data);
 
