@@ -30,7 +30,9 @@ async function toggleSignIn() {
       if (result.user) {
         const idToken = await result.user.getIdToken(/* forceRefresh */ false);
         const secureAttr = window.location.protocol === 'https:' ? '; Secure' : '';
-        document.cookie = `idToken=${idToken}; Path=/; SameSite=Lax${secureAttr}`;
+        const expires = new Date();
+        expires.setFullYear(expires.getFullYear() + 1); // Expire in 1 year
+        document.cookie = `idToken=${idToken}; Path=/; SameSite=Lax; Expires=${expires.toUTCString()}${secureAttr}`;
         
         const response = await fetch("/login", {
           method: "POST",
